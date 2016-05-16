@@ -1,0 +1,28 @@
+{{define "content"}}
+    <div class="row">
+        <div class="large-12 columns">
+            <section class="content">
+                {{ if .Message }}
+                    <div class="row">
+                        <div class="large-12 columns">
+                            <div class="blogger-notice">
+                                {{ .Message }}
+                            </div>
+                        </div>
+                    </div>
+                {{ else }}
+                    <div class="row">
+                        <div class="large-12 columns">
+                            <div>
+                                {{range $k, $error := .Errors}}
+                                    {{ . }}
+                                {{end}}
+                                {{template "contact_form" .}}
+                            </div>
+                        </div>
+                    </div>
+                {{end}}
+            </section>
+        </div>
+    </div>
+{{end}}

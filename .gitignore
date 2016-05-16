@@ -1,32 +1,31 @@
-# Created by .ignore support plugin (hsz.mobi)
-### Go template
-# Compiled Object files, Static and Dynamic libs (Shared Objects)
-*.o
-*.a
-*.so
-
-# Folders
-_obj
-_test
-
-# Architecture specific extensions/prefixes
-*.[568vq]
-[568vq].out
-
-*.cgo1.go
-*.cgo2.c
-_cgo_defun.c
-_cgo_gotypes.go
-_cgo_export.*
-
-_testmain.go
-
-*.exe
-*.test
-*.prof
-
-bin/*
-
-*.db
+/vendor/*
 
 .idea
+/config/parameters.yml
+/patches
+/web/media/cache
+/bower_components/
+/app/cache/
+/app/logs/
+/node_modules/
+/build
+/docker/.env
+/.env
+/tmp/
+/app/spool/
+/log
+/web/dev
+/var/*
+/admin.conf
+/admin.conf.base64
+/bin/*
+!/bin/console
+/web/css/
+/web/fonts/
+/web/js/
+/web/images/
+/web/rev-manifest-css.json
+/web/rev-manifest-js.json
+/medzoner/
+!/var/log/
+/var/log/*.log
