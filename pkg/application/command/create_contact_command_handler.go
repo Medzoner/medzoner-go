@@ -16,10 +16,11 @@ type CreateContactCommandHandler struct {
 
 func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
 	contact := c.ContactFactory.New()
-	contact.SetName(command.Name)
-	contact.SetMessage(command.Message)
-	contact.SetEmail(customtype.NullString{String: command.Email, Valid: true})
-	contact.SetDateAdd(time.Now())
+	contact.
+		SetName(command.Name).
+		SetMessage(command.Message).
+		SetEmail(customtype.NullString{String: command.Email, Valid: true}).
+		SetDateAdd(time.Now())
 
 	c.ContactRepository.Save(contact)
 

@@ -20,7 +20,7 @@ func (m *TechnoJsonRepository) FetchStack() map[string]interface{} {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer jsonFile.Close()
+	defer m.deferJsonFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -38,7 +38,7 @@ func (m *TechnoJsonRepository) FetchExperience() map[string]interface{} {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer jsonFile.Close()
+	defer m.deferJsonFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -56,7 +56,7 @@ func (m *TechnoJsonRepository) FetchFormation() map[string]interface{} {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer jsonFile.Close()
+	defer m.deferJsonFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -74,7 +74,7 @@ func (m *TechnoJsonRepository) FetchLang() map[string]interface{} {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer jsonFile.Close()
+	defer m.deferJsonFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -92,7 +92,7 @@ func (m *TechnoJsonRepository) FetchOther() map[string]interface{} {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer jsonFile.Close()
+	defer m.deferJsonFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -103,4 +103,11 @@ func (m *TechnoJsonRepository) FetchOther() map[string]interface{} {
 	}
 
 	return c
+}
+
+func (m *TechnoJsonRepository) deferJsonFile(jsonFile *os.File) {
+	err := jsonFile.Close()
+	if err == nil {
+		fmt.Println("jsonFile closed.")
+	}
 }
