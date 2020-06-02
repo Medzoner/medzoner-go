@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
-	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
@@ -24,30 +23,28 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		}
 
 		contact := &ContactTest{}
-
+		loggerTest := &LoggerTest{}
 		handler := command.CreateContactCommandHandler {
 			ContactFactory:             contact,
 			ContactRepository:          &ContactRepositoryTest{},
 			ContactCreatedEventHandler: CreateContactCommandHandlerTest{},
-			Logger: &LoggerTest{},
+			Logger: loggerTest,
 		}
 
-		assert.Equal(t, contact.Name(), "")
-		assert.Equal(t, contact.Message(), "")
-		assert.Equal(t, contact.Email(), customtype.NullString{String: "", Valid: false})
-		assert.Equal(t, contact.DateAdd(), date)
 		handler.Handle(createContactCommand)
-		//assert.Equal(t, mailer.SendParam, "a name")
+		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
 	})
 }
 
 type LoggerTest struct {
-	RootPath string
+	LogMessages []string
 }
 func (l *LoggerTest) Log(msg string) {
+	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
 }
 func (l *LoggerTest) Error(msg string) {
+	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
 }
 func (l LoggerTest) New() logger.ILogger {

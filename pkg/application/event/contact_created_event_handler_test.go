@@ -29,35 +29,41 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		mailer := &MailerTest{
 			isSend: false,
 		}
+		loggerTest := &LoggerTest{}
 		handler := event.ContactCreatedEventHandler{
 			Mailer:  mailer,
-			Logger: &LoggerTest{},
+			Logger: loggerTest,
 		}
 
 		handler.Handle(contactCreatedEvent)
+		assert.Equal(t, loggerTest.LogMessages[0], "Mail was send.")
 		assert.Equal(t, mailer.isSend, true)
 	})
 	t.Run("Unit: test ContactCreatedEventHandler failed with bad event", func(t *testing.T) {
 		mailer := &MailerTest{
 			isSend: false,
 		}
+		loggerTest := &LoggerTest{}
 		handler := event.ContactCreatedEventHandler{
 			Mailer:  mailer,
-			Logger: &LoggerTest{},
+			Logger: loggerTest,
 		}
 
 		handler.Handle(BadEvent{})
+		assert.Equal(t, loggerTest.LogMessages[0], "Error during send mail.")
 		assert.Equal(t, mailer.isSend, false)
 	})
 }
 
 type LoggerTest struct {
-	RootPath string
+	LogMessages []string
 }
 func (l *LoggerTest) Log(msg string) {
+	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
 }
 func (l *LoggerTest) Error(msg string) {
+	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
 }
 func (l LoggerTest) New() logger.ILogger {

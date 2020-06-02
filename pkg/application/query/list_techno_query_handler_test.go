@@ -1,7 +1,6 @@
 package query_test
 
 import (
-	"encoding/json"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"testing"
 )
@@ -75,47 +74,17 @@ func TestListTechnoQueryHandler(t *testing.T) {
 
 type TechnoRepositoryTest struct {}
 func (m *TechnoRepositoryTest) FetchStack() map[string]interface{} {
-	str := "{}"
-	c := make(map[string]interface{})
-	err := json.Unmarshal([]byte(str), &c)
-	if err != nil {
-		panic(err)
-	}
-	return c
+	return map[string]interface{}{}
 }
 func (m *TechnoRepositoryTest) FetchExperience() map[string]interface{} {
-	str := "{}"
-	c := make(map[string]interface{})
-	err := json.Unmarshal([]byte(str), &c)
-	if err != nil {
-		panic(err)
-	}
-	return c
+	return map[string]interface{}{}
 }
 func (m *TechnoRepositoryTest) FetchFormation() map[string]interface{} {
-	str := "{}"
-	c := make(map[string]interface{})
-	err := json.Unmarshal([]byte(str), &c)
-	if err != nil {
-		panic(err)
-	}
-	return c
+	return map[string]interface{}{}
 }
 func (m *TechnoRepositoryTest) FetchLang() map[string]interface{} {
-	str := "{}"
-	c := make(map[string]interface{})
-	err := json.Unmarshal([]byte(str), &c)
-	if err != nil {
-		panic(err)
-	}
-	return c
+	return map[string]interface{}{}
 }
 func (m *TechnoRepositoryTest) FetchOther() map[string]interface{} {
-	str := "{}"
-	c := make(map[string]interface{})
-	err := json.Unmarshal([]byte(str), &c)
-	if err != nil {
-		panic(err)
-	}
-	return c
+	return map[string]interface{}{}
 }

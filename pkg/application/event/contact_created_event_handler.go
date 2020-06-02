@@ -16,6 +16,6 @@ func (c ContactCreatedEventHandler) Handle(event Event) {
 		_, _ = c.Mailer.Send(event.GetModel())
 		c.Logger.Log("Mail was send.")
 	default:
-		c.Logger.Error("Error")
+		c.Logger.Error("Error during send mail.")
 	}
 }
