@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
+	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
@@ -14,11 +15,12 @@ import (
 
 func TestCreateContactCommandHandler(t *testing.T) {
 	t.Run("Unit: test CreateContactCommandHandler success", func(t *testing.T) {
+		date := time.Time{}
 		createContactCommand := command.CreateContactCommand{
 			Name:    "a name",
 			Email:   "an email",
 			Message: "the message",
-			DateAdd: time.Time{},
+			DateAdd: date,
 		}
 
 		contact := &ContactTest{}
@@ -31,6 +33,9 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		}
 
 		assert.Equal(t, contact.Name(), "")
+		assert.Equal(t, contact.Message(), "")
+		assert.Equal(t, contact.Email(), customtype.NullString{String: "", Valid: false})
+		assert.Equal(t, contact.DateAdd(), date)
 		handler.Handle(createContactCommand)
 		//assert.Equal(t, mailer.SendParam, "a name")
 	})
