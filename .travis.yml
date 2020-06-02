@@ -20,6 +20,7 @@ before_script:
 script:
   - cp .env.ci .env
   - go test -v -cover -coverpkg=./... ./pkg/... -covermode=count -coverprofile=coverage.out
+  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
   - rm .env
   - go test -v -cover -coverpkg=./... ./godog_test.go
   - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app.go
