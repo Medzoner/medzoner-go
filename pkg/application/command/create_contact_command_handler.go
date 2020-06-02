@@ -5,13 +5,15 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 	"github.com/Medzoner/medzoner-go/pkg/domain/factory"
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
+	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"time"
 )
 
 type CreateContactCommandHandler struct {
-	ContactFactory                    factory.IContactFactory
+	ContactFactory             factory.IContactFactory
 	ContactRepository          repository.ContactRepository
-	ContactCreatedEventHandler event.ContactCreatedEventHandler
+	ContactCreatedEventHandler event.EventHandler
+	Logger  logger.ILogger
 }
 
 func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
@@ -23,6 +25,7 @@ func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
 		SetDateAdd(time.Now())
 
 	c.ContactRepository.Save(contact)
+	c.Logger.Log("Contact was created.")
 
 	contactCreatedEvent := event.ContactCreatedEvent{Contact: contact}
 	c.ContactCreatedEventHandler.Handle(contactCreatedEvent)

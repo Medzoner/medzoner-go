@@ -1,4 +1,4 @@
-package mailer
+package mailer_smtp
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-type Mailer struct {
+type MailerSmtp struct {
 	User     string
 	Password string
 	Host     string
@@ -29,7 +29,7 @@ func NewRequest(to []string, subject, body string) *Request {
 	}
 }
 
-func (m *Mailer) Send(view interface{}) (bool, error) {
+func (m *MailerSmtp) Send(view interface{}) (bool, error) {
 	auth := smtp.PlainAuth("", m.User, m.Password, m.Host)
 
 	r := NewRequest([]string{m.User}, "Hello Junk!", "Hello, World!")

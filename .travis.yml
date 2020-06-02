@@ -14,10 +14,12 @@ env:
 
 before_script:
   - docker-compose up -d --force-recreate
+  - go get github.com/modocache/gover
+  - go get github.com/mattn/goveralls
 
 script:
   - cp .env.ci .env
-  - go test -v -cover -coverpkg=./... ./pkg/...
+  - go test -v -cover -coverpkg=./... ./pkg/... -covermode=count -coverprofile=coverage.out
   - rm .env
   - go test -v -cover -coverpkg=./... ./godog_test.go
   - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app.go

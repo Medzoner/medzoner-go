@@ -39,9 +39,9 @@ func (a *Web) Start() {
 	a.Router.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir(dir+"/public/css/"))))
 	a.Router.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir(dir+"/public/js/"))))
 	http.Handle("/", a.Router)
-	_ = a.Logger.Log(fmt.Sprintf("Server up on port '%d'", a.ApiPort))
+	a.Logger.Log(fmt.Sprintf("Server up on port '%d'", a.ApiPort))
 	err := a.Server.ListenAndServe()
 	if err != nil {
-		_ = a.Logger.Error(err)
+		a.Logger.Error(fmt.Sprintln(err))
 	}
 }

@@ -5,24 +5,24 @@ import (
 )
 
 type ListTechnoQueryHandler struct {
-	ItechnoRepository repository.TechnoRepository
+	TechnoRepository repository.TechnoRepository
 }
 
 func (l *ListTechnoQueryHandler) Handle(query ListTechnoQuery) map[string]interface{} {
 	if query.Type == "stack" {
-		return l.ItechnoRepository.FetchStack()
+		return l.TechnoRepository.FetchStack()
 	}
 	if query.Type == "experience" {
-		return l.ItechnoRepository.FetchExperience()
+		return l.TechnoRepository.FetchExperience()
 	}
 	if query.Type == "formation" {
-		return l.ItechnoRepository.FetchFormation()
+		return l.TechnoRepository.FetchFormation()
 	}
 	if query.Type == "lang" {
-		return l.ItechnoRepository.FetchLang()
+		return l.TechnoRepository.FetchLang()
 	}
 	if query.Type == "other" {
-		return l.ItechnoRepository.FetchOther()
+		return l.TechnoRepository.FetchOther()
 	}
 	return map[string]interface{}{}
 }

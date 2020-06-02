@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/jmoiron/sqlx"
@@ -19,6 +20,6 @@ func (m *MysqlContactRepository) Save(contact model.IContact) {
 		_ = tx.Commit()
 	}
 	if err != nil {
-		_ = m.Logger.Error(err)
+		m.Logger.Error(fmt.Sprintln(err))
 	}
 }

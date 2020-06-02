@@ -11,7 +11,7 @@ var ListTechnoQueryHandlerDefinition = di.Def{
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
 		return query.ListTechnoQueryHandler{
-			ItechnoRepository: ctn.Get("techno-repository").(repository.TechnoRepository),
+			TechnoRepository: ctn.Get("techno-repository").(repository.TechnoRepository),
 		}, nil
 	},
 }

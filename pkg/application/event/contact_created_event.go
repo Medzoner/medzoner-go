@@ -7,3 +7,7 @@ import (
 type ContactCreatedEvent struct {
 	Contact model.IContact
 }
+
+func (c ContactCreatedEvent) GetModel() interface{} {
+	return c.Contact
+}

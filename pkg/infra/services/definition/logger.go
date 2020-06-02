@@ -1,8 +1,8 @@
 package definition
 
 import (
-	logger "github.com/Medzoner/gologger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/sarulabs/di"
 )
 
@@ -11,7 +11,7 @@ var LoggerDefinition = di.Def{
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
 		return &logger.Logger{
-			LogPath: ctn.Get("config").(config.IConfig).GetRootPath() + "/var/log/" + ctn.Get("config").(config.IConfig).GetEnvironment() + ".log",
+			RootPath: ctn.Get("config").(config.IConfig).GetRootPath() + "/",
 		}, nil
 	},
 }
