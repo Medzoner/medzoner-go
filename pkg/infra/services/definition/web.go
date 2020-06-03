@@ -3,7 +3,6 @@ package definition
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
-	"github.com/Medzoner/medzoner-go/pkg/infra/security"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
 	"github.com/gorilla/mux"
@@ -23,7 +22,6 @@ var WebDefinition = di.Def{
 			TechnoHandler:  ctn.Get("techno-handler").(*handler.TechnoHandler),
 			ContactHandler: ctn.Get("contact-handler").(*handler.ContactHandler),
 			ApiPort:        ctn.Get("config").(config.IConfig).GetApiPort(),
-			Security:       ctn.Get("security").(security.IAuth),
 		}, nil
 	},
 }

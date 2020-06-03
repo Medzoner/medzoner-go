@@ -4,19 +4,18 @@ name: default
 type: docker
 
 steps:
-  - name: integration-test
+  - name: wait-db
     image: "attxproject/dockerize-drone-test:dev"
     commands:
       - "dockerize -wait tcp://mariadb:3306 -timeout 240s"
 
-  - name: test & build
+  - name: test
     image: golang:1.14
     commands:
       - cp .env.ci .env
-      - go test -v -cover -coverpkg=./... ./pkg/...
+      - go test -v -cover -coverpkg=./pkg/... ./...
       - cp .env.ci .env
-      - go test -v -cover -coverpkg=./... ./godog_test.go
-      - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app.go
+      - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/app.go
     when:
       branch:
         - master

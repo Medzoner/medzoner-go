@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
-	"github.com/Medzoner/medzoner-go/pkg/infra/security"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -23,7 +22,6 @@ type Web struct {
 	TechnoHandler  *handler.TechnoHandler
 	ContactHandler *handler.ContactHandler
 	ApiPort        int
-	Security       security.IAuth
 }
 
 func (a *Web) Start() {

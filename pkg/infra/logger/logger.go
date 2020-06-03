@@ -18,7 +18,7 @@ type Logger struct {
 
 func (l *Logger) Log(msg string) {
 	n, e := fmt.Println(msg)
-	logFile(msg, l.RootPath + "var/log/info.log")
+	logFile(msg, l.RootPath + l.InfoBasePath())
 	if e != nil {
 		os.Exit(1)
 	}
@@ -29,11 +29,19 @@ func (l *Logger) Log(msg string) {
 
 func (l *Logger) Error(msg string) {
 	fmt.Println(msg)
-	errorFile(msg, l.RootPath + "var/log/error.log")
+	errorFile(msg, l.RootPath + l.ErrorBasePath())
 }
 
 func (l Logger) New() ILogger {
 	return &Logger{}
+}
+
+func (l *Logger) InfoBasePath() string {
+	return "var/log/info.log"
+}
+
+func (l *Logger) ErrorBasePath() string {
+	return "var/log/error.log"
 }
 
 func logFile(msg string, fileLog string) {
@@ -41,7 +49,9 @@ func logFile(msg string, fileLog string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 	log.SetOutput(file)
 	log.Println(msg)
 }
@@ -51,7 +61,9 @@ func errorFile(msg string, fileLog string)  {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 	log.SetOutput(file)
 	log.Println(msg)
 }

@@ -24,10 +24,6 @@ func (s Service) GetDefinitions() []di.Def {
 	services = append(services, definition.WebDefinition)
 	services = append(services, definition.RouterDefinition)
 	services = append(services, definition.ServerDefinition)
-	services = append(services, definition.SecurityDefinition)
-	if config.ConfigInstance.GetEnvironment() != "test" && config.ConfigInstance.GetEnvironment() != "test_func" {
-		services = append(services, definition.ProviderDefinition)
-	}
 	services = append(services, definition.ContactRepositoryDefinition)
 	services = append(services, definition.TechnoRepositoryDefinition)
 
@@ -39,10 +35,6 @@ func (s Service) GetDefinitions() []di.Def {
 	services = append(services, application.CreateContactCommandHandlerDefinition)
 
 	services = append(services, application.ContactCreatedEventHandlerDefinition)
-
-	if config.ConfigInstance.GetEnvironment() == "test" || config.ConfigInstance.GetEnvironment() == "test_func" {
-		services = append(services, definition.ProviderFakerDefinition)
-	}
 
 	return services
 }

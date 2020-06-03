@@ -7,7 +7,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
-	"github.com/bmizerany/assert"
+	"gotest.tools/assert"
 	"reflect"
 	"testing"
 	"time"

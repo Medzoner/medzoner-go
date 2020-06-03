@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"github.com/DATA-DOG/godog"
@@ -12,6 +13,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 )
 
 var opt = godog.Options{
@@ -26,13 +28,12 @@ func init() {
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	//quit := make(chan os.Signal)
 	app := &pkg.App{}
 	ctn := app.LoadContainer()
 
+	appWeb := ctn.Get("app-web").(*web.Web)
 	go func() {
 		log.Println("server starting")
-		appWeb := ctn.Get("app-web").(*web.Web)
 		appWeb.Start()
 	}()
 	fmt.Println("server started")
@@ -50,15 +51,15 @@ func TestMain(m *testing.M) {
 	if st := m.Run(); st > status {
 		status = st
 	}
-	//
-	//<-quit
-	////// gracefully stop server
-	//ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	//defer cancel()
-	//if err := srv.Shutdown(ctx); err != nil {
-	//	log.Fatal(err)
-	//}
-	//log.Println("server stopped")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer func() {
+		cancel()
+	}()
+	if err := appWeb.Server.Shutdown(ctx); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("server stopped")
 	os.Exit(status)
 }
 
