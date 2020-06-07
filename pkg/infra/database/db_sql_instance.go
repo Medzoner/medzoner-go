@@ -16,17 +16,17 @@ type DbSqlInstance struct {
 	DriverName   string
 }
 
-func (d *DbSqlInstance) DbConn(dbDriver string, dsn string, databaseName string) (db *sqlx.DB) {
-	var sqlDSN = flag.String(dbDriver, dsn+"/"+databaseName+"?multiStatements=true&parseTime=true", d.DriverName+" DSN")
-	c, err := sql.Open(dbDriver, *sqlDSN)
+func (d *DbSqlInstance) DbConn(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
+	var sqlDSN = flag.String(dbDriverName, dsn+"/"+databaseName+"?multiStatements=true&parseTime=true", d.DriverName+" DSN")
+	c, err := sql.Open(dbDriverName, *sqlDSN)
 	if err != nil {
 		panic(err.Error())
 	}
-	orm := sqlx.NewDb(c, dbDriver)
+	orm := sqlx.NewDb(c, dbDriverName)
 	d.Connection = orm
 	d.Dsn = dsn
 	d.DatabaseName = databaseName
-	d.DriverName = dbDriver
+	d.DriverName = dbDriverName
 
 	return orm
 }
