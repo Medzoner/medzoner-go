@@ -3,7 +3,6 @@ package definition
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/sarulabs/di"
-	"os"
 )
 
 type ConfigDependency struct {
@@ -22,8 +21,7 @@ func (cd *ConfigDependency) GetDefinition() di.Def {
 	return ConfigDefinition
 }
 
-func (cd *ConfigDependency) InitConfig() config.Config {
-	rootPath, _ := os.Getwd()
+func (cd *ConfigDependency) InitConfig(rootPath string) config.Config {
 	c := config.Config{
 		RootPath:  rootPath,
 		DebugMode: false,

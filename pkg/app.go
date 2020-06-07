@@ -24,7 +24,7 @@ func (a *App) Handle(action string) {
 
 func (a *App) LoadContainer() di.Container {
 	builder, _ := di.NewBuilder()
-	err := builder.Add(services.Service{}.GetDefinitions()...)
+	err := builder.Add(services.Service{}.GetDefinitions(a.RootPath)...)
 	if err != nil {
 		panic(err)
 	}

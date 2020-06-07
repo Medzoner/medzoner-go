@@ -10,11 +10,11 @@ type Service struct {
 	Definitions []di.Def
 }
 
-func (s Service) GetDefinitions() []di.Def {
+func (s Service) GetDefinitions(rootPath string) []di.Def {
 	var services []di.Def
 
 	config := definition.ConfigDependency{}
-	config.InitConfig()
+	config.InitConfig(rootPath)
 	services = append(services, config.GetDefinition())
 
 	services = append(services, definition.LoggerDefinition)

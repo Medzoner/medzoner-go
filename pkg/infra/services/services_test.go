@@ -7,6 +7,6 @@ import (
 
 func TestApp(t *testing.T) {
 	t.Run("Unit: test services success", func(t *testing.T) {
-		services.Service{}.GetDefinitions()
+		services.Service{}.GetDefinitions("../../../")
 	})
 }

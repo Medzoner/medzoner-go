@@ -28,7 +28,10 @@ func init() {
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	app := &pkg.App{}
+	rootPath, _ := os.Getwd()
+	app := &pkg.App{
+		RootPath: rootPath,
+	}
 	ctn := app.LoadContainer()
 
 	appWeb := ctn.Get("app-web").(*web.Web)
