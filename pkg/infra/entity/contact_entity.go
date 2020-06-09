@@ -8,10 +8,10 @@ import (
 
 type Contact struct {
 	CommonModel
-	name    string         `db:"name"`
-	message string         `db:"message"`
+	name    string                `db:"name"`
+	message string                `db:"message"`
 	email   customtype.NullString `db:"email"`
-	dateAdd time.Time      `db:"date_add"`
+	dateAdd time.Time             `db:"date_add"`
 }
 
 func (*Contact) New() model.IContact {

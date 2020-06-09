@@ -72,7 +72,8 @@ func TestListTechnoQueryHandler(t *testing.T) {
 
 }
 
-type TechnoRepositoryTest struct {}
+type TechnoRepositoryTest struct{}
+
 func (m *TechnoRepositoryTest) FetchStack() map[string]interface{} {
 	return map[string]interface{}{}
 }

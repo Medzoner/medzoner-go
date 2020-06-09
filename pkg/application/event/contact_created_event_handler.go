@@ -6,8 +6,8 @@ import (
 )
 
 type ContactCreatedEventHandler struct {
-	Mailer  mailer.Mailer
-	Logger  logger.ILogger
+	Mailer mailer.Mailer
+	Logger logger.ILogger
 }
 
 func (c ContactCreatedEventHandler) Handle(event Event) {

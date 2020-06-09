@@ -13,7 +13,7 @@ type CreateContactCommandHandler struct {
 	ContactFactory             factory.IContactFactory
 	ContactRepository          repository.ContactRepository
 	ContactCreatedEventHandler event.EventHandler
-	Logger  logger.ILogger
+	Logger                     logger.ILogger
 }
 
 func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {

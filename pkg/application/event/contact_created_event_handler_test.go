@@ -31,7 +31,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		}
 		loggerTest := &LoggerTest{}
 		handler := event.ContactCreatedEventHandler{
-			Mailer:  mailer,
+			Mailer: mailer,
 			Logger: loggerTest,
 		}
 
@@ -45,7 +45,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		}
 		loggerTest := &LoggerTest{}
 		handler := event.ContactCreatedEventHandler{
-			Mailer:  mailer,
+			Mailer: mailer,
 			Logger: loggerTest,
 		}
 
@@ -58,6 +58,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 type LoggerTest struct {
 	LogMessages []string
 }
+
 func (l *LoggerTest) Log(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
@@ -73,6 +74,7 @@ func (l LoggerTest) New() logger.ILogger {
 type ContactTest struct {
 	entity.Contact
 }
+
 func (*ContactTest) New() model.IContact {
 	return &ContactTest{}
 }
@@ -84,6 +86,7 @@ type MailerTest struct {
 	Port     string
 	isSend   bool
 }
+
 func (m *MailerTest) Send(view interface{}) (bool, error) {
 	m.isSend = true
 	_, err := fmt.Println(reflect.TypeOf(view))
@@ -93,7 +96,8 @@ func (m *MailerTest) Send(view interface{}) (bool, error) {
 	return m.isSend, err
 }
 
-type BadEvent struct {}
+type BadEvent struct{}
+
 func (b BadEvent) GetName() string {
 	return "BadEvent"
 }

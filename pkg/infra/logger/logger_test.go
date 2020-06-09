@@ -43,4 +43,3 @@ func TestLoggerErrorSuccess(t *testing.T) {
 		assert.Equal(t, isExist, true)
 	})
 }
-

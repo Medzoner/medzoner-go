@@ -17,7 +17,7 @@ var CreateContactCommandHandlerDefinition = di.Def{
 			ContactFactory:             &entity.Contact{},
 			ContactRepository:          ctn.Get("contact-repository").(repository.ContactRepository),
 			ContactCreatedEventHandler: ctn.Get("contact-event-created-handler").(event.ContactCreatedEventHandler),
-			Logger: ctn.Get("logger").(logger.ILogger),
+			Logger:                     ctn.Get("logger").(logger.ILogger),
 		}, nil
 	},
 }

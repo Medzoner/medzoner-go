@@ -16,9 +16,9 @@ func TestStart(t *testing.T) {
 	t.Run("Unit: test Start success", func(t *testing.T) {
 		router := &mux.Router{}
 		webTest := web.Web{
-			Logger:         &LoggerTest{},
-			Router:         router,
-			Server:         &http.Server{
+			Logger: &LoggerTest{},
+			Router: router,
+			Server: &http.Server{
 				Addr:    ":8123",
 				Handler: router,
 			},
@@ -44,6 +44,7 @@ func TestStart(t *testing.T) {
 type LoggerTest struct {
 	LogMessages []string
 }
+
 func (l *LoggerTest) Log(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)

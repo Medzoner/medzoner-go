@@ -24,11 +24,11 @@ func TestCreateContactCommandHandler(t *testing.T) {
 
 		contact := &ContactTest{}
 		loggerTest := &LoggerTest{}
-		handler := command.CreateContactCommandHandler {
+		handler := command.CreateContactCommandHandler{
 			ContactFactory:             contact,
 			ContactRepository:          &ContactRepositoryTest{},
 			ContactCreatedEventHandler: CreateContactCommandHandlerTest{},
-			Logger: loggerTest,
+			Logger:                     loggerTest,
 		}
 
 		handler.Handle(createContactCommand)
@@ -39,6 +39,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 type LoggerTest struct {
 	LogMessages []string
 }
+
 func (l *LoggerTest) Log(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
@@ -51,7 +52,8 @@ func (l LoggerTest) New() logger.ILogger {
 	return &LoggerTest{}
 }
 
-type ContactRepositoryTest struct {}
+type ContactRepositoryTest struct{}
+
 func (r ContactRepositoryTest) Save(contact model.IContact) {
 	fmt.Println(contact)
 }
@@ -59,11 +61,12 @@ func (r ContactRepositoryTest) Save(contact model.IContact) {
 type ContactTest struct {
 	entity.Contact
 }
+
 func (*ContactTest) New() model.IContact {
 	return &ContactTest{}
 }
 
-type CreateContactCommandHandlerTest struct {}
+type CreateContactCommandHandlerTest struct{}
 
 func (c CreateContactCommandHandlerTest) Handle(event event.Event) {
 	_ = event
