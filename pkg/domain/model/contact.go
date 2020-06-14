@@ -6,6 +6,7 @@ import (
 )
 
 type IContact interface {
+	ICommon
 	Name() string
 	SetName(name string) IContact
 	Message() string

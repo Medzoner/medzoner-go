@@ -28,7 +28,7 @@ func (c *Contact) SetName(name string) model.IContact {
 }
 
 func (c *Contact) Message() string {
-	return c.name
+	return c.message
 }
 
 func (c *Contact) SetMessage(message string) model.IContact {
