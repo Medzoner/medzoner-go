@@ -1,4 +1,16 @@
-{{define "content"}}
+{{define "contact"}}
+    <!doctype html>
+    <html class="no-js" lang="{{ .Locale }}">
+    {{template "head" .}}
+    <body>
+    {{template "header" .}}
+    {{template "contact_body" .}}
+    {{template "footer" .}}
+    </body>
+    </html>
+{{end}}
+
+{{define "contact_body"}}
     <div class="row">
         <div class="large-12 columns">
             <section class="content">

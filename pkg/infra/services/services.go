@@ -22,6 +22,7 @@ func (s Service) GetDefinitions(rootPath string) []di.Def {
 	services = append(services, definition.DatabaseDefinition)
 	services = append(services, definition.DatabaseManagerDefinition)
 	services = append(services, definition.WebDefinition)
+	services = append(services, definition.TemplaterDefinition)
 	services = append(services, definition.RouterDefinition)
 	services = append(services, definition.ServerDefinition)
 	services = append(services, definition.ContactRepositoryDefinition)

@@ -28,4 +28,25 @@
         {{ end }}
     </div>
 </footer>
+
+<script src="https://use.fontawesome.com/14bb74bd50.js"></script>
+<script src="/js/app.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(document).foundation({
+            reveal: {
+                animation_speed: 500
+            },
+            tooltip: {
+                disable_for_touch: true
+            },
+            topbar: {
+                custom_back_text: false,
+                is_hover: true,
+                mobile_show_parent_link: true
+            }
+        });
+    });
+</script>
 {{end}}

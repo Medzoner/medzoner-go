@@ -2,16 +2,16 @@ package handler
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/sessions"
-	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"time"
 )
 
 type ContactHandler struct {
+	Template templater.Templater
 	CreateContactCommandHandler command.CreateContactCommandHandler
 }
 
@@ -25,10 +25,10 @@ type ContactView struct {
 
 var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
-func (c *ContactHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "session-name")
+func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
+	session, err := store.Get(request, "session-name")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	view := ContactView{
@@ -37,46 +37,38 @@ func (c *ContactHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 		Message:   session.Values["message"],
 	}
 	statusCode := http.StatusOK
-	if r.Method == "POST" && r.FormValue("Envoyer") == "" {
+	if request.Method == "POST" && request.FormValue("Envoyer") == "" {
 		createContactCommand := command.CreateContactCommand{
 			DateAdd: time.Now(),
-			Name:    r.FormValue("name"),
-			Email:   r.FormValue("email"),
-			Message: r.FormValue("message"),
+			Name:    request.FormValue("name"),
+			Email:   request.FormValue("email"),
+			Message: request.FormValue("message"),
 		}
 		v := validator.New()
 		err := v.Struct(createContactCommand)
 		if err == nil {
 			c.CreateContactCommandHandler.Handle(createContactCommand)
 			session.Values["message"] = "Votre message a bien été envoyé. Merci!"
-			err = session.Save(r, w)
+			err = session.Save(request, response)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(response, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			http.Redirect(w, r, "/contact", http.StatusSeeOther)
+			http.Redirect(response, request, "/contact", http.StatusSeeOther)
 			return
 		}
 		statusCode = http.StatusBadRequest
 		view.Errors = err.(validator.ValidationErrors)
 	}
 	session.Values["message"] = ""
-	err = session.Save(r, w)
+	err = session.Save(request, response)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	t := template.New("contact template")
-	pp, _ := os.Getwd()
-	t = template.Must(t.ParseFiles(pp+"/tmpl/base.html", pp+"/tmpl/footer.html", pp+"/tmpl/header.html", pp+"/tmpl/Contact/contact.html", pp+"/tmpl/Contact/contact_form.html"))
-	w.WriteHeader(statusCode)
+	view.TorHost = request.Header.Get("TOR-HOST")
+	c.Template.Render("contact", view, response, statusCode)
 
-	view.TorHost = r.Header.Get("TOR-HOST")
-	err = t.ExecuteTemplate(w, "layout", view)
-
-	if err != nil {
-		log.Fatalf("Template execution: %s", err)
-	}
-	_ = r
+	_ = request
 }

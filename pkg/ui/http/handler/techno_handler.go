@@ -2,13 +2,12 @@ package handler
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
-	"html/template"
-	"log"
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"net/http"
-	"os"
 )
 
 type TechnoHandler struct {
+	Template templater.Templater
 	ListTechnoQueryHandler query.ListTechnoQueryHandler
 }
 
@@ -34,24 +33,6 @@ func (h *TechnoHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 		Others:      h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "other"}),
 	}
 	view.TorHost = r.Header.Get("TOR-HOST")
-	t := template.New("techno template")
-	pp, _ := os.Getwd()
-	t = template.Must(t.ParseFiles(
-		pp+"/tmpl/base.html",
-		pp+"/tmpl/footer.html",
-		pp+"/tmpl/header.html",
-		pp+"/tmpl/Technos/index.html",
-		pp+"/tmpl/Technos/stack.html",
-		pp+"/tmpl/Technos/experience.html",
-		pp+"/tmpl/Technos/formation.html",
-		pp+"/tmpl/Technos/lang.html",
-		pp+"/tmpl/Technos/other.html",
-	))
-	w.WriteHeader(http.StatusOK)
-	err := t.ExecuteTemplate(w, "layout", view)
-
-	if err != nil {
-		log.Fatalf("Template execution: %s", err)
-	}
+	h.Template.Render("technos", view, w, http.StatusOK)
 	_ = r
 }
