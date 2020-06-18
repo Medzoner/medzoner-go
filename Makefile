@@ -12,5 +12,8 @@ build:
 db_run:
 	docker-compose up -d --force-recreate
 
+ssr_run:
+	deno run --allow-net frontend/main.ts
+
 migrate:
 	go run cmd/migrate/migrate.go
