@@ -11,3 +11,7 @@ type ContactCreatedEvent struct {
 func (c ContactCreatedEvent) GetModel() interface{} {
 	return c.Contact
 }
+
+func (c *ContactCreatedEvent) GetName() string {
+	return "CreateContactCommand"
+}

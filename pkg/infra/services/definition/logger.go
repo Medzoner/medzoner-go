@@ -10,8 +10,9 @@ var LoggerDefinition = di.Def{
 	Name:  "logger",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		return &logger.Logger{
+		return logger.ZapLoggerAdapter{
 			RootPath: ctn.Get("config").(config.IConfig).GetRootPath() + "/",
-		}, nil
+			UseSugar: false,
+		}.New(), nil
 	},
 }

@@ -8,3 +8,7 @@ type CreateContactCommand struct {
 	Message string    `json:"message" validate:"required"`
 	DateAdd time.Time `json:"dateAdd"`
 }
+
+func (c *CreateContactCommandHandler) GetName() string {
+	return "CreateContactCommand"
+}
