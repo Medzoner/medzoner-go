@@ -2,12 +2,12 @@ package handler_test
 
 import (
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/application/command"
-	"github.com/Medzoner/medzoner-go/pkg/application/event"
+	"github.com/Medzoner/medzoner-go/pkg/application/utils/messager"
 	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
+	"github.com/ThreeDotsLabs/watermill/components/cqrs"
 	"gotest.tools/assert"
 	"net/http/httptest"
 	"net/url"
@@ -16,34 +16,24 @@ import (
 
 func TestContactHandler(t *testing.T) {
 	t.Run("Unit: test ContactHandler success", func(t *testing.T) {
-		repositoryMock := &ContactRepositoryTest{}
+		bus := &CommandBusTest{}
+
 		contactHandler := handler.ContactHandler{
-	     Template: &TemplaterTest{},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
-				ContactRepository:          repositoryMock,
-				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
-				Logger: &LoggerTest{},
-			},
+			Template: &TemplaterTest{},
+			CommandBus: bus,
 		}
 
 		request := httptest.NewRequest("GET", "/contact", nil)
 		contactHandler.IndexHandle(httptest.NewRecorder(), request)
 
-		assert.Equal(t, repositoryMock.ContactSaved, nil)
+		assert.Equal(t, len(bus.MessagePublishedList), 0)
 	})
 
 	t.Run("Unit: test ContactHandler with form submit success", func(t *testing.T) {
-		repositoryMock := &ContactRepositoryTest{}
-
+		bus := &CommandBusTest{}
 		contactHandler := handler.ContactHandler{
 			Template: &TemplaterTest{},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
-				ContactRepository:          repositoryMock,
-				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
-				Logger: &LoggerTest{},
-			},
+			CommandBus: bus,
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -55,17 +45,8 @@ func TestContactHandler(t *testing.T) {
 		request.Form = v
 		contactHandler.IndexHandle(responseWriter, request)
 
-		assert.Equal(t, repositoryMock.ContactSaved.Id(), 0)
-		assert.Equal(t, repositoryMock.ContactSaved.Name(), "a name")
-		assert.Equal(t, repositoryMock.ContactSaved.Email().String, "email@fake.com")
-		assert.Equal(t, repositoryMock.ContactSaved.Message(), "a message")
+		assert.Equal(t, len(bus.MessagePublishedList), 1)
 	})
-}
-
-type ContactCreatedEventHandlerTest struct {}
-
-func (h *ContactCreatedEventHandlerTest) Handle(event event.Event) {
-	fmt.Println(event)
 }
 
 type ContactRepositoryTest struct {
@@ -91,4 +72,26 @@ func (l *LoggerTest) Error(msg string) {
 }
 func (l LoggerTest) New() logger.ILogger {
 	return &LoggerTest{}
+}
+
+type ContactTest struct {
+	entity.Contact
+}
+
+func (*ContactTest) New() model.IContact {
+	return &ContactTest{}
+}
+type CommandBusTest struct {
+	Bus *cqrs.CommandBus
+	Handlers []cqrs.CommandHandler
+	MessagePublishedList []messager.Message
+}
+
+func (c *CommandBusTest) NewBus() messager.MessageBus {
+	return c
+}
+
+func (c *CommandBusTest) Handle(message messager.Message)  {
+	c.MessagePublishedList = append(c.MessagePublishedList, message)
+	fmt.Sprintln(message)
 }

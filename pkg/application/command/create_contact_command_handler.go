@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 	"github.com/Medzoner/medzoner-go/pkg/domain/factory"
@@ -16,17 +17,32 @@ type CreateContactCommandHandler struct {
 	Logger                     logger.ILogger
 }
 
-func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
-	contact := c.ContactFactory.New()
+func (h *CreateContactCommandHandler) HandlerName() string {
+	return "command.CreateContactCommandHandler"
+}
+
+func (h *CreateContactCommandHandler) NewCommand() interface{} {
+	return &CreateContactCommand{}
+}
+
+func (h *CreateContactCommandHandler) Handle(ctx context.Context, c interface{}) error {
+	_ = ctx
+	cmd := c.(CreateContactCommand)
+	h.handle(cmd)
+	return nil
+}
+
+func (h *CreateContactCommandHandler) handle(command CreateContactCommand) {
+	contact := h.ContactFactory.New()
 	contact.
 		SetName(command.Name).
-		SetMessage(command.Message).
+		SetMessage(command.Description).
 		SetEmail(customtype.NullString{String: command.Email, Valid: true}).
 		SetDateAdd(time.Now())
 
-	c.ContactRepository.Save(contact)
-	c.Logger.Log("Contact was created.")
+	h.ContactRepository.Save(contact)
+	h.Logger.Log("Contact was created.")
 
 	contactCreatedEvent := event.ContactCreatedEvent{Contact: contact}
-	c.ContactCreatedEventHandler.Handle(contactCreatedEvent)
+	h.ContactCreatedEventHandler.Handle(contactCreatedEvent)
 }

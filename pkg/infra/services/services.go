@@ -18,6 +18,7 @@ func (s Service) GetDefinitions(rootPath string) []di.Def {
 	services = append(services, config.GetDefinition())
 
 	services = append(services, definition.LoggerDefinition)
+	services = append(services, definition.CommandBusDefinition)
 	services = append(services, definition.MailerDefinition)
 	services = append(services, definition.DatabaseDefinition)
 	services = append(services, definition.DatabaseManagerDefinition)

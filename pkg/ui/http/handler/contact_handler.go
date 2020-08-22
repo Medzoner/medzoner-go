@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
+	"github.com/Medzoner/medzoner-go/pkg/application/utils/messager"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/sessions"
@@ -12,7 +13,7 @@ import (
 
 type ContactHandler struct {
 	Template templater.Templater
-	CreateContactCommandHandler command.CreateContactCommandHandler
+	CommandBus messager.MessageBus
 }
 
 type ContactView struct {
@@ -39,15 +40,15 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("Envoyer") == "" {
 		createContactCommand := command.CreateContactCommand{
-			DateAdd: time.Now(),
-			Name:    request.FormValue("name"),
-			Email:   request.FormValue("email"),
-			Message: request.FormValue("message"),
+			DateAdd:     time.Now(),
+			Name:        request.FormValue("name"),
+			Email:       request.FormValue("email"),
+			Description: request.FormValue("message"),
 		}
 		v := validator.New()
 		err := v.Struct(createContactCommand)
 		if err == nil {
-			c.CreateContactCommandHandler.Handle(createContactCommand)
+			c.CommandBus.Handle(&createContactCommand)
 			session.Values["message"] = "Votre message a bien été envoyé. Merci!"
 			err = session.Save(request, response)
 			if err != nil {

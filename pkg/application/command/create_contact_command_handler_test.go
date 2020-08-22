@@ -1,6 +1,7 @@
 package command_test
 
 import (
+	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
@@ -16,10 +17,10 @@ func TestCreateContactCommandHandler(t *testing.T) {
 	t.Run("Unit: test CreateContactCommandHandler success", func(t *testing.T) {
 		date := time.Time{}
 		createContactCommand := command.CreateContactCommand{
-			Name:    "a name",
-			Email:   "an email",
-			Message: "the message",
-			DateAdd: date,
+			Name:        "a name",
+			Email:       "an email",
+			Description: "the message",
+			DateAdd:     date,
 		}
 
 		contact := &ContactTest{}
@@ -27,11 +28,15 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		handler := command.CreateContactCommandHandler{
 			ContactFactory:             contact,
 			ContactRepository:          &ContactRepositoryTest{},
-			ContactCreatedEventHandler: CreateContactCommandHandlerTest{},
+			ContactCreatedEventHandler: ContactCreatedEventHandler{},
 			Logger:                     loggerTest,
 		}
 
-		handler.Handle(createContactCommand)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer func() {
+			cancel()
+		}()
+		_ = handler.Handle(ctx, createContactCommand)
 		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
 	})
 }
@@ -66,8 +71,8 @@ func (*ContactTest) New() model.IContact {
 	return &ContactTest{}
 }
 
-type CreateContactCommandHandlerTest struct{}
+type ContactCreatedEventHandler struct{}
 
-func (c CreateContactCommandHandlerTest) Handle(event event.Event) {
+func (c ContactCreatedEventHandler) Handle(event event.Event) {
 	_ = event
 }

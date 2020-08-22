@@ -1,52 +1,80 @@
-package command_bus
+package messagebus
 
 import (
 	"context"
-	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/application/utils/messagebus"
+	"github.com/Medzoner/medzoner-go/pkg/application/utils/messager"
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill/components/cqrs"
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
+	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
+	"time"
 )
-import (
-	"github.com/mustafaturan/bus"
-	"github.com/mustafaturan/monoton"
-	"github.com/mustafaturan/monoton/sequencer"
-)
-
-func (c CommandBus) NewBus() *bus.Bus {
-	// configure id generator (it doesn't have to be monoton)
-	node        := uint64(1)
-	initialTime := uint64(1577865600000) // set 2020-01-01 PST as initial time
-	m, err := monoton.New(sequencer.NewMillisecond(), node, initialTime)
-	if err != nil {
-		panic(err)
-	}
-
-	// init an id generator
-	var idGenerator bus.Next = (*m).Next
-
-	// create a new bus instance
-	c.Bus, err = bus.NewBus(idGenerator)
-	if err != nil {
-		panic(err)
-	}
-
-	// maybe register topics in here
-	c.Bus.RegisterTopics("order.received", "order.fulfilled")
-
-	return c.Bus
-}
 
 type CommandBus struct {
-	Bus *bus.Bus
+	Bus *cqrs.CommandBus
+	Handlers []cqrs.CommandHandler
+	Router *message.Router
 }
 
-func (c *CommandBus) Handle(message messagebus.Message)  {
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, bus.CtxKeyTxID, "some-transaction-id-if-exists")
+func (c *CommandBus) NewBus() messager.MessageBus {
+	logger := watermill.NewStdLogger(false, false)
+	cqrsMarshaler := cqrs.JSONMarshaler{}
 
-	event, err := c.Bus.Emit(ctx, message.GetName(), message)
+	commandsPublisher := gochannel.NewGoChannel(
+		gochannel.Config{},
+		watermill.NewStdLogger(false, false),
+	)
 
+	routerCommandBus, err := message.NewRouter(message.RouterConfig{}, logger)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
-	fmt.Println(event)
+
+	routerCommandBus.AddMiddleware(middleware.Recoverer)
+
+	cqrsFacade, err := cqrs.NewFacade(cqrs.FacadeConfig{
+		GenerateCommandsTopic: func(commandName string) string {
+			return commandName
+		},
+		CommandHandlers: func(cb *cqrs.CommandBus, eb *cqrs.EventBus) []cqrs.CommandHandler {
+			return c.Handlers
+		},
+		CommandsPublisher: commandsPublisher,
+		CommandsSubscriberConstructor: func(handlerName string) (message.Subscriber, error) {
+			return commandsPublisher, nil
+		},
+
+		Router:                routerCommandBus,
+		CommandEventMarshaler: cqrsMarshaler,
+		Logger:                logger,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	c.Bus = cqrsFacade.CommandBus()
+	c.Router = routerCommandBus
+	return c
+}
+
+func (c *CommandBus) Run()  {
+	if err := c.Router.Run(context.Background()); err != nil {
+		panic(err)
+	}
+	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer func() {
+		cancel()
+	}()
+}
+
+func (c *CommandBus) Handle(message messager.Message)  {
+	c.publishCommands(message)
+}
+
+func (c *CommandBus) publishCommands(msg messager.Message) {
+	cmd := &msg
+	if err := c.Bus.Send(context.Background(), cmd); err != nil {
+		panic(err)
+	}
 }

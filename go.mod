@@ -4,9 +4,13 @@ go 1.14
 
 require (
 	github.com/DATA-DOG/godog v0.7.13
+	github.com/ThreeDotsLabs/watermill v1.1.1
+	github.com/ThreeDotsLabs/watermill-amqp v1.0.3
 	github.com/go-playground/validator/v10 v10.1.0
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/gogo/protobuf v1.2.1
 	github.com/golang-migrate/migrate/v4 v4.7.0
+	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/sessions v1.2.0
 	github.com/jmoiron/sqlx v1.2.0
@@ -14,7 +18,7 @@ require (
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible
 	github.com/mustafaturan/bus v1.0.2
-	github.com/mustafaturan/monoton v1.0.0
+	github.com/pkg/errors v0.8.1
 	github.com/sarulabs/di v2.0.0+incompatible
 	go.uber.org/zap v1.15.0
 	golang.org/x/tools v0.0.0-20200530233709-52effbd89c51 // indirect

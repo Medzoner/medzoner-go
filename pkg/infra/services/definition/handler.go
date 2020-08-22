@@ -1,8 +1,8 @@
 package definition
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	"github.com/Medzoner/medzoner-go/pkg/application/utils/messager"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"github.com/sarulabs/di"
@@ -35,7 +35,7 @@ var ContactHandlerDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		return &handler.ContactHandler{
 			Template: ctn.Get("templater").(templater.Templater),
-			CreateContactCommandHandler: ctn.Get("create-contact-command-handler").(command.CreateContactCommandHandler),
+			CommandBus: ctn.Get("command-bus").(messager.MessageBus),
 		}, nil
 	},
 }
