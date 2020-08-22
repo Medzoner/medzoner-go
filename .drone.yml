@@ -25,7 +25,6 @@ steps:
 
   - name: "image build"
     image: plugins/docker
-    debug: true
     settings:
       repo: registry.hub.docker.com/medzoner/medzoner-go
       username:
