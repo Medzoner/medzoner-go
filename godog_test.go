@@ -41,9 +41,9 @@ func TestMain(m *testing.M) {
 	}()
 	fmt.Println("server started")
 
-	baseUrl := "http://127.0.0.1:8000"
+	baseURL := "http://127.0.0.1:8000"
 	status := godog.RunWithOptions("medzoner", func(s *godog.Suite) {
-		bootstrap.New(baseUrl, app).FeatureContext(s)
+		bootstrap.New(baseURL, app).FeatureContext(s)
 	}, godog.Options{
 		Output: colors.Colored(os.Stdout),
 		Format: "pretty",

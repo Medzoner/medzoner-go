@@ -17,6 +17,7 @@ require (
 	github.com/mustafaturan/monoton v1.0.0
 	github.com/sarulabs/di v2.0.0+incompatible
 	go.uber.org/zap v1.15.0
-	golang.org/x/tools v0.0.0-20200530233709-52effbd89c51 // indirect
+	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
+	golang.org/x/tools v0.0.0-20200822203824-307de81be3f4 // indirect
 	gotest.tools v2.2.0+incompatible
 )
