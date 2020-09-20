@@ -16,6 +16,7 @@ steps:
       - go test -v -cover -coverpkg=./pkg/... ./...
       - cp .env.ci .env
       - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/app.go
+      - CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/app/migrate.go
     when:
       branch:
         - master
