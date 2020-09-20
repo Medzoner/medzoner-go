@@ -9,6 +9,9 @@ test_unit:
 build:
 	go build -o bin/app ./cmd/app/app.go
 
+start:
+	go run ./cmd/app/app.go
+
 db_run:
 	docker-compose up -d --force-recreate
 

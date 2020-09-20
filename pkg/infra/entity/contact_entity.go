@@ -7,49 +7,68 @@ import (
 )
 
 type Contact struct {
-	CommonModel
-	name    string                `db:"name"`
-	message string                `db:"message"`
-	email   customtype.NullString `db:"email"`
-	dateAdd time.Time             `db:"date_add"`
+	Id      int                   `json:"id" db:"id"`
+	Uuid    string                `json:"uuid" db:"uuid"`
+	Name    string                `db:"name"`
+	Message string                `db:"message"`
+	Email   customtype.NullString `db:"email"`
+	DateAdd time.Time             `db:"date_add"`
 }
 
 func (*Contact) New() model.IContact {
 	return &Contact{}
 }
 
-func (c *Contact) Name() string {
-	return c.name
+func (c *Contact) GetId() int {
+	return c.Id
+}
+
+func (c *Contact) SetId(id int) model.ICommon {
+	c.Id = id
+	return c
+}
+
+func (c *Contact) GetUuid() string {
+	return c.Uuid
+}
+
+func (c *Contact) SetUuid(uuid string) model.ICommon {
+	c.Uuid = uuid
+	return c
+}
+
+func (c *Contact) GetName() string {
+	return c.Name
 }
 
 func (c *Contact) SetName(name string) model.IContact {
-	c.name = name
+	c.Name = name
 	return c
 }
 
-func (c *Contact) Message() string {
-	return c.message
+func (c *Contact) GetMessage() string {
+	return c.Message
 }
 
 func (c *Contact) SetMessage(message string) model.IContact {
-	c.message = message
+	c.Message = message
 	return c
 }
 
-func (c *Contact) Email() customtype.NullString {
-	return c.email
+func (c *Contact) GetEmail() customtype.NullString {
+	return c.Email
 }
 
 func (c *Contact) SetEmail(email customtype.NullString) model.IContact {
-	c.email = email
+	c.Email = email
 	return c
 }
 
-func (c *Contact) DateAdd() time.Time {
-	return c.dateAdd
+func (c *Contact) GetDateAdd() time.Time {
+	return c.DateAdd
 }
 
 func (c *Contact) SetDateAdd(dateAdd time.Time) model.IContact {
-	c.dateAdd = dateAdd
+	c.DateAdd = dateAdd
 	return c
 }

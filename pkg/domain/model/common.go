@@ -1,8 +1,8 @@
 package model
 
 type ICommon interface {
-	Id() int
+	GetId() int
 	SetId(id int) ICommon
-	Uuid() string
+	GetUuid() string
 	SetUuid(id string) ICommon
 }

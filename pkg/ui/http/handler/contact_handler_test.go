@@ -57,8 +57,8 @@ func TestContactHandler(t *testing.T) {
 
 		assert.Equal(t, repositoryMock.ContactSaved.Id(), 0)
 		assert.Equal(t, repositoryMock.ContactSaved.Name(), "a name")
-		assert.Equal(t, repositoryMock.ContactSaved.Email().String, "email@fake.com")
-		assert.Equal(t, repositoryMock.ContactSaved.Message(), "a message")
+		assert.Equal(t, repositoryMock.ContactSaved.GetEmail().String, "email@fake.com")
+		assert.Equal(t, repositoryMock.ContactSaved.GetMessage(), "a message")
 	})
 }
 

@@ -7,12 +7,12 @@ import (
 
 type IContact interface {
 	ICommon
-	Name() string
+	GetName() string
 	SetName(name string) IContact
-	Message() string
+	GetMessage() string
 	SetMessage(message string) IContact
-	Email() customtype.NullString
+	GetEmail() customtype.NullString
 	SetEmail(email customtype.NullString) IContact
-	DateAdd() time.Time
+	GetDateAdd() time.Time
 	SetDateAdd(dateAdd time.Time) IContact
 }

@@ -14,7 +14,7 @@ type MysqlContactRepository struct {
 
 func (m *MysqlContactRepository) Save(contact model.IContact) {
 	tx := m.Conn.MustBegin()
-	query := `INSERT INTO Contact (name, message, email, date_add) VALUES (:name, :message, :email, :date_add)`
+	query := `INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (:name, :message, :email, :date_add, :uuid)`
 	res, err := tx.NamedExec(query, contact)
 	if res != nil {
 		_ = tx.Commit()

@@ -6,6 +6,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/domain/factory"
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	"github.com/docker/distribution/uuid"
 	"time"
 )
 
@@ -22,7 +23,8 @@ func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
 		SetName(command.Name).
 		SetMessage(command.Message).
 		SetEmail(customtype.NullString{String: command.Email, Valid: true}).
-		SetDateAdd(time.Now())
+		SetDateAdd(time.Now()).
+		SetUuid(uuid.UUID{}.String())
 
 	c.ContactRepository.Save(contact)
 	c.Logger.Log("Contact was created.")
