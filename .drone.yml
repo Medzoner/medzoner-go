@@ -41,27 +41,27 @@ steps:
       branch:
         - master
 
-  - name: "tag config repo"
-    image: medzoner/tools
-    environment:
-      SSH_KEY:
-        from_secret: ssh_key
-      TAG_REPO:
-        from_secret: tag_repo
-    volumes:
-      - name: key
-        path: /root/.ssh
-    commands:
-      - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
-      - echo $SSH_KEY | base64 -d > /root/private_key
-      - chmod 600 /root/.ssh/id_rsa
-      - eval `ssh-agent -s` && ssh-add
-      - cd /tmp && git clone $TAG_REPO && cd medzoner-gitops
-      - cp .env.prod .env
-      - ./bin/app tag ${DRONE_BRANCH} medzoner ${DRONE_COMMIT_SHA} medzoner
-    when:
-      branch:
-        - master
+#  - name: "tag config repo"
+#    image: medzoner/tools
+#    environment:
+#      SSH_KEY:
+#        from_secret: ssh_key
+#      TAG_REPO:
+#        from_secret: tag_repo
+#    volumes:
+#      - name: key
+#        path: /root/.ssh
+#    commands:
+#      - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
+#      - echo $SSH_KEY | base64 -d > /root/private_key
+#      - chmod 600 /root/.ssh/id_rsa
+#      - eval `ssh-agent -s` && ssh-add
+#      - cd /tmp && git clone $TAG_REPO && cd medzoner-gitops
+#      - cp .env.prod .env
+#      - ./bin/app tag ${DRONE_BRANCH} medzoner ${DRONE_COMMIT_SHA} medzoner
+#    when:
+#      branch:
+#        - master
 
 services:
     - name: mariadb
