@@ -7,7 +7,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/gorilla/mux"
 	"net/http"
-	"os"
 )
 
 type IWeb interface {
@@ -25,7 +24,6 @@ type Web struct {
 }
 
 func (a *Web) Start() {
-	dir, _ := os.Getwd()
 
 	a.Router.HandleFunc("/", a.IndexHandler.IndexHandle).Methods("GET")
 	a.Router.HandleFunc("/contact", a.ContactHandler.IndexHandle).Methods("GET")
@@ -33,9 +31,7 @@ func (a *Web) Start() {
 	a.Router.HandleFunc("/technos", a.TechnoHandler.IndexHandle).Methods("GET")
 	a.Router.Use(middleware.ApiMiddleware{Logger: a.Logger}.Middleware)
 
-	a.Router.PathPrefix("/images/").Handler(http.StripPrefix("/images/", http.FileServer(http.Dir(dir+"/public/images/"))))
-	a.Router.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir(dir+"/public/css/"))))
-	a.Router.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir(dir+"/public/js/"))))
+	a.Router.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 	http.Handle("/", a.Router)
 	a.Logger.Log(fmt.Sprintf("Server up on port '%d'", a.ApiPort))
 	err := a.Server.ListenAndServe()
