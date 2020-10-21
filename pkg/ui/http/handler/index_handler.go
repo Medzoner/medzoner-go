@@ -21,6 +21,9 @@ func (h *IndexHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "MedZoner.com",
 	}
 	view.TorHost = r.Header.Get("TOR-HOST")
-	h.Template.Render("index", view, w, http.StatusOK)
+	_, err := h.Template.Render("index", view, w, http.StatusOK)
+	if err != nil {
+		panic(err)
+	}
 	_ = r
 }

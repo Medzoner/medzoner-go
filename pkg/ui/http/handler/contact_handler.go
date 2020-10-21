@@ -68,7 +68,10 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 	}
 
 	view.TorHost = request.Header.Get("TOR-HOST")
-	c.Template.Render("contact", view, response, statusCode)
+	_, err = c.Template.Render("contact", view, response, statusCode)
+	if err != nil {
+		panic(err)
+	}
 
 	_ = request
 }

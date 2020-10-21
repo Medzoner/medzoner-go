@@ -22,6 +22,7 @@ type TemplaterTest struct {
 	RootPath string
 }
 
-func (t *TemplaterTest) Render(name string, view interface{}, response http.ResponseWriter, status int) {
+func (t *TemplaterTest) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
 	fmt.Println(view)
+	return nil, nil
 }

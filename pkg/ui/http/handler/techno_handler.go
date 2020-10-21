@@ -33,6 +33,9 @@ func (h *TechnoHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 		Others:      h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "other"}),
 	}
 	view.TorHost = r.Header.Get("TOR-HOST")
-	h.Template.Render("technos", view, w, http.StatusOK)
+	_, err := h.Template.Render("technos", view, w, http.StatusOK)
+	if err != nil {
+		panic(err)
+	}
 	_ = r
 }

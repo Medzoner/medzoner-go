@@ -2,7 +2,6 @@ package templater
 
 import (
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,39 +9,39 @@ import (
 )
 
 type Templater interface {
-	Render(name string, view interface{}, response http.ResponseWriter, status int)
+	Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error)
 }
 
 type TemplateHtml struct {
 	RootPath string
 }
 
-func (t *TemplateHtml) Render(name string, view interface{}, response http.ResponseWriter, status int) {
+func (t *TemplateHtml) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
 	response.WriteHeader(status)
 
-	htmlTemplate := t.parseTemplates(name)
-	err := htmlTemplate.ExecuteTemplate(response, name, view)
-
+	htmlTemplate, err := t.parseTemplates(name)
 	if err != nil {
-		log.Fatalf("Template execution: %s", err)
+		return nil, err
 	}
+	err = htmlTemplate.ExecuteTemplate(response, name, view)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
-func (t *TemplateHtml) parseTemplates(name string) *template.Template {
+func (t *TemplateHtml) parseTemplates(name string) (*template.Template, error) {
 	templ := template.New(name)
 	err := filepath.Walk(t.RootPath+"/tmpl/", func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(path, ".html") {
 			_, err = templ.ParseFiles(path)
 			if err != nil {
-				log.Println(err)
+				return err
 			}
 		}
-
 		return err
 	})
-
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-
-	return templ
+	return templ, nil
 }
