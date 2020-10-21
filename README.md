@@ -5,7 +5,7 @@
 [![Go report](https://goreportcard.com/badge/github.com/Medzoner/medzoner-go)](https://goreportcard.com/report/github.com/Medzoner/medzoner-go)
 
 ## Short Description
-My website rewrite in golang from php (https://github.com/Medzoner/medzoner.com)
+My website https://www.medzoner.com rewrite in golang from php (https://github.com/Medzoner/medzoner.com)
 
 ## Configuration
 
