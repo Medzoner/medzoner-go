@@ -8,6 +8,9 @@ steps:
     image: "attxproject/dockerize-drone-test:dev"
     commands:
       - "dockerize -wait tcp://mariadb:3306 -timeout 240s"
+    when:
+      branch:
+        - master
 
   - name: test
     image: golang:1.14
