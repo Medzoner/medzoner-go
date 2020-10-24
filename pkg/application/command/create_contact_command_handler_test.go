@@ -33,6 +33,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 
 		handler.Handle(createContactCommand)
 		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
+		assert.Equal(t, handler.GetName(), "CreateContactCommand")
 	})
 }
 

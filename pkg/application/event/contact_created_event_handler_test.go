@@ -19,7 +19,8 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		SetName("a name").
 		SetEmail(customtype.NullString{String: "an email", Valid: true}).
 		SetMessage("the message").
-		SetDateAdd(time.Time{})
+		SetDateAdd(time.Time{}).
+		SetId(1)
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
 		contactCreatedEvent := event.ContactCreatedEvent{
@@ -38,6 +39,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		handler.Handle(contactCreatedEvent)
 		assert.Equal(t, loggerTest.LogMessages[0], "Mail was send.")
 		assert.Equal(t, mailer.isSend, true)
+		assert.Equal(t, contactCreatedEvent.GetName(), "CreateContactCommand")
 	})
 	t.Run("Unit: test ContactCreatedEventHandler failed with bad event", func(t *testing.T) {
 		mailer := &MailerTest{
