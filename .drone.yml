@@ -27,22 +27,22 @@ steps:
       - name: go-cache
         path: /tmp
 
-  - name: "image build"
-    image: plugins/docker
-    settings:
-      repo: registry.hub.docker.com/medzoner/medzoner-go
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      dockerfile: docker/Dockerfile
-      registry: registry.hub.docker.com
-      tags:
-        - latest
-        - ${DRONE_BRANCH}-${DRONE_COMMIT_SHA}
-    when:
-      branch:
-        - master
+#  - name: "image build"
+#    image: plugins/docker
+#    settings:
+#      repo: registry.hub.docker.com/medzoner/medzoner-go
+#      username:
+#        from_secret: docker_username
+#      password:
+#        from_secret: docker_password
+#      dockerfile: docker/Dockerfile
+#      registry: registry.hub.docker.com
+#      tags:
+#        - latest
+#        - ${DRONE_BRANCH}-${DRONE_COMMIT_SHA}
+#    when:
+#      branch:
+#        - master
 
 #  - name: "tag config repo"
 #    image: medzoner/tools
