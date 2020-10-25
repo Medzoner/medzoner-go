@@ -1,16 +1,16 @@
 version: '3'
 
 services:
+    app:
+        image: golang:1.12.1-alpine
+        volumes:
+            - .:/go/src/go-with-compose
+        working_dir: /go/src/go-with-compose
+        command: go run cmd/app.go
+        links:
+            - mariadb_test
+            - mariadb
 
-#    app:
-#        image: golang:1.12.1-alpine
-#        volumes:
-#            - .:/go/src/go-with-compose
-#        working_dir: /go/src/go-with-compose
-#        command: go run cmd/app.go
-#        links:
-#            - mariadb_test
-#            - mariadb
     mariadb:
         image: "mariadb"
         container_name: "mariadb"
