@@ -3,9 +3,6 @@ language: go
 go:
   - '1.14'
 
-#addons:
-#  mariadb: '10.5'
-
 branches:
   only:
     - master
@@ -38,8 +35,11 @@ script:
   - rm .env
   - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/app.go
   - CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/migrate/migrate.go
+  - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+  - docker build -t ${DOCKER_USERNAME}/medzoner-go -f ./docker/Dockerfile .
+  - docker images
+  - docker tag "${DOCKER_USERNAME}/medzoner-go" "${DOCKER_USERNAME}/medzoner-go:${TRAVIS_BRANCH}-${TRAVIS_COMMIT}"
+  - docker push "${DOCKER_USERNAME}/medzoner-go:${TRAVIS_BRANCH}-${TRAVIS_COMMIT}"
 
-#services:
-#  - mariadb
 after_script:
   - docker-compose -f ./docker-compose-travis.yml -p medzoner stop
