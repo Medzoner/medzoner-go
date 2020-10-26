@@ -7,8 +7,8 @@ import (
 )
 
 type ILogger interface {
-	Log(msg string)
-	Error(msg string)
+	Log(msg string) error
+	Error(msg string) error
 	New() ILogger
 }
 
@@ -16,20 +16,14 @@ type Logger struct {
 	RootPath string
 }
 
-func (l *Logger) Log(msg string) {
-	n, e := fmt.Println(msg)
-	logFile(msg, l.RootPath+l.InfoBasePath())
-	if e != nil {
-		os.Exit(1)
-	}
-	if n > 0 {
-		return
-	}
+func (l *Logger) Log(msg string) error {
+	fmt.Println(msg)
+	return logFile(msg, l.RootPath+l.InfoBasePath())
 }
 
-func (l *Logger) Error(msg string) {
+func (l *Logger) Error(msg string) error {
 	fmt.Println(msg)
-	errorFile(msg, l.RootPath+l.ErrorBasePath())
+	return errorFile(msg, l.RootPath+l.ErrorBasePath())
 }
 
 func (l Logger) New() ILogger {
@@ -46,26 +40,30 @@ func (l *Logger) ErrorBasePath() string {
 	return "var/log/error.log"
 }
 
-func logFile(msg string, fileLog string) {
+func logFile(msg string, fileLog string) error {
 	file, err := os.OpenFile(fileLog, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return err
 	}
 	defer func() {
 		_ = file.Close()
 	}()
 	log.SetOutput(file)
 	log.Println(msg)
+	return nil
 }
 
-func errorFile(msg string, fileLog string) {
+func errorFile(msg string, fileLog string) error {
 	file, err := os.OpenFile(fileLog, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 	defer func() {
 		_ = file.Close()
 	}()
 	log.SetOutput(file)
 	log.Println(msg)
+	return nil
 }

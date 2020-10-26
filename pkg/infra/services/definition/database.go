@@ -26,6 +26,7 @@ var DatabaseManagerDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		d := database.DbMigration{
 			DbInstance: ctn.Get("database").(database.IDbInstance),
+			RootPath:   ctn.Get("config").(config.IConfig).GetRootPath() + "/",
 		}
 		return &d, nil
 	},

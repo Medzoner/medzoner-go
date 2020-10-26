@@ -8,9 +8,9 @@ import (
 )
 
 func TestHandle(t *testing.T) {
-	t.Run("Unit: test App success", func(t *testing.T) {
+	t.Run("Unit: test App success web server", func(t *testing.T) {
 		app := pkg.App{
-			DebugMode: false,
+			DebugMode: true,
 			RootPath:  "../",
 		}
 		go func() {
@@ -20,5 +20,24 @@ func TestHandle(t *testing.T) {
 		defer func() {
 			cancel()
 		}()
+	})
+	t.Run("Unit: test App success migrate up", func(t *testing.T) {
+		app := pkg.App{
+			DebugMode: true,
+			RootPath:  "../",
+		}
+		app.Handle("migrate-up")
+	})
+	t.Run("Unit: test App failed", func(t *testing.T) {
+		app := pkg.App{
+			DebugMode: true,
+			RootPath:  "../fake",
+		}
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("The code did not panic")
+			}
+		}()
+		app.Handle("web")
 	})
 }

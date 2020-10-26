@@ -14,10 +14,11 @@ import (
 
 type DbMigration struct {
 	DbInstance IDbInstance
+	RootPath   string
 }
 
 func (d *DbMigration) MigrateUp() {
-	var migrationDir = flag.String("migration.files", "./migrations", "Directory where the migration files are located ?")
+	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
 	var driverInstance database.Driver
 	// Run migrations
 	if d.DbInstance.GetConnection().DriverName() == "mysql" {
@@ -57,7 +58,7 @@ func (d *DbMigration) MigrateUp() {
 }
 
 func (d *DbMigration) MigrateDown() {
-	var migrationDir = flag.String("migration.files", "./migrations", "Directory where the migration files are located ?")
+	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
 	// Run migrations
 	driverInstance, err := mysql.WithInstance(d.DbInstance.GetConnection().DB, &mysql.Config{})
 	if err != nil {

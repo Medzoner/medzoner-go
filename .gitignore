@@ -30,3 +30,4 @@
 !/var/log/
 /var/log/*.log
 !/var/test/
+/coverage.out

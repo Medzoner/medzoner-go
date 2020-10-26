@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/Medzoner/medzoner-go/pkg/infra/services"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
 	"github.com/sarulabs/di"
@@ -17,6 +18,9 @@ func (a *App) Handle(action string) {
 	ct := a.LoadContainer()
 	if action == "web" {
 		ct.Get("app-web").(web.IWeb).Start()
+	}
+	if action == "migrate-up" {
+		ct.Get("db-manager").(*database.DbMigration).MigrateUp()
 	}
 	defer a.deferCT(ct)
 	return

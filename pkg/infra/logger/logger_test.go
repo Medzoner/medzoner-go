@@ -13,7 +13,7 @@ func TestLoggerSuccess(t *testing.T) {
 		loggerTest := &logger.Logger{RootPath: "../../../"}
 		loggerInstanceTest := loggerTest.New()
 		message := "good test"
-		loggerInstanceTest.Log(message)
+		_ = loggerInstanceTest.Log(message)
 
 		b, err := ioutil.ReadFile("../../../" + loggerTest.InfoBasePath())
 		if err != nil {
@@ -31,7 +31,7 @@ func TestLoggerErrorSuccess(t *testing.T) {
 	t.Run("Unit: test logger log error success", func(t *testing.T) {
 		loggerTest := logger.Logger{RootPath: "../../../"}
 		message := "this is a log error"
-		loggerTest.Error(message)
+		_ = loggerTest.Error(message)
 
 		b, err := ioutil.ReadFile("../../../" + loggerTest.ErrorBasePath())
 		if err != nil {
@@ -45,17 +45,19 @@ func TestLoggerErrorSuccess(t *testing.T) {
 	})
 }
 
-//func TestLoggerFailed(t *testing.T) {
-//	t.Run("Unit: test logger log failed with bad RootPath", func(t *testing.T) {
-//		loggerTest := logger.Logger{RootPath: "../../"}
-//		loggerInstanceTest := loggerTest.New()
-//		message := "this is a log error"
-//
-//		defer func() {
-//			if r := recover(); r == nil {
-//				t.Errorf("The code did not panic")
-//			}
-//		}()
-//		loggerInstanceTest.Error(message)
-//	})
-//}
+func TestLoggerFailed(t *testing.T) {
+	t.Run("Unit: test logger log error failed with bad RootPath", func(t *testing.T) {
+		loggerTest := logger.Logger{RootPath: "../../"}
+		loggerInstanceTest := loggerTest.New()
+		message := "this is a log error failed"
+
+		_ = loggerInstanceTest.Error(message)
+	})
+	t.Run("Unit: test logger log failed with bad RootPath", func(t *testing.T) {
+		loggerTest := logger.Logger{RootPath: "../../"}
+		loggerInstanceTest := loggerTest.New()
+		message := "this is a log failed"
+
+		_ = loggerInstanceTest.Log(message)
+	})
+}

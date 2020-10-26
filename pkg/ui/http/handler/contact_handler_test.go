@@ -217,13 +217,15 @@ type LoggerTest struct {
 	LogMessages []string
 }
 
-func (l *LoggerTest) Log(msg string) {
+func (l *LoggerTest) Log(msg string) error {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
+	return nil
 }
-func (l *LoggerTest) Error(msg string) {
+func (l *LoggerTest) Error(msg string) error {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
+	return nil
 }
 func (l LoggerTest) New() logger.ILogger {
 	return &LoggerTest{}
