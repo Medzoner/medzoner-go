@@ -6,10 +6,12 @@ import (
 	"github.com/sarulabs/di"
 )
 
+//Service Service
 type Service struct {
 	Definitions []di.Def
 }
 
+//GetDefinitions GetDefinitions
 func (s Service) GetDefinitions(rootPath string) []di.Def {
 	var services []di.Def
 

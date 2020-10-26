@@ -6,6 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
+//LoggerDefinition LoggerDefinition
 var LoggerDefinition = di.Def{
 	Name:  "logger",
 	Scope: di.App,

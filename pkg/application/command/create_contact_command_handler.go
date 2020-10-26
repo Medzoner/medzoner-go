@@ -10,13 +10,15 @@ import (
 	"time"
 )
 
+//CreateContactCommandHandler CreateContactCommandHandler
 type CreateContactCommandHandler struct {
 	ContactFactory             factory.IContactFactory
 	ContactRepository          repository.ContactRepository
-	ContactCreatedEventHandler event.EventHandler
+	ContactCreatedEventHandler event.IEventHandler
 	Logger                     logger.ILogger
 }
 
+//Handle Handle
 func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
 	contact := c.ContactFactory.New()
 	contact.

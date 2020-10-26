@@ -1,5 +1,6 @@
 package repository
 
+//TechnoRepository TechnoRepository
 type TechnoRepository interface {
 	FetchStack() map[string]interface{}
 	FetchExperience() map[string]interface{}

@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+//IContact IContact
 type IContact interface {
 	ICommon
 	GetName() string

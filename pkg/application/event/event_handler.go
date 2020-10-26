@@ -1,5 +1,6 @@
 package event
 
-type EventHandler interface {
+//IEventHandler IEventHandler
+type IEventHandler interface {
 	Handle(event Event)
 }

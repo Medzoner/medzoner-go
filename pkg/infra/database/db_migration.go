@@ -3,20 +3,24 @@ package database
 import (
 	"flag"
 	"fmt"
+	//hack
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+	//hack
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"log"
 )
 
+//DbMigration DbMigration
 type DbMigration struct {
 	DbInstance IDbInstance
 	RootPath   string
 }
 
+//MigrateUp MigrateUp
 func (d *DbMigration) MigrateUp() {
 	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
 	var driverInstance database.Driver
@@ -57,6 +61,7 @@ func (d *DbMigration) MigrateUp() {
 	log.Println("Database migrated ok: up")
 }
 
+//MigrateDown MigrateDown
 func (d *DbMigration) MigrateDown() {
 	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
 	// Run migrations

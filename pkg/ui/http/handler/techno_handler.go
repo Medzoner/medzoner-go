@@ -6,11 +6,13 @@ import (
 	"net/http"
 )
 
+//TechnoHandler TechnoHandler
 type TechnoHandler struct {
 	Template               templater.Templater
 	ListTechnoQueryHandler query.ListTechnoQueryHandler
 }
 
+//TechnoView TechnoView
 type TechnoView struct {
 	Locale      string
 	PageTitle   string
@@ -22,6 +24,7 @@ type TechnoView struct {
 	TorHost     string
 }
 
+//IndexHandle IndexHandle
 func (h *TechnoHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 	view := TechnoView{
 		Locale:      "fr",

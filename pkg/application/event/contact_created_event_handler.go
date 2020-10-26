@@ -5,11 +5,13 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 )
 
+//ContactCreatedEventHandler ContactCreatedEventHandler
 type ContactCreatedEventHandler struct {
 	Mailer mailer.Mailer
 	Logger logger.ILogger
 }
 
+//Handle Handle
 func (c ContactCreatedEventHandler) Handle(event Event) {
 	switch event.(type) {
 	case ContactCreatedEvent:

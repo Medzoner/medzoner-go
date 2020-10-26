@@ -5,11 +5,12 @@ import (
 	"github.com/sarulabs/di"
 )
 
+//SessionDefinition SessionDefinition
 var SessionDefinition = di.Def{
 	Name:  "session",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		return session.SessionAdapter{
+		return session.SessionerAdapter{
 			SessionKey: "medzoner-sessid",
 		}.New(), nil
 	},

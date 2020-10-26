@@ -8,12 +8,14 @@ import (
 	"github.com/sarulabs/di"
 )
 
+//App App
 type App struct {
 	DebugMode bool
 	RootPath  string
 	Container di.Container
 }
 
+//Handle Handle
 func (a *App) Handle(action string) {
 	ct := a.LoadContainer()
 	if action == "web" {
@@ -26,6 +28,7 @@ func (a *App) Handle(action string) {
 	return
 }
 
+//LoadContainer LoadContainer
 func (a *App) LoadContainer() di.Container {
 	builder, _ := di.NewBuilder()
 	err := builder.Add(services.Service{}.GetDefinitions(a.RootPath)...)

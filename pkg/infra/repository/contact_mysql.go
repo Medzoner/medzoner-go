@@ -7,11 +7,13 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+//MysqlContactRepository MysqlContactRepository
 type MysqlContactRepository struct {
 	Conn   *sqlx.DB
 	Logger logger.ILogger
 }
 
+//Save Save
 func (m *MysqlContactRepository) Save(contact model.IContact) {
 	tx := m.Conn.MustBegin()
 	query := `INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (:name, :message, :email, :date_add, :uuid)`

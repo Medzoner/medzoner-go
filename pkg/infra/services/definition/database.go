@@ -6,6 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
+//DatabaseDefinition DatabaseDefinition
 var DatabaseDefinition = di.Def{
 	Name:  "database",
 	Scope: di.App,
@@ -20,6 +21,7 @@ var DatabaseDefinition = di.Def{
 	},
 }
 
+//DatabaseManagerDefinition DatabaseManagerDefinition
 var DatabaseManagerDefinition = di.Def{
 	Name:  "db-manager",
 	Scope: di.App,

@@ -10,6 +10,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
+//IndexHandlerDefinition IndexHandlerDefinition
 var IndexHandlerDefinition = di.Def{
 	Name:  "index-handler",
 	Scope: di.App,
@@ -20,6 +21,7 @@ var IndexHandlerDefinition = di.Def{
 	},
 }
 
+//TechnoHandlerDefinition TechnoHandlerDefinition
 var TechnoHandlerDefinition = di.Def{
 	Name:  "techno-handler",
 	Scope: di.App,
@@ -31,6 +33,7 @@ var TechnoHandlerDefinition = di.Def{
 	},
 }
 
+//ContactHandlerDefinition ContactHandlerDefinition
 var ContactHandlerDefinition = di.Def{
 	Name:  "contact-handler",
 	Scope: di.App,

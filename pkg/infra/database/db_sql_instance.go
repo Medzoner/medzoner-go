@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+//DbSQLInstance DbSQLInstance
 type DbSQLInstance struct {
 	Connection   *sqlx.DB
 	Dsn          string
@@ -14,6 +15,7 @@ type DbSQLInstance struct {
 	DriverName   string
 }
 
+//DbConn DbConn
 func (d *DbSQLInstance) DbConn(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
 	var sqlDSN = flag.String(dbDriverName, dsn+"/"+databaseName+"?multiStatements=true&parseTime=true", d.DriverName+" DSN")
 	c, err := sql.Open(dbDriverName, *sqlDSN)
@@ -29,10 +31,12 @@ func (d *DbSQLInstance) DbConn(dbDriverName string, dsn string, databaseName str
 	return orm
 }
 
+//GetConnection GetConnection
 func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 	return d.Connection
 }
 
+//CreateDatabase CreateDatabase
 func (d *DbSQLInstance) CreateDatabase() {
 	if d.DriverName == "mysql" {
 		dbCreate, err := sql.Open(d.DriverName, d.Dsn+"/?multiStatements=true&parseTime=true")
@@ -50,6 +54,7 @@ func (d *DbSQLInstance) CreateDatabase() {
 	}
 }
 
+//DropDatabase DropDatabase
 func (d *DbSQLInstance) DropDatabase() {
 	if d.DriverName == "mysql" {
 		dbDrop, err := sql.Open(d.DriverName, d.Dsn+"/?multiStatements=true&parseTime=true")
@@ -67,6 +72,7 @@ func (d *DbSQLInstance) DropDatabase() {
 	}
 }
 
+//GetDatabaseName GetDatabaseName
 func (d *DbSQLInstance) GetDatabaseName() string {
 	return d.DatabaseName
 }

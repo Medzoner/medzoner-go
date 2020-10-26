@@ -9,8 +9,8 @@ import (
 )
 
 func TestApiMiddleware(t *testing.T) {
-	t.Run("Unit: test ApiMiddleware success", func(t *testing.T) {
-		apiMiddleware := middleware.ApiMiddleware{}
+	t.Run("Unit: test APIMiddleware success", func(t *testing.T) {
+		apiMiddleware := middleware.APIMiddleware{}
 
 		handler := apiMiddleware.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 		handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/", nil))

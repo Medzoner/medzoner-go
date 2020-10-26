@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+//ContactHandler ContactHandler
 type ContactHandler struct {
 	Template                    templater.Templater
 	CreateContactCommandHandler command.CreateContactCommandHandler
@@ -16,6 +17,7 @@ type ContactHandler struct {
 	Validation                  validation.MzValidator
 }
 
+//ContactView ContactView
 type ContactView struct {
 	Locale    string
 	PageTitle string
@@ -24,6 +26,7 @@ type ContactView struct {
 	TorHost   string
 }
 
+//IndexHandle IndexHandle
 func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
 	c.Session = c.Session.Init(request)
 	view := ContactView{

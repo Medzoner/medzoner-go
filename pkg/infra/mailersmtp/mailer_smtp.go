@@ -1,4 +1,4 @@
-package mailer_smtp
+package mailersmtp
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"net/smtp"
 )
 
+//MailerSMTP MailerSMTP
 type MailerSMTP struct {
 	RootPath string
 	User     string
@@ -14,6 +15,7 @@ type MailerSMTP struct {
 	Port     string
 }
 
+//Request Request
 type Request struct {
 	from    string
 	to      []string
@@ -21,6 +23,7 @@ type Request struct {
 	body    string
 }
 
+//NewRequest NewRequest
 func NewRequest(to []string, subject, body string) *Request {
 	return &Request{
 		to:      to,
@@ -29,6 +32,7 @@ func NewRequest(to []string, subject, body string) *Request {
 	}
 }
 
+//Send Send
 func (m *MailerSMTP) Send(view interface{}) (bool, error) {
 	auth := smtp.PlainAuth("", m.User, m.Password, m.Host)
 
@@ -51,6 +55,7 @@ func (m *MailerSMTP) Send(view interface{}) (bool, error) {
 	return true, nil
 }
 
+//ParseTemplate ParseTemplate
 func (r *Request) ParseTemplate(templateFileName string, data interface{}) error {
 	t, err := template.ParseFiles(templateFileName)
 	if err != nil {

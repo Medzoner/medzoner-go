@@ -2,6 +2,7 @@ package command
 
 import "time"
 
+//CreateContactCommand CreateContactCommand
 type CreateContactCommand struct {
 	Name    string    `json:"name" validate:"required"`
 	Email   string    `json:"email" validate:"required,email"`
@@ -9,6 +10,7 @@ type CreateContactCommand struct {
 	DateAdd time.Time `json:"dateAdd"`
 }
 
+//GetName GetName
 func (c *CreateContactCommandHandler) GetName() string {
 	return "CreateContactCommand"
 }

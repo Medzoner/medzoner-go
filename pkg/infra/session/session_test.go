@@ -8,7 +8,7 @@ import (
 
 func TestSession(t *testing.T) {
 	t.Run("Unit: test Session success", func(t *testing.T) {
-		sessioner := &session.SessionAdapter{
+		sessioner := &session.SessionerAdapter{
 			SessionKey: "test-session",
 			Values:     map[interface{}]interface{}{},
 		}

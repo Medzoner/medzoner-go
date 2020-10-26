@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+//ServerDefinition ServerDefinition
 var ServerDefinition = di.Def{
 	Name:  "server",
 	Scope: di.App,

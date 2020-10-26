@@ -5,16 +5,19 @@ import (
 	"net/http"
 )
 
+//IndexHandler IndexHandler
 type IndexHandler struct {
 	Template templater.Templater
 }
 
+//IndexView IndexView
 type IndexView struct {
 	Locale    string
 	PageTitle string
 	TorHost   string
 }
 
+//IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 	view := IndexView{
 		Locale:    "fr",
