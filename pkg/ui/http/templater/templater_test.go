@@ -31,7 +31,7 @@ func TestRender(t *testing.T) {
 		var tpl = templater.TemplateHtml{
 			RootPath: "../../../../var/test",
 		}
-		err := os.Chmod(tpl.RootPath + "/tmpl/failed.html", 0000)
+		err := os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0000)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -48,7 +48,7 @@ func TestRender(t *testing.T) {
 		if err == nil {
 			assert.Equal(t, true, false)
 		}
-		err = os.Chmod(tpl.RootPath + "/tmpl/failed.html", 0700)
+		err = os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0700)
 		if err != nil {
 			log.Fatal(err)
 		}
