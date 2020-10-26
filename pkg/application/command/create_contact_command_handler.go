@@ -24,7 +24,7 @@ func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
 		SetMessage(command.Message).
 		SetEmail(customtype.NullString{String: command.Email, Valid: true}).
 		SetDateAdd(time.Now()).
-		SetUuid(uuid.UUID{}.String())
+		SetUUID(uuid.UUID{}.String())
 
 	c.ContactRepository.Save(contact)
 	c.Logger.Log("Contact was created.")

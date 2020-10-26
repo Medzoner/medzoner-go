@@ -3,20 +3,18 @@ package database
 import (
 	"database/sql"
 	"flag"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
 )
 
-type DbSqlInstance struct {
+type DbSQLInstance struct {
 	Connection   *sqlx.DB
 	Dsn          string
 	DatabaseName string
 	DriverName   string
 }
 
-func (d *DbSqlInstance) DbConn(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
+func (d *DbSQLInstance) DbConn(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
 	var sqlDSN = flag.String(dbDriverName, dsn+"/"+databaseName+"?multiStatements=true&parseTime=true", d.DriverName+" DSN")
 	c, err := sql.Open(dbDriverName, *sqlDSN)
 	if err != nil {
@@ -31,11 +29,11 @@ func (d *DbSqlInstance) DbConn(dbDriverName string, dsn string, databaseName str
 	return orm
 }
 
-func (d *DbSqlInstance) GetConnection() (db *sqlx.DB) {
+func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 	return d.Connection
 }
 
-func (d *DbSqlInstance) CreateDatabase() {
+func (d *DbSQLInstance) CreateDatabase() {
 	if d.DriverName == "mysql" {
 		dbCreate, err := sql.Open(d.DriverName, d.Dsn+"/?multiStatements=true&parseTime=true")
 		if err != nil {
@@ -52,7 +50,7 @@ func (d *DbSqlInstance) CreateDatabase() {
 	}
 }
 
-func (d *DbSqlInstance) DropDatabase() {
+func (d *DbSQLInstance) DropDatabase() {
 	if d.DriverName == "mysql" {
 		dbDrop, err := sql.Open(d.DriverName, d.Dsn+"/?multiStatements=true&parseTime=true")
 		if err != nil {
@@ -69,6 +67,6 @@ func (d *DbSqlInstance) DropDatabase() {
 	}
 }
 
-func (d *DbSqlInstance) GetDatabaseName() string {
+func (d *DbSQLInstance) GetDatabaseName() string {
 	return d.DatabaseName
 }

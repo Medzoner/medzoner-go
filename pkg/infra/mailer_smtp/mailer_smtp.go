@@ -6,7 +6,7 @@ import (
 	"net/smtp"
 )
 
-type MailerSmtp struct {
+type MailerSMTP struct {
 	RootPath string
 	User     string
 	Password string
@@ -29,7 +29,7 @@ func NewRequest(to []string, subject, body string) *Request {
 	}
 }
 
-func (m *MailerSmtp) Send(view interface{}) (bool, error) {
+func (m *MailerSMTP) Send(view interface{}) (bool, error) {
 	auth := smtp.PlainAuth("", m.User, m.Password, m.Host)
 
 	r := NewRequest([]string{m.User}, "Hello Junk!", "Hello, World!")

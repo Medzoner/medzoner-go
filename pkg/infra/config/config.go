@@ -13,7 +13,7 @@ type IConfig interface {
 	GetRootPath() string
 	GetEnvironment() string
 	GetMysqlDsn() string
-	GetApiPort() int
+	GetAPIPort() int
 	GetDatabaseName() string
 	GetDatabaseDriver() string
 	GetMailerUser() string
@@ -68,7 +68,7 @@ func (c *Config) GetDatabaseName() string {
 	return c.DatabaseName
 }
 
-func (c *Config) GetApiPort() int {
+func (c *Config) GetAPIPort() int {
 	return c.ApiPort
 }
 

@@ -10,7 +10,7 @@ var DatabaseDefinition = di.Def{
 	Name:  "database",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		d := database.DbSqlInstance{}
+		d := database.DbSQLInstance{}
 		d.DbConn(
 			ctn.Get("config").(config.IConfig).GetDatabaseDriver(),
 			ctn.Get("config").(config.IConfig).GetMysqlDsn(),

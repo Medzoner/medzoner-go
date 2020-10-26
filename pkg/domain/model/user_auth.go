@@ -1,5 +1,5 @@
 package model
 
 type UserAuth struct {
-	Uuid string
+	UUID string
 }

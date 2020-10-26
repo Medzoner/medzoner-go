@@ -20,7 +20,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		SetEmail(customtype.NullString{String: "an email", Valid: true}).
 		SetMessage("the message").
 		SetDateAdd(time.Time{}).
-		SetId(1)
+		SetID(1)
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
 		contactCreatedEvent := event.ContactCreatedEvent{

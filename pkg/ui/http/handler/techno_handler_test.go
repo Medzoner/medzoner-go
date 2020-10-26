@@ -14,7 +14,7 @@ func TestTechnoHandler(t *testing.T) {
 		technoHandler := handler.TechnoHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
-				TechnoRepository: &repository.TechnoJsonRepository{
+				TechnoRepository: &repository.TechnoJSONRepository{
 					Logger:   &LoggerTest{},
 					RootPath: "./../../../../",
 				},
@@ -33,7 +33,7 @@ func TestTechnoHandler(t *testing.T) {
 		technoHandler := handler.TechnoHandler{
 			Template: &TemplaterRanderFailedTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
-				TechnoRepository: &repository.TechnoJsonRepository{
+				TechnoRepository: &repository.TechnoJSONRepository{
 					Logger:   &LoggerTest{},
 					RootPath: "./../../../../",
 				},

@@ -7,8 +7,8 @@ import (
 )
 
 type Contact struct {
-	Id      int                   `json:"id" db:"id"`
-	Uuid    string                `json:"uuid" db:"uuid"`
+	ID      int                   `json:"id" db:"id"`
+	UUID    string                `json:"uuid" db:"uuid"`
 	Name    string                `db:"name"`
 	Message string                `db:"message"`
 	Email   customtype.NullString `db:"email"`
@@ -19,21 +19,21 @@ func (*Contact) New() model.IContact {
 	return &Contact{}
 }
 
-func (c *Contact) GetId() int {
-	return c.Id
+func (c *Contact) GetID() int {
+	return c.ID
 }
 
-func (c *Contact) SetId(id int) model.ICommon {
-	c.Id = id
+func (c *Contact) SetID(id int) model.ICommon {
+	c.ID = id
 	return c
 }
 
-func (c *Contact) GetUuid() string {
-	return c.Uuid
+func (c *Contact) GetUUID() string {
+	return c.UUID
 }
 
-func (c *Contact) SetUuid(uuid string) model.ICommon {
-	c.Uuid = uuid
+func (c *Contact) SetUUID(uuid string) model.ICommon {
+	c.UUID = uuid
 	return c
 }
 

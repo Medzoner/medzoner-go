@@ -13,7 +13,7 @@ var ServerDefinition = di.Def{
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
 		s := http.Server{
-			Addr:    fmt.Sprintf(":%d", ctn.Get("config").(config.IConfig).GetApiPort()),
+			Addr:    fmt.Sprintf(":%d", ctn.Get("config").(config.IConfig).GetAPIPort()),
 			Handler: ctn.Get("router").(*mux.Router),
 		}
 		return &s, nil

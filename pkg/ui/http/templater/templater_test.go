@@ -11,7 +11,7 @@ import (
 
 func TestRender(t *testing.T) {
 	t.Run("Unit: test Render success", func(t *testing.T) {
-		var tpl = templater.TemplateHtml{
+		var tpl = templater.TemplateHTML{
 			RootPath: "../../../..",
 		}
 		_, err := tpl.Render(
@@ -28,7 +28,7 @@ func TestRender(t *testing.T) {
 		}
 	})
 	t.Run("Unit: test Render failed when parse tpl", func(t *testing.T) {
-		var tpl = templater.TemplateHtml{
+		var tpl = templater.TemplateHTML{
 			RootPath: "../../../../var/test",
 		}
 		err := os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0000)
@@ -54,7 +54,7 @@ func TestRender(t *testing.T) {
 		}
 	})
 	t.Run("Unit: test Render failed with bad tpl name", func(t *testing.T) {
-		var tpl = templater.TemplateHtml{
+		var tpl = templater.TemplateHTML{
 			RootPath: "../../../..",
 		}
 		_, err := tpl.Render(
@@ -71,7 +71,7 @@ func TestRender(t *testing.T) {
 		}
 	})
 	t.Run("Unit: test Render failed with bad rootPath", func(t *testing.T) {
-		var tpl = templater.TemplateHtml{
+		var tpl = templater.TemplateHTML{
 			RootPath: "../../..",
 		}
 		_, err := tpl.Render(

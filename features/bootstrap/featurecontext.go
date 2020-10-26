@@ -15,7 +15,7 @@ import (
 	"net/url"
 )
 
-type ApiFeature struct {
+type APIFeature struct {
 	Response *http.Response
 	Request  *http.Request
 	BaseUrl  *string
@@ -31,23 +31,23 @@ func (b BodyRequest) Read(p []byte) (n int, err error) {
 	return buffer.Read(p)
 }
 
-func New(url string, App *pkg.App) *ApiFeature {
-	feature := &ApiFeature{Response: &http.Response{}, BaseUrl: &url, App: App}
+func New(url string, App *pkg.App) *APIFeature {
+	feature := &APIFeature{Response: &http.Response{}, BaseUrl: &url, App: App}
 	feature.Request, _ = http.NewRequest("GET", fmt.Sprintf("%s%s", url, "/"), BodyRequest{}.Body)
 	return feature
 }
 
-func (a *ApiFeature) resetResponse() {
+func (a *APIFeature) resetResponse() {
 	a.Request, _ = http.NewRequest("GET", "/", BodyRequest{}.Body)
 	a.Response = &http.Response{}
 }
 
-func (a *ApiFeature) iAddHeaderEqualTo(arg1 string, arg2 string) (err error) {
+func (a *APIFeature) iAddHeaderEqualTo(arg1 string, arg2 string) (err error) {
 	a.Request.Header.Set(arg1, arg2)
 	return
 }
 
-func (a *ApiFeature) iSendARequestTo(method, endpoint string) (err error) {
+func (a *APIFeature) iSendARequestTo(method, endpoint string) (err error) {
 	a.Request.Method = method
 	a.Request.URL, err = url.Parse(fmt.Sprintf("%s%s", *a.BaseUrl, endpoint))
 	if err != nil {
@@ -74,14 +74,14 @@ func (a *ApiFeature) iSendARequestTo(method, endpoint string) (err error) {
 	return
 }
 
-func (a *ApiFeature) theResponseStatusCodeShouldBe(code int) (err error) {
+func (a *APIFeature) theResponseStatusCodeShouldBe(code int) (err error) {
 	if code != a.Response.StatusCode && a.Response.Request.Response.StatusCode != code {
 		return fmt.Errorf("expected response code to be: %d, but actual is: %d", code, a.Response.StatusCode)
 	}
 	return
 }
 
-func (a *ApiFeature) theResponseShouldMatchJSON(body *gherkin.DocString) (err error) {
+func (a *APIFeature) theResponseShouldMatchJSON(body *gherkin.DocString) (err error) {
 	var expected, actual []byte
 	var data interface{}
 	if err = json.Unmarshal([]byte(body.Content), &data); err != nil {
@@ -97,7 +97,7 @@ func (a *ApiFeature) theResponseShouldMatchJSON(body *gherkin.DocString) (err er
 	return
 }
 
-func (a *ApiFeature) theJSONNodeShouldBeEqualTo(arg1, arg2 string) (err error) {
+func (a *APIFeature) theJSONNodeShouldBeEqualTo(arg1, arg2 string) (err error) {
 	data := make(map[string]interface{})
 
 	bodyBytes, err := ioutil.ReadAll(a.Response.Body)
@@ -115,7 +115,7 @@ func (a *ApiFeature) theJSONNodeShouldBeEqualTo(arg1, arg2 string) (err error) {
 	return
 }
 
-func (a *ApiFeature) theResponseShouldBeInJSON() (err error) {
+func (a *APIFeature) theResponseShouldBeInJSON() (err error) {
 	res, _ := ioutil.ReadAll(a.Response.Body)
 	var js json.RawMessage
 	if json.Unmarshal(res, &js) != nil {
@@ -124,38 +124,38 @@ func (a *ApiFeature) theResponseShouldBeInJSON() (err error) {
 	return nil
 }
 
-func (a *ApiFeature) theJSONShouldBeValidAccordingToTheSchema(arg1 string) (err error) {
+func (a *APIFeature) theJSONShouldBeValidAccordingToTheSchema(arg1 string) (err error) {
 	_ = arg1
 	return godog.ErrPending
 }
 
-func (a *ApiFeature) theJSONNodeShouldContain(arg1, arg2 string) (err error) {
-	_ = arg1
-	_ = arg2
-	return godog.ErrPending
-}
-
-func (a *ApiFeature) theJSONNodeShouldBeFalse(arg1 string) (err error) {
-	_ = arg1
-	return godog.ErrPending
-}
-
-func (a *ApiFeature) theJSONNodeShouldNotExist(arg1 string) (err error) {
-	_ = arg1
-	return godog.ErrPending
-}
-
-func (a *ApiFeature) theJSONNodeShouldHaveElements(arg1 string, arg2 int) (err error) {
+func (a *APIFeature) theJSONNodeShouldContain(arg1, arg2 string) (err error) {
 	_ = arg1
 	_ = arg2
 	return godog.ErrPending
 }
 
-func (a *ApiFeature) paginationScenario() error {
+func (a *APIFeature) theJSONNodeShouldBeFalse(arg1 string) (err error) {
+	_ = arg1
 	return godog.ErrPending
 }
 
-func (a *ApiFeature) printLastJSONResponse() (err error) {
+func (a *APIFeature) theJSONNodeShouldNotExist(arg1 string) (err error) {
+	_ = arg1
+	return godog.ErrPending
+}
+
+func (a *APIFeature) theJSONNodeShouldHaveElements(arg1 string, arg2 int) (err error) {
+	_ = arg1
+	_ = arg2
+	return godog.ErrPending
+}
+
+func (a *APIFeature) paginationScenario() error {
+	return godog.ErrPending
+}
+
+func (a *APIFeature) printLastJSONResponse() (err error) {
 	bodyBytes, err := ioutil.ReadAll(a.Response.Body)
 	if err != nil {
 		fmt.Println(err)
@@ -165,34 +165,34 @@ func (a *ApiFeature) printLastJSONResponse() (err error) {
 	return
 }
 
-func (a *ApiFeature) theJSONNodeShouldBeTrue(arg1 string) (err error) {
+func (a *APIFeature) theJSONNodeShouldBeTrue(arg1 string) (err error) {
 	_ = arg1
 	return godog.ErrPending
 }
 
-func (a *ApiFeature) theJSONNodeShouldExist(arg1 string) (err error) {
+func (a *APIFeature) theJSONNodeShouldExist(arg1 string) (err error) {
 	_ = arg1
 	return godog.ErrPending
 }
 
-func (a *ApiFeature) theJSONNodeShouldNotBeNull(arg1 string) (err error) {
+func (a *APIFeature) theJSONNodeShouldNotBeNull(arg1 string) (err error) {
 	_ = arg1
 	return godog.ErrPending
 }
 
-func (a *ApiFeature) theJSONNodeShouldBeNull(arg1 string) (err error) {
+func (a *APIFeature) theJSONNodeShouldBeNull(arg1 string) (err error) {
 	_ = arg1
 	return godog.ErrPending
 }
 
-func (a *ApiFeature) theJSONNodeShouldContainTheKeyIsInvalidAsItWillOverrideTheExistingKey(arg1, arg2, arg3 string) (err error) {
+func (a *APIFeature) theJSONNodeShouldContainTheKeyIsInvalidAsItWillOverrideTheExistingKey(arg1, arg2, arg3 string) (err error) {
 	_ = arg1
 	_ = arg2
 	_ = arg3
 	return godog.ErrPending
 }
 
-func (a *ApiFeature) theResponseShouldBeEmpty() (err error) {
+func (a *APIFeature) theResponseShouldBeEmpty() (err error) {
 	bodyBytes, err := ioutil.ReadAll(a.Response.Body)
 	if err != nil {
 		fmt.Println(err)
@@ -204,15 +204,15 @@ func (a *ApiFeature) theResponseShouldBeEmpty() (err error) {
 	return nil
 }
 
-func (a *ApiFeature) iSendAGETRequestTo(arg1 string) (err error) {
+func (a *APIFeature) iSendAGETRequestTo(arg1 string) (err error) {
 	return a.iSendARequestTo("GET", arg1)
 }
 
-func (a *ApiFeature) iSendADELETERequestTo(arg1 string) (err error) {
+func (a *APIFeature) iSendADELETERequestTo(arg1 string) (err error) {
 	return a.iSendARequestTo("DELETE", arg1)
 }
 
-func (a *ApiFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *gherkin.DocString) (err error) {
+func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *gherkin.DocString) (err error) {
 	v := url.Values{}
 	if arg2 != nil && arg2.Content != "" {
 
@@ -253,11 +253,11 @@ func (a *ApiFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *gherkin.DocS
 	return
 }
 
-func (a *ApiFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *gherkin.DocString) (err error) {
+func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *gherkin.DocString) (err error) {
 	return a.iSendAPOSTRequestToWithBody(arg1, arg2)
 }
 
-func (a *ApiFeature) FeatureContext(s *godog.Suite) {
+func (a *APIFeature) FeatureContext(s *godog.Suite) {
 	s.BeforeSuite(func() {
 		a.resetBdd()
 	})
@@ -288,10 +288,10 @@ func (a *ApiFeature) FeatureContext(s *godog.Suite) {
 	s.Step(`^the response should be empty$`, a.theResponseShouldBeEmpty)
 }
 
-func (a *ApiFeature) resetBdd() {
-	a.App.Container.Get("database").(*database.DbSqlInstance).CreateDatabase()
-	a.App.Container.Get("database").(*database.DbSqlInstance).DropDatabase()
-	a.App.Container.Get("database").(*database.DbSqlInstance).CreateDatabase()
+func (a *APIFeature) resetBdd() {
+	a.App.Container.Get("database").(*database.DbSQLInstance).CreateDatabase()
+	a.App.Container.Get("database").(*database.DbSQLInstance).DropDatabase()
+	a.App.Container.Get("database").(*database.DbSQLInstance).CreateDatabase()
 	a.App.Container.Get("db-manager").(*database.DbMigration).MigrateUp()
 	return
 }

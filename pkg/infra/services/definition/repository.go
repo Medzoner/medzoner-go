@@ -14,7 +14,7 @@ var ContactRepositoryDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		r := repository.MysqlContactRepository{
 			Logger: ctn.Get("logger").(logger.ILogger),
-			Conn:   ctn.Get("database").(*database.DbSqlInstance).Connection,
+			Conn:   ctn.Get("database").(*database.DbSQLInstance).Connection,
 		}
 		return &r, nil
 	},
@@ -24,7 +24,7 @@ var TechnoRepositoryDefinition = di.Def{
 	Name:  "techno-repository",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		r := repository.TechnoJsonRepository{
+		r := repository.TechnoJSONRepository{
 			Logger:   ctn.Get("logger").(logger.ILogger),
 			RootPath: ctn.Get("config").(config.IConfig).GetRootPath(),
 		}

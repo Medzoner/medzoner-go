@@ -21,7 +21,7 @@ var WebDefinition = di.Def{
 			IndexHandler:   ctn.Get("index-handler").(*handler.IndexHandler),
 			TechnoHandler:  ctn.Get("techno-handler").(*handler.TechnoHandler),
 			ContactHandler: ctn.Get("contact-handler").(*handler.ContactHandler),
-			ApiPort:        ctn.Get("config").(config.IConfig).GetApiPort(),
+			APIPORT:        ctn.Get("config").(config.IConfig).GetAPIPort(),
 		}, nil
 	},
 }

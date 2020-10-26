@@ -8,17 +8,17 @@ import (
 	"os"
 )
 
-type TechnoJsonRepository struct {
+type TechnoJSONRepository struct {
 	Logger   logger.ILogger
 	RootPath string
 }
 
-func (m *TechnoJsonRepository) FetchStack() map[string]interface{} {
+func (m *TechnoJSONRepository) FetchStack() map[string]interface{} {
 	jsonFile, err := os.Open(m.RootPath + "/pkg/infra/resources/data/jobs/stacks.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer m.deferJsonFile(jsonFile)
+	defer m.deferJSONFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -31,12 +31,12 @@ func (m *TechnoJsonRepository) FetchStack() map[string]interface{} {
 	return c
 }
 
-func (m *TechnoJsonRepository) FetchExperience() map[string]interface{} {
+func (m *TechnoJSONRepository) FetchExperience() map[string]interface{} {
 	jsonFile, err := os.Open(m.RootPath + "/pkg/infra/resources/data/jobs/experiences.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer m.deferJsonFile(jsonFile)
+	defer m.deferJSONFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -49,12 +49,12 @@ func (m *TechnoJsonRepository) FetchExperience() map[string]interface{} {
 	return c
 }
 
-func (m *TechnoJsonRepository) FetchFormation() map[string]interface{} {
+func (m *TechnoJSONRepository) FetchFormation() map[string]interface{} {
 	jsonFile, err := os.Open(m.RootPath + "/pkg/infra/resources/data/jobs/formations.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer m.deferJsonFile(jsonFile)
+	defer m.deferJSONFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -67,12 +67,12 @@ func (m *TechnoJsonRepository) FetchFormation() map[string]interface{} {
 	return c
 }
 
-func (m *TechnoJsonRepository) FetchLang() map[string]interface{} {
+func (m *TechnoJSONRepository) FetchLang() map[string]interface{} {
 	jsonFile, err := os.Open(m.RootPath + "/pkg/infra/resources/data/jobs/langs.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer m.deferJsonFile(jsonFile)
+	defer m.deferJSONFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -85,12 +85,12 @@ func (m *TechnoJsonRepository) FetchLang() map[string]interface{} {
 	return c
 }
 
-func (m *TechnoJsonRepository) FetchOther() map[string]interface{} {
+func (m *TechnoJSONRepository) FetchOther() map[string]interface{} {
 	jsonFile, err := os.Open(m.RootPath + "/pkg/infra/resources/data/jobs/others.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer m.deferJsonFile(jsonFile)
+	defer m.deferJSONFile(jsonFile)
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
@@ -103,7 +103,7 @@ func (m *TechnoJsonRepository) FetchOther() map[string]interface{} {
 	return c
 }
 
-func (m *TechnoJsonRepository) deferJsonFile(jsonFile *os.File) {
+func (m *TechnoJSONRepository) deferJSONFile(jsonFile *os.File) {
 	err := jsonFile.Close()
 	if err == nil {
 		fmt.Println("jsonFile closed.")

@@ -63,8 +63,8 @@ func TestContactHandler(t *testing.T) {
 		request.Form = v
 		contactHandler.IndexHandle(responseWriter, request)
 
-		assert.Equal(t, repositoryMock.ContactSaved.GetId(), 0)
-		assert.Assert(t, len(repositoryMock.ContactSaved.GetUuid()) > 0)
+		assert.Equal(t, repositoryMock.ContactSaved.GetID(), 0)
+		assert.Assert(t, len(repositoryMock.ContactSaved.GetUUID()) > 0)
 		assert.Assert(t, len(repositoryMock.ContactSaved.GetDateAdd().String()) > 0)
 		assert.Equal(t, repositoryMock.ContactSaved.GetName(), "a name")
 		assert.Equal(t, repositoryMock.ContactSaved.GetEmail().String, "email@fake.com")

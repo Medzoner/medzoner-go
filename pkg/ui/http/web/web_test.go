@@ -25,7 +25,7 @@ func TestStart(t *testing.T) {
 			IndexHandler:   nil,
 			TechnoHandler:  nil,
 			ContactHandler: nil,
-			ApiPort:        8123,
+			APIPORT:        8123,
 		}
 		go func() {
 			webTest.Start()
