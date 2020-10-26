@@ -7,7 +7,7 @@ import (
 )
 
 type TechnoHandler struct {
-	Template templater.Templater
+	Template               templater.Templater
 	ListTechnoQueryHandler query.ListTechnoQueryHandler
 }
 

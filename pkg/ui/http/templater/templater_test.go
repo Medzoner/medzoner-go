@@ -19,10 +19,10 @@ func TestRender(t *testing.T) {
 			200,
 		)
 		if err != nil {
-			assert.Equal(t,true, true)
+			assert.Equal(t, true, true)
 		}
 		if err == nil {
-			assert.Equal(t,true, false)
+			assert.Equal(t, true, false)
 		}
 	})
 	t.Run("Unit: test Render failed", func(t *testing.T) {
@@ -36,10 +36,10 @@ func TestRender(t *testing.T) {
 			200,
 		)
 		if err != nil {
-			assert.Equal(t,true, true)
+			assert.Equal(t, true, true)
 		}
 		if err == nil {
-			assert.Equal(t,true, false)
+			assert.Equal(t, true, false)
 		}
 	})
 }

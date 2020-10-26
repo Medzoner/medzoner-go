@@ -30,7 +30,8 @@ before_script:
 script:
   - mysql -h 127.0.0.1 -u root -e "create database test" -pchangeme
   - cp .env.travis .env
-  - go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
+  - gotest -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
+  - go tool cover -func=coverage.out
   - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
   - rm .env
   - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/app.go

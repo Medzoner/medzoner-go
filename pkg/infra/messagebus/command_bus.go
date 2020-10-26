@@ -13,7 +13,7 @@ import (
 
 func (c CommandBus) NewBus() *bus.Bus {
 	// configure id generator (it doesn't have to be monoton)
-	node        := uint64(1)
+	node := uint64(1)
 	initialTime := uint64(1577865600000) // set 2020-01-01 PST as initial time
 	m, err := monoton.New(sequencer.NewMillisecond(), node, initialTime)
 	if err != nil {
@@ -39,7 +39,7 @@ type CommandBus struct {
 	Bus *bus.Bus
 }
 
-func (c *CommandBus) Handle(message messagebus.Message)  {
+func (c *CommandBus) Handle(message messagebus.Message) {
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, bus.CtxKeyTxID, "some-transaction-id-if-exists")
 

@@ -33,7 +33,7 @@ func (z ZapLoggerAdapter) New() ILogger {
 		panic(err)
 	}
 
-	cfg.EncoderConfig.EncodeLevel = func (level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
+	cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 		enc.AppendString("[" + level.CapitalString() + "]")
 	}
 	zapLogger, err := cfg.Build()

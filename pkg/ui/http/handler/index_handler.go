@@ -17,7 +17,7 @@ type IndexView struct {
 
 func (h *IndexHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 	view := IndexView{
-		Locale: "fr",
+		Locale:    "fr",
 		PageTitle: "MedZoner.com",
 	}
 	view.TorHost = r.Header.Get("TOR-HOST")

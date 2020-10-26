@@ -35,6 +35,7 @@ func TestIndexHandler(t *testing.T) {
 type TemplaterTestFailed struct {
 	RootPath string
 }
+
 func (t *TemplaterTestFailed) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
 	return nil, errors.New("panic")
 }
@@ -42,6 +43,7 @@ func (t *TemplaterTestFailed) Render(name string, view interface{}, response htt
 type TemplaterTest struct {
 	RootPath string
 }
+
 func (t *TemplaterTest) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
 	fmt.Println(view)
 	return nil, nil
