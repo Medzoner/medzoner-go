@@ -29,3 +29,4 @@
 /medzoner/
 !/var/log/
 /var/log/*.log
+!/var/test/

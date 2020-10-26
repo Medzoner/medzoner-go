@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
-	"github.com/jmoiron/sqlx"
 	"io/ioutil"
 	"os"
 )
 
 type TechnoJsonRepository struct {
-	Conn     *sqlx.DB
 	Logger   logger.ILogger
 	RootPath string
 }
