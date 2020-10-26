@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.com/Medzoner/medzoner-go.svg?token=USx1h5scpzCMKrhJnEzv&branch=master)](https://travis-ci.com/github/Medzoner/medzoner-go)
 [![Coverage Status](https://coveralls.io/repos/github/Medzoner/medzoner-go/badge.svg?branch=master&service=github)](https://coveralls.io/github/Medzoner/medzoner-go?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Go report](https://goreportcard.com/badge/github.com/Medzoner/medzoner-go)](https://goreportcard.com/report/github.com/Medzoner/medzoner-go)
+[![Go report](https://goreportcard.com/badge/github.com/Medzoner/medzoner-go?service=github)](https://goreportcard.com/report/github.com/Medzoner/medzoner-go?service=github)
 
 ## Short Description
 My website https://www.medzoner.com rewrite in golang from php (https://github.com/Medzoner/medzoner.com)
