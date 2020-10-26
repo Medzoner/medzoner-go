@@ -10,7 +10,7 @@ func TestSession(t *testing.T) {
 	t.Run("Unit: test Session success", func(t *testing.T) {
 		sessioner := &session.SessionAdapter{
 			SessionKey: "test-session",
-			Values: map[interface{}]interface{}{},
+			Values:     map[interface{}]interface{}{},
 		}
 		request := httptest.NewRequest("GET", "/", nil)
 		sessionerInstance := sessioner.New()
