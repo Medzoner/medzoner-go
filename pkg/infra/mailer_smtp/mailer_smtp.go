@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"html/template"
 	"net/smtp"
-	"os"
 )
 
 type MailerSmtp struct {
+	RootPath string
 	User     string
 	Password string
 	Host     string
@@ -34,8 +34,7 @@ func (m *MailerSmtp) Send(view interface{}) (bool, error) {
 
 	r := NewRequest([]string{m.User}, "Hello Junk!", "Hello, World!")
 
-	pp, _ := os.Getwd()
-	err := r.ParseTemplate(pp+"/tmpl/Contact/contactEmail.html", view)
+	err := r.ParseTemplate(m.RootPath+"/tmpl/contact/contactEmail.html", view)
 
 	if err != nil {
 		return false, err
