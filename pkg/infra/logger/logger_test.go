@@ -11,8 +11,9 @@ import (
 func TestLoggerSuccess(t *testing.T) {
 	t.Run("Unit: test logger log success", func(t *testing.T) {
 		loggerTest := &logger.Logger{RootPath: "../../../"}
+		loggerInstanceTest := loggerTest.New()
 		message := "good test"
-		loggerTest.Log(message)
+		loggerInstanceTest.Log(message)
 
 		b, err := ioutil.ReadFile("../../../" + loggerTest.InfoBasePath())
 		if err != nil {
@@ -43,3 +44,18 @@ func TestLoggerErrorSuccess(t *testing.T) {
 		assert.Equal(t, isExist, true)
 	})
 }
+
+//func TestLoggerFailed(t *testing.T) {
+//	t.Run("Unit: test logger log failed with bad RootPath", func(t *testing.T) {
+//		loggerTest := logger.Logger{RootPath: "../../"}
+//		loggerInstanceTest := loggerTest.New()
+//		message := "this is a log error"
+//
+//		defer func() {
+//			if r := recover(); r == nil {
+//				t.Errorf("The code did not panic")
+//			}
+//		}()
+//		loggerInstanceTest.Error(message)
+//	})
+//}

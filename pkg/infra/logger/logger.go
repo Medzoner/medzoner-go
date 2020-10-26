@@ -33,7 +33,9 @@ func (l *Logger) Error(msg string) {
 }
 
 func (l Logger) New() ILogger {
-	return &Logger{}
+	return &Logger{
+		RootPath: l.RootPath,
+	}
 }
 
 func (l *Logger) InfoBasePath() string {
