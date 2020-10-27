@@ -3,6 +3,7 @@ package definition
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
+	"github.com/Medzoner/medzoner-go/pkg/infra/database/connection"
 	"github.com/sarulabs/di"
 )
 
@@ -18,6 +19,24 @@ var DatabaseDefinition = di.Def{
 			ctn.Get("config").(config.IConfig).GetDatabaseName(),
 		)
 		return &d, nil
+	},
+}
+var DatabaseConnectionDefinition = di.Def{
+	Name:  "database-connection",
+	Scope: di.App,
+	Build: func(ctn di.Container) (interface{}, error) {
+		d := connection.Connection{}
+		c, _ := d.DriverManager.GetDriver("mysql")
+		//m.Create(
+		//	ctn.Get("config").(config.IConfig).GetDatabaseDriver(),
+		//	ctn.Get("config").(config.IConfig).GetMysqlDsn(),
+		//	ctn.Get("config").(config.IConfig).GetDatabaseName(),
+		//)
+		c.Connect(
+			ctn.Get("config").(config.IConfig).GetMysqlDsn(),
+			ctn.Get("config").(config.IConfig).GetDatabaseName(),
+		)
+		return &c, nil
 	},
 }
 
