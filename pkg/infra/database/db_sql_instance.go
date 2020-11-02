@@ -2,29 +2,27 @@ package database
 
 import (
 	"database/sql"
-	"flag"
 	"github.com/jmoiron/sqlx"
 	"log"
 )
 
 //DbSQLInstance DbSQLInstance
 type DbSQLInstance struct {
-	Connection   *sqlx.DB
+	Connection   interface{}
 	Dsn          string
 	DatabaseName string
 	DriverName   string
 }
 
 //DbConn DbConn
-func (d *DbSQLInstance) DbConn(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
-	var sqlDSN = flag.String(dbDriverName, dsn+"/"+databaseName+"?multiStatements=true&parseTime=true", d.DriverName+" DSN")
-	c, err := sql.Open(dbDriverName, *sqlDSN)
+func (d *DbSQLInstance) DbConn(dbDriverName string, sqlDSN string, databaseName string) (db *sqlx.DB) {
+	c, err := sql.Open(dbDriverName, sqlDSN)
 	if err != nil {
 		panic(err.Error())
 	}
 	orm := sqlx.NewDb(c, dbDriverName)
 	d.Connection = orm
-	d.Dsn = dsn
+	d.Dsn = sqlDSN
 	d.DatabaseName = databaseName
 	d.DriverName = dbDriverName
 
@@ -32,7 +30,7 @@ func (d *DbSQLInstance) DbConn(dbDriverName string, dsn string, databaseName str
 }
 
 //GetConnection GetConnection
-func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
+func (d *DbSQLInstance) GetConnection() (db interface{}) {
 	return d.Connection
 }
 
