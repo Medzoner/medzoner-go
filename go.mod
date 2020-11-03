@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/DATA-DOG/godog v0.7.13
-	github.com/cosmtrek/air v1.12.4 // indirect
+	github.com/cosmtrek/air v1.21.2 // indirect
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/docker/distribution v2.7.0+incompatible
 	github.com/fatih/color v1.10.0 // indirect
