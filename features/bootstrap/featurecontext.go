@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/DATA-DOG/godog"
-	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Medzoner/medzoner-go/pkg"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
+	"github.com/cucumber/godog"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -41,36 +40,38 @@ func New(url string, App *pkg.App) *APIFeature {
 	return feature
 }
 
-//FeatureContext FeatureContext
-func (a *APIFeature) FeatureContext(s *godog.Suite) {
-	s.BeforeSuite(func() {
+
+func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
+	ctx.BeforeSuite(func() {
 		a.resetBdd()
 	})
-	s.BeforeScenario(func(interface{}) {
+}
+func (a *APIFeature) InitializeScenario(ctx *godog.ScenarioContext) {
+	ctx.BeforeScenario(func(*godog.Scenario) {
 		a.resetResponse()
 	})
-	s.Step(`^I add "([^"]*)" header equal to "([^"]*)"$`, a.iAddHeaderEqualTo)
-	s.Step(`^I send a GET request to "([^"]*)"$`, a.iSendAGETRequestTo)
-	s.Step(`^I send a POST request to "([^"]*)" with body:$`, a.iSendAPOSTRequestToWithBody)
-	s.Step(`^I send a PUT request to "([^"]*)" with body:$`, a.iSendAPUTRequestToWithBody)
-	s.Step(`^I send a DELETE request to "([^"]*)"$`, a.iSendADELETERequestTo)
-	s.Step(`^the response status code should be (\d+)$`, a.theResponseStatusCodeShouldBe)
-	s.Step(`^the JSON node "([^"]*)" should be equal to "([^"]*)"$`, a.theJSONNodeShouldBeEqualTo)
-	s.Step(`^the response should be in JSON$`, a.theResponseShouldBeInJSON)
-	s.Step(`^the JSON should be valid according to the schema "([^"]*)"$`, a.theJSONShouldBeValidAccordingToTheSchema)
-	s.Step(`^the JSON node "([^"]*)" should contain "([^"]*)"$`, a.theJSONNodeShouldContain)
-	s.Step(`^the JSON node "([^"]*)" should be false$`, a.theJSONNodeShouldBeFalse)
-	s.Step(`^the JSON node "([^"]*)" should not exist$`, a.theJSONNodeShouldNotExist)
-	s.Step(`^the JSON node "([^"]*)" should contain (\d+)$`, a.theJSONNodeShouldContain)
-	s.Step(`^the JSON node "([^"]*)" should have (\d+) elements$`, a.theJSONNodeShouldHaveElements)
-	s.Step(`^PaginationScenario$`, a.paginationScenario)
-	s.Step(`^print last JSON response$`, a.printLastJSONResponse)
-	s.Step(`^the JSON node "([^"]*)" should be true$`, a.theJSONNodeShouldBeTrue)
-	s.Step(`^the JSON node "([^"]*)" should exist$`, a.theJSONNodeShouldExist)
-	s.Step(`^the JSON node "([^"]*)" should not be null$`, a.theJSONNodeShouldNotBeNull)
-	s.Step(`^the JSON node "([^"]*)" should be null$`, a.theJSONNodeShouldBeNull)
-	s.Step(`^the JSON node "([^"]*)" should contain \'The key "([^"]*)" is invalid as it will override the existing key "([^"]*)"\'$`, a.theJSONNodeShouldContainTheKeyIsInvalidAsItWillOverrideTheExistingKey)
-	s.Step(`^the response should be empty$`, a.theResponseShouldBeEmpty)
+	ctx.Step(`^I add "([^"]*)" header equal to "([^"]*)"$`, a.iAddHeaderEqualTo)
+	ctx.Step(`^I send a GET request to "([^"]*)"$`, a.iSendAGETRequestTo)
+	ctx.Step(`^I send a POST request to "([^"]*)" with body:$`, a.iSendAPOSTRequestToWithBody)
+	ctx.Step(`^I send a PUT request to "([^"]*)" with body:$`, a.iSendAPUTRequestToWithBody)
+	ctx.Step(`^I send a DELETE request to "([^"]*)"$`, a.iSendADELETERequestTo)
+	ctx.Step(`^the response status code should be (\d+)$`, a.theResponseStatusCodeShouldBe)
+	ctx.Step(`^the JSON node "([^"]*)" should be equal to "([^"]*)"$`, a.theJSONNodeShouldBeEqualTo)
+	ctx.Step(`^the response should be in JSON$`, a.theResponseShouldBeInJSON)
+	ctx.Step(`^the JSON should be valid according to the schema "([^"]*)"$`, a.theJSONShouldBeValidAccordingToTheSchema)
+	ctx.Step(`^the JSON node "([^"]*)" should contain "([^"]*)"$`, a.theJSONNodeShouldContain)
+	ctx.Step(`^the JSON node "([^"]*)" should be false$`, a.theJSONNodeShouldBeFalse)
+	ctx.Step(`^the JSON node "([^"]*)" should not exist$`, a.theJSONNodeShouldNotExist)
+	ctx.Step(`^the JSON node "([^"]*)" should contain (\d+)$`, a.theJSONNodeShouldContain)
+	ctx.Step(`^the JSON node "([^"]*)" should have (\d+) elements$`, a.theJSONNodeShouldHaveElements)
+	ctx.Step(`^PaginationScenario$`, a.paginationScenario)
+	ctx.Step(`^print last JSON response$`, a.printLastJSONResponse)
+	ctx.Step(`^the JSON node "([^"]*)" should be true$`, a.theJSONNodeShouldBeTrue)
+	ctx.Step(`^the JSON node "([^"]*)" should exist$`, a.theJSONNodeShouldExist)
+	ctx.Step(`^the JSON node "([^"]*)" should not be null$`, a.theJSONNodeShouldNotBeNull)
+	ctx.Step(`^the JSON node "([^"]*)" should be null$`, a.theJSONNodeShouldBeNull)
+	ctx.Step(`^the JSON node "([^"]*)" should contain \'The key "([^"]*)" is invalid as it will override the existing key "([^"]*)"\'$`, a.theJSONNodeShouldContainTheKeyIsInvalidAsItWillOverrideTheExistingKey)
+	ctx.Step(`^the response should be empty$`, a.theResponseShouldBeEmpty)
 }
 
 func (a *APIFeature) resetResponse() {
@@ -117,21 +118,21 @@ func (a *APIFeature) theResponseStatusCodeShouldBe(code int) (err error) {
 	return
 }
 
-func (a *APIFeature) theResponseShouldMatchJSON(body *gherkin.DocString) (err error) {
-	var expected, actual []byte
-	var data interface{}
-	if err = json.Unmarshal([]byte(body.Content), &data); err != nil {
-		return
-	}
-	if expected, err = json.Marshal(data); err != nil {
-		return
-	}
-	actual, _ = ioutil.ReadAll(a.Response.Body)
-	if !bytes.Equal(actual, expected) {
-		err = fmt.Errorf("expected json, does not match actual: %s", string(actual))
-	}
-	return
-}
+//func (a *APIFeature) theResponseShouldMatchJSON(body string) (err error) {
+//	var expected, actual []byte
+//	var data interface{}
+//	if err = json.Unmarshal([]byte(body.Content), &data); err != nil {
+//		return
+//	}
+//	if expected, err = json.Marshal(data); err != nil {
+//		return
+//	}
+//	actual, _ = ioutil.ReadAll(a.Response.Body)
+//	if !bytes.Equal(actual, expected) {
+//		err = fmt.Errorf("expected json, does not match actual: %s", string(actual))
+//	}
+//	return
+//}
 
 func (a *APIFeature) theJSONNodeShouldBeEqualTo(arg1, arg2 string) (err error) {
 	data := make(map[string]interface{})
@@ -248,7 +249,7 @@ func (a *APIFeature) iSendADELETERequestTo(arg1 string) (err error) {
 	return a.iSendARequestTo("DELETE", arg1)
 }
 
-func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *gherkin.DocString) error {
+func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocString) error {
 	v := url.Values{}
 	if arg2 != nil && arg2.Content != "" {
 		var data map[string]string
@@ -287,7 +288,7 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *gherkin.DocS
 	return nil
 }
 
-func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *gherkin.DocString) (err error) {
+func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *godog.DocString) (err error) {
 	return a.iSendAPOSTRequestToWithBody(arg1, arg2)
 }
 

@@ -9,6 +9,9 @@ test_unit:
 build:
 	go build -o bin/app ./cmd/app/app.go
 
+watch:
+	~/go/bin/air -d -c .air.toml
+
 start:
 	go run ./cmd/app/app.go
 

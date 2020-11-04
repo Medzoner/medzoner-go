@@ -4,11 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/DATA-DOG/godog"
-	"github.com/DATA-DOG/godog/colors"
 	"github.com/Medzoner/medzoner-go/features/bootstrap"
 	"github.com/Medzoner/medzoner-go/pkg"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
+	"github.com/cucumber/godog"
+	"github.com/cucumber/godog/colors"
 	"gotest.tools/assert"
 	"log"
 	"os"
@@ -42,14 +42,26 @@ func TestMain(m *testing.M) {
 	fmt.Println("server started")
 
 	baseURL := "http://127.0.0.1:8000"
-	status := godog.RunWithOptions("medzoner", func(s *godog.Suite) {
-		bootstrap.New(baseURL, app).FeatureContext(s)
-	}, godog.Options{
+
+	opts := godog.Options{
 		Output: colors.Colored(os.Stdout),
 		Format: "pretty",
 		Paths:  []string{"./features"},
 		//Randomize: time.Now().UTC().UnixNano(),
-	})
+	}
+
+
+	featureCtx := bootstrap.New(baseURL, app)
+	status := godog.TestSuite{
+		Name: "medzoner",
+		TestSuiteInitializer: func(suiteContext *godog.TestSuiteContext) {
+			featureCtx.InitializeTestSuite(suiteContext)
+		},
+		ScenarioInitializer: func(scenarioContext *godog.ScenarioContext) {
+			featureCtx.InitializeScenario(scenarioContext)
+		},
+		Options: &opts,
+	}.Run()
 
 	if st := m.Run(); st > status {
 		status = st
