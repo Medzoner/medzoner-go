@@ -14,6 +14,8 @@ type IContact interface {
 	SetMessage(message string) IContact
 	GetEmail() customtype.NullString
 	SetEmail(email customtype.NullString) IContact
+	GetEmailString() string
+	SetEmailString() IContact
 	GetDateAdd() time.Time
 	SetDateAdd(dateAdd time.Time) IContact
 }

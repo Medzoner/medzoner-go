@@ -14,6 +14,7 @@ type Contact struct {
 	Message string                `db:"message"`
 	Email   customtype.NullString `db:"email"`
 	DateAdd time.Time             `db:"date_add"`
+	EmailString string
 }
 
 //New New
@@ -70,9 +71,20 @@ func (c *Contact) GetEmail() customtype.NullString {
 	return c.Email
 }
 
+//GetEmailString GetEmailString
+func (c *Contact) GetEmailString() string {
+	return c.Email.String
+}
+
 //SetEmail SetEmail
 func (c *Contact) SetEmail(email customtype.NullString) model.IContact {
 	c.Email = email
+	return c
+}
+
+//SetEmailString SetEmailString
+func (c *Contact) SetEmailString() model.IContact {
+	c.EmailString = c.Email.String
 	return c
 }
 
