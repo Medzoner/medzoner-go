@@ -10,6 +10,6 @@ import (
 func main() {
 	app := &pkg.App{}
 	app.LoadContainer()
-	app.Container.Get("database").(*database.DbSQLInstance).CreateDatabase()
+	app.Container.Get("database").(*database.DbSQLInstance).CreateDatabase(true)
 	app.Container.Get("db-manager").(*database.DbMigration).MigrateUp()
 }

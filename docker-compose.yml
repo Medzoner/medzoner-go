@@ -34,8 +34,8 @@ services:
             - "3307:3306"
         networks:
             - "default"
-        volumes:
-            - "./var/mysqltest:/var/lib/mysql"
+#        volumes:
+#            - "./var/mysqltest:/var/lib/mysql"
 
     postgres:
         image: "postgres:10.4"
