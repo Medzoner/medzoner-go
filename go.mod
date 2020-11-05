@@ -30,8 +30,8 @@ require (
 	golang.org/x/net v0.0.0-20201031054903-ff519b6c9102 // indirect
 	golang.org/x/sys v0.0.0-20201101102859-da207088b7d1 // indirect
 	golang.org/x/text v0.3.4 // indirect
-	golang.org/x/tools v0.0.0-20201104193857-22bd85271a8b // indirect
-	google.golang.org/genproto v0.0.0-20201104152603-2e45c02ce95c // indirect
+	golang.org/x/tools v0.0.0-20201105220310-78b158585360 // indirect
+	google.golang.org/genproto v0.0.0-20201105153401-9d023cd09d72 // indirect
 	google.golang.org/grpc v1.33.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect

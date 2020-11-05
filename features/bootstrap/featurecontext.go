@@ -40,12 +40,14 @@ func New(url string, App *pkg.App) *APIFeature {
 	return feature
 }
 
-
+//InitializeTestSuite InitializeTestSuite
 func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 	ctx.BeforeSuite(func() {
 		a.resetBdd()
 	})
 }
+
+//InitializeScenario InitializeScenario
 func (a *APIFeature) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.BeforeScenario(func(*godog.Scenario) {
 		a.resetResponse()
@@ -288,7 +290,7 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocStr
 	return nil
 }
 
-func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *godog.DocString) (err error) {
+func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *godog.DocString) error {
 	return a.iSendAPOSTRequestToWithBody(arg1, arg2)
 }
 
