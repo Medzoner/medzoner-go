@@ -31,3 +31,4 @@
 /var/log/*.log
 !/var/test/
 /coverage.out
+/.config/
