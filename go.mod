@@ -5,9 +5,12 @@ go 1.14
 require (
 	github.com/Microsoft/go-winio v0.4.15 // indirect
 	github.com/containerd/containerd v1.4.1 // indirect
+	github.com/cosmtrek/air v1.21.2 // indirect
+	github.com/creack/pty v1.1.11 // indirect
 	github.com/cucumber/godog v0.10.0
 	github.com/dhui/dktest v0.3.3 // indirect
 	github.com/docker/distribution v2.7.1+incompatible
+	github.com/fatih/color v1.10.0 // indirect
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect
@@ -19,9 +22,11 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-memdb v1.3.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
+	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.4 // indirect
+	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/sarulabs/di v2.0.0+incompatible
 	github.com/sirupsen/logrus v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect

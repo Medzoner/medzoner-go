@@ -23,7 +23,7 @@ before_install:
 
 before_script:
   - docker-compose -f ./docker-compose-travis.yml -p medzoner up -d --force-recreate
-  - sleep 20
+  - sleep 30
   - go get github.com/modocache/gover
   - go get github.com/mattn/goveralls
 
