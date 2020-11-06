@@ -1,6 +1,7 @@
 /vendor/*
 
 .idea
+.air.toml
 /config/parameters.yml
 /patches
 /web/media/cache
