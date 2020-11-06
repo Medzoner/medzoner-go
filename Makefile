@@ -7,13 +7,13 @@ test_unit:
 	go test -v -cover -coverpkg=./... ./pkg/...
 
 build:
-	go build -o bin/app ./cmd/app/app.go
+	go build -o bin/app ./cmd/app/main.go
 
 watch:
 	~/go/bin/air -d -c .air.toml
 
 start:
-	go run ./cmd/app/app.go
+	go run ./cmd/app/main.go
 
 db_run:
 	docker-compose up -d --force-recreate

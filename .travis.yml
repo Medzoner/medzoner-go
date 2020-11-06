@@ -35,7 +35,7 @@ script:
   - go tool cover -func=coverage.out
   - if [ ${TRAVIS_BRANCH} = "master" ]; then $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN; else ls; fi
   - rm .env
-  - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/app.go
+  - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/main.go
   - CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/migrate/migrate.go
   - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
   - docker build -t ${DOCKER_USERNAME}/medzoner-go -f ./docker/Dockerfile .

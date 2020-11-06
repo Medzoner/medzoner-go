@@ -24,7 +24,7 @@ Configuration can be specified in .env or exported as environnement variable:
 
 ## Build
 ```
-go build -o bin/app ./cmd/app.go
+go build -o bin/app ./cmd/app/main.go
 go build -o bin/migrate ./cmd/migrate.go
 ```
 
