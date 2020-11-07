@@ -7,7 +7,7 @@
 
 while :
 do
-    if mysql --protocol=tcp -e 'select version()'; then
+    if mysql -h 127.0.0.1 -uroot -pchangeme --protocol=tcp -e 'select version()'; then
         break
     fi
     sleep 3

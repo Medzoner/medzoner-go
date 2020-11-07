@@ -11,7 +11,8 @@ test_all:
 	go tool cover -func=coverage.out
 
 build:
-	go build -o bin/app ./cmd/app/main.go
+	CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/main.go
+	CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/migrate/migrate.go
 
 watch:
 	~/go/bin/air -d -c .air.toml
