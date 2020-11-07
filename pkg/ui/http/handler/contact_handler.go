@@ -65,7 +65,9 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response.WriteHeader(statusCode)
+	if statusCode != http.StatusOK {
+		response.WriteHeader(statusCode)
+	}
 
 	view.TorHost = request.Header.Get("TOR-HOST")
 	_, err = c.Template.Render("contact", view, response, statusCode)
