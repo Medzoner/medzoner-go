@@ -20,20 +20,21 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+  - go get -u github.com/rakyll/gotest
+  - go get github.com/modocache/gover
+  - go get github.com/mattn/goveralls
 
 before_script:
   - docker-compose -f ./docker-compose-travis.yml -p medzoner up -d --force-recreate
   - sleep 20
-  - go get github.com/modocache/gover
-  - go get github.com/mattn/goveralls
 
 script:
   - mysql -h 127.0.0.1 -u root -e "create database test" -pchangeme
   - cp .env.travis .env
-  - go get -u github.com/rakyll/gotest
   - gotest -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
   - go tool cover -func=coverage.out
-  - if [ ${TRAVIS_BRANCH} = "master" ]; then $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN; else ls; fi
+  - go vet ./...
+  - .travis/gofmt.sh
   - rm .env
   - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/main.go
   - CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/migrate/migrate.go
@@ -44,4 +45,5 @@ script:
   - docker push "${DOCKER_USERNAME}/medzoner-go:${TRAVIS_BRANCH}-${TRAVIS_COMMIT}"
 
 after_script:
+  - if [ ${TRAVIS_BRANCH} = "master" ]; then $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN; else ls; fi
   - docker-compose -f ./docker-compose-travis.yml -p medzoner stop
