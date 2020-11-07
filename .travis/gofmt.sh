@@ -1,4 +1,4 @@
 #!/bin/bash
 set -ev
 
-test -z "$(gofmt ./pkg | tee /dev/stderr)"
+test -z "$(gofmt -d -s ./pkg | tee /dev/stderr)"

@@ -23,7 +23,7 @@ type Web struct {
 	IndexHandler    *handler.IndexHandler
 	TechnoHandler   *handler.TechnoHandler
 	ContactHandler  *handler.ContactHandler
-	APIPORT         int
+	APIPort         int
 }
 
 //Start Start
@@ -39,7 +39,7 @@ func (a *Web) Start() {
 	a.Router.PathPrefix("/public").Handler(http.FileServer(http.Dir(".")))
 	http.Handle("/", a.Router)
 
-	a.Logger.Log(fmt.Sprintf("Server up on port '%d'", a.APIPORT))
+	a.Logger.Log(fmt.Sprintf("Server up on port '%d'", a.APIPort))
 	err := a.Server.ListenAndServe()
 	if err != nil {
 		a.Logger.Error(fmt.Sprintln(err))
