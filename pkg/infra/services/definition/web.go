@@ -19,6 +19,7 @@ var WebDefinition = di.Def{
 			Logger:         ctn.Get("logger").(logger.ILogger),
 			Router:         ctn.Get("router").(*mux.Router),
 			Server:         ctn.Get("server").(*http.Server),
+			NotFoundHandler: ctn.Get("notfound-handler").(*handler.NotFoundHandler),
 			IndexHandler:   ctn.Get("index-handler").(*handler.IndexHandler),
 			TechnoHandler:  ctn.Get("techno-handler").(*handler.TechnoHandler),
 			ContactHandler: ctn.Get("contact-handler").(*handler.ContactHandler),

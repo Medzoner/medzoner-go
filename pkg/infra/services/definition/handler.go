@@ -10,6 +10,17 @@ import (
 	"github.com/sarulabs/di"
 )
 
+//NotFoundHandlerDefinition NotFoundHandlerDefinition
+var NotFoundHandlerDefinition = di.Def{
+	Name:  "notfound-handler",
+	Scope: di.App,
+	Build: func(ctn di.Container) (interface{}, error) {
+		return &handler.NotFoundHandler{
+			Template: ctn.Get("templater").(templater.Templater),
+		}, nil
+	},
+}
+
 //IndexHandlerDefinition IndexHandlerDefinition
 var IndexHandlerDefinition = di.Def{
 	Name:  "index-handler",

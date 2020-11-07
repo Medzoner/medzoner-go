@@ -10,7 +10,7 @@
                                     {{ range $item := $stack }}
                                         {{ if $item.title }}
                                             <li><img class="noprint" style="height: 18px;"
-                                                     src="/images/technos/{{ $item.img }}"
+                                                     src="/public/images/technos/{{ $item.img }}"
                                                      alt="{{ $item.title }}"/> {{ $item.title }}</li>
                                         {{end}}
                                         {{ if not $item.title }}
@@ -19,7 +19,7 @@
                                                     <ul>
                                                         {{ range $subitem := $substack }}
                                                             <li><img class="noprint" style="height: 18px;"
-                                                                     src="/images/technos/{{ $subitem.img }}"
+                                                                     src="/public/images/technos/{{ $subitem.img }}"
                                                                      alt="{{ $subitem.title }}"/> {{ $subitem.title }}
                                                             </li>
                                                         {{end}}

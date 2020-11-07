@@ -32,6 +32,7 @@ func (s Service) GetDefinitions(rootPath string) []di.Def {
 	services = append(services, definition.ContactRepositoryDefinition)
 	services = append(services, definition.TechnoRepositoryDefinition)
 
+	services = append(services, definition.NotFoundHandlerDefinition)
 	services = append(services, definition.IndexHandlerDefinition)
 	services = append(services, definition.TechnoHandlerDefinition)
 	services = append(services, definition.ContactHandlerDefinition)
