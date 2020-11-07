@@ -1,7 +1,7 @@
 Feature: Global behavior "Medzoner"
     In order to check the global behavior APP
     As a visitor
-    I need to able to access APP
+    I need to able to access
 
     Background:
         And I add "Authorization" header equal to ""

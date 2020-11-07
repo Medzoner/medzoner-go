@@ -1,7 +1,7 @@
 Feature: Global behavior "Medzoner"
     In order to check the contact behavior APP
     As a visitor
-    I need to able to access APP
+    I need to able to access
 
     Background:
         And I add "Content-Type" header equal to "text/html"
