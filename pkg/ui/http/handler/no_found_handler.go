@@ -22,7 +22,7 @@ func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	view := &NotFoundView{
 		Locale:    "fr",
 		PageTitle: "MedZoner.com - Not Found",
-		TorHost: r.Header.Get("TOR-HOST"),
+		TorHost:   r.Header.Get("TOR-HOST"),
 	}
 	_, err := h.Template.Render("404", view, w, http.StatusNotFound)
 	if err != nil {

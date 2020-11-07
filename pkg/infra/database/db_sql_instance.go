@@ -45,7 +45,7 @@ func (d *DbSQLInstance) CreateDatabase(close bool) {
 		}
 		_, err = dbCreate.Exec("CREATE DATABASE IF NOT EXISTS " + d.DatabaseName)
 		if err != nil {
-			log.Fatalf( "could not create database... %v", err)
+			log.Fatalf("could not create database... %v", err)
 		}
 		if !close {
 			err = d.Connection.Close()

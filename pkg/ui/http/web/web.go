@@ -16,14 +16,14 @@ type IWeb interface {
 
 //Web Web
 type Web struct {
-	Logger         logger.ILogger
-	Router         *mux.Router
-	Server         *http.Server
+	Logger          logger.ILogger
+	Router          *mux.Router
+	Server          *http.Server
 	NotFoundHandler *handler.NotFoundHandler
-	IndexHandler   *handler.IndexHandler
-	TechnoHandler  *handler.TechnoHandler
-	ContactHandler *handler.ContactHandler
-	APIPORT        int
+	IndexHandler    *handler.IndexHandler
+	TechnoHandler   *handler.TechnoHandler
+	ContactHandler  *handler.ContactHandler
+	APIPORT         int
 }
 
 //Start Start

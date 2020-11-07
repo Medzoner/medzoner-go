@@ -16,14 +16,14 @@ var WebDefinition = di.Def{
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
 		return &web.Web{
-			Logger:         ctn.Get("logger").(logger.ILogger),
-			Router:         ctn.Get("router").(*mux.Router),
-			Server:         ctn.Get("server").(*http.Server),
+			Logger:          ctn.Get("logger").(logger.ILogger),
+			Router:          ctn.Get("router").(*mux.Router),
+			Server:          ctn.Get("server").(*http.Server),
 			NotFoundHandler: ctn.Get("notfound-handler").(*handler.NotFoundHandler),
-			IndexHandler:   ctn.Get("index-handler").(*handler.IndexHandler),
-			TechnoHandler:  ctn.Get("techno-handler").(*handler.TechnoHandler),
-			ContactHandler: ctn.Get("contact-handler").(*handler.ContactHandler),
-			APIPORT:        ctn.Get("config").(config.IConfig).GetAPIPort(),
+			IndexHandler:    ctn.Get("index-handler").(*handler.IndexHandler),
+			TechnoHandler:   ctn.Get("techno-handler").(*handler.TechnoHandler),
+			ContactHandler:  ctn.Get("contact-handler").(*handler.ContactHandler),
+			APIPORT:         ctn.Get("config").(config.IConfig).GetAPIPort(),
 		}, nil
 	},
 }
