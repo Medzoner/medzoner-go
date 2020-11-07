@@ -6,6 +6,10 @@ test_behavior:
 test_unit:
 	go test -v -cover -coverpkg=./... ./pkg/...
 
+test_all:
+	gotest -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out
+
 build:
 	go build -o bin/app ./cmd/app/main.go
 
