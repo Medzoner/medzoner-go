@@ -50,7 +50,6 @@ func TestMain(m *testing.M) {
 		//Randomize: time.Now().UTC().UnixNano(),
 	}
 
-
 	featureCtx := bootstrap.New(baseURL, app)
 	status := godog.TestSuite{
 		Name: "medzoner",

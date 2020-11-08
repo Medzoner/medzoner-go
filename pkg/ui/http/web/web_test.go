@@ -22,11 +22,11 @@ func TestStart(t *testing.T) {
 				Addr:    ":8123",
 				Handler: router,
 			},
-			IndexHandler:   nil,
-			TechnoHandler:  nil,
-			ContactHandler: nil,
+			IndexHandler:    nil,
+			TechnoHandler:   nil,
+			ContactHandler:  nil,
 			NotFoundHandler: nil,
-			APIPort:        8123,
+			APIPort:         8123,
 		}
 		go func() {
 			webTest.Start()

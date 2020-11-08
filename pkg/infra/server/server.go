@@ -15,6 +15,7 @@ type IServer interface {
 type Server struct {
 	HTTPServer *http.Server
 }
+
 func (s Server) ListenAndServe() error {
 	return s.HTTPServer.ListenAndServe()
 }
