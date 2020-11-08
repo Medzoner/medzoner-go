@@ -30,6 +30,6 @@ var DatabaseManagerDefinition = di.Def{
 			DbInstance: ctn.Get("database").(database.IDbInstance),
 			RootPath:   ctn.Get("config").(config.IConfig).GetRootPath() + "/",
 		}
-		return &d, nil
+		return d.New(), nil
 	},
 }

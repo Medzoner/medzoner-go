@@ -13,8 +13,19 @@ import (
 
 //DbMigration DbMigration
 type DbMigration struct {
-	DbInstance IDbInstance
-	RootPath   string
+	DbInstance   IDbInstance
+	RootPath     string
+	MigrationDir *string
+}
+
+//MigrateUp MigrateUp
+func (d *DbMigration) New() *DbMigration {
+	db := DbMigration{
+		DbInstance:   d.DbInstance,
+		RootPath:     d.RootPath,
+		MigrationDir: d.getMigrationDir(),
+	}
+	return &db
 }
 
 //MigrateUp MigrateUp
@@ -38,7 +49,7 @@ func (d *DbMigration) checkMigrateErrors(err error) {
 }
 
 func (d *DbMigration) getNewWithDatabaseInstance() *migrate.Migrate {
-	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *d.getMigrationDir()), d.DbInstance.GetDatabaseName(), d.DbInstance.GetDatabaseDriver())
+	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *d.MigrationDir), d.DbInstance.GetDatabaseName(), d.DbInstance.GetDatabaseDriver())
 
 	if err != nil {
 		log.Fatalf("migration failed... %v", err)

@@ -45,6 +45,9 @@ func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 	ctx.BeforeSuite(func() {
 		a.resetBdd()
 	})
+	ctx.AfterSuite(func() {
+		a.App.Container.Get("db-manager").(*database.DbMigration).MigrateDown()
+	})
 }
 
 //InitializeScenario InitializeScenario
