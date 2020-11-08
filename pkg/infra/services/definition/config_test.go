@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestDefConfig(t *testing.T) {
-	t.Run("Unit: test service config success", func(t *testing.T) {
+func TestConfigDefinition(t *testing.T) {
+	t.Run("Unit: test config definition success", func(t *testing.T) {
 		fmt.Println(definition.ConfigDependency{})
 	})
 }
