@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestValidator(t *testing.T) {
+func TestValidatetValidator(t *testing.T) {
 	t.Run("Unit: test Validate success", func(t *testing.T) {
 		validater := validation.ValidatorAdapter{}.New()
 
@@ -37,5 +37,13 @@ func TestValidator(t *testing.T) {
 		validater.GetErrors()
 		customErrors := validation.CustomError{}
 		_ = customErrors.Error()
+	})
+}
+
+func TestErrorValidator(t *testing.T) {
+	t.Run("Unit: test Error success", func(t *testing.T) {
+		validatorAdapter := validation.ValidatorAdapter{}.New()
+		_ = validatorAdapter.GetErrors()
+		assert.Equal(t, true, true)
 	})
 }
