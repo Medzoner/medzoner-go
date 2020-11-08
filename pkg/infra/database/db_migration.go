@@ -32,7 +32,7 @@ func (d *DbMigration) MigrateUp() {
 //MigrateDown MigrateDown
 func (d *DbMigration) MigrateDown() {
 	err := d.getNewWithDatabaseInstance().Down()
-	if  err != nil && err != migrate.ErrNoChange {
+	if err != nil && err != migrate.ErrNoChange {
 		log.Fatalf("An error occurred while syncing the database.. %v", err)
 	}
 
