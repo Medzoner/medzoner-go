@@ -17,13 +17,18 @@ type DbSQLInstance struct {
 
 //DbConn DbConn
 func (d *DbSQLInstance) New(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
+	d.Dsn = dsn
 	d.DatabaseName = databaseName
 	d.DriverName = dbDriverName
-	var sqlDSN = flag.String(dbDriverName, dsn+"/"+databaseName+"?multiStatements=true&parseTime=true", d.DriverName+" DSN")
-	c := d.openDb(*sqlDSN)
+	c := d.openDb(
+		*flag.String(
+			dbDriverName,
+			dsn+"/"+databaseName+"?multiStatements=true&parseTime=true",
+			dbDriverName+" DSN",
+		),
+	)
 	orm := sqlx.NewDb(c, dbDriverName)
 	d.Connection = orm
-	d.Dsn = dsn
 
 	return orm
 }
