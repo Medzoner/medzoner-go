@@ -25,6 +25,7 @@ func TestStart(t *testing.T) {
 			IndexHandler:   nil,
 			TechnoHandler:  nil,
 			ContactHandler: nil,
+			NotFoundHandler: nil,
 			APIPort:        8123,
 		}
 		go func() {

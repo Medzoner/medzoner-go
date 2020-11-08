@@ -14,4 +14,17 @@ func TestNotFoundHandler(t *testing.T) {
 		request := httptest.NewRequest("GET", "/not-found", nil)
 		notFoundHandler.Handle(httptest.NewRecorder(), request)
 	})
+	t.Run("Unit: test NotFoundHandler failed", func(t *testing.T) {
+		notFoundHandler := handler.NotFoundHandler{
+			Template: &TemplaterTestFailed{},
+		}
+		request := httptest.NewRequest("GET", "/not-found", nil)
+
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("The code did not panic")
+			}
+		}()
+		notFoundHandler.Handle(httptest.NewRecorder(), request)
+	})
 }
