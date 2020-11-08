@@ -15,15 +15,19 @@ type MysqlContactRepository struct {
 
 //Save Save
 func (m *MysqlContactRepository) Save(contact model.IContact) {
-	tx := m.Conn.MustBegin()
+	conn := m.Conn.MustBegin()
 	contact.SetEmailString()
 	query := `INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (:name, :message, :emailstring, :date_add, :uuid)`
-	res, err := tx.NamedExec(query, contact)
-	if res != nil {
-		_ = tx.Commit()
-	}
+	res, err := conn.NamedExec(query, contact)
 	if err != nil {
 		_ = m.Logger.Error(fmt.Sprintln(err))
 		panic(err)
+	}
+	if res != nil {
+		err = conn.Commit()
+		if err != nil {
+			_ = m.Logger.Error(fmt.Sprintln(err))
+			panic(err)
+		}
 	}
 }

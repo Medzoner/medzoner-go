@@ -71,15 +71,15 @@ func (c *Contact) GetEmail() customtype.NullString {
 	return c.Email
 }
 
-//GetEmailString GetEmailString
-func (c *Contact) GetEmailString() string {
-	return c.Email.String
-}
-
 //SetEmail SetEmail
 func (c *Contact) SetEmail(email customtype.NullString) model.IContact {
 	c.Email = email
 	return c
+}
+
+//GetEmailString GetEmailString
+func (c *Contact) GetEmailString() string {
+	return c.Email.String
 }
 
 //SetEmailString SetEmailString
