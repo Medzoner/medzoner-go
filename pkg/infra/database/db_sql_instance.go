@@ -3,7 +3,6 @@ package database
 import (
 	"flag"
 	"github.com/jmoiron/sqlx"
-	"log"
 )
 
 //DbSQLInstance DbSQLInstance
@@ -23,7 +22,6 @@ func (d *DbSQLInstance) New(dbDriverName string, dsn string, databaseName string
 	d.DriverName = dbDriverName
 	c := d.openDb(*flag.String(dbDriverName, d.Dsn+databaseName+dsnOptions, dbDriverName+" DSN"))
 	c.MustExec("USE " + databaseName)
-	defer d.closeDb(true)
 
 	d.Connection = c
 
@@ -39,8 +37,7 @@ func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 func (d *DbSQLInstance) CreateDatabase(close bool) {
 	if d.DriverName == "mysql" {
 		dbCreate := d.openDb(d.Dsn + dsnOptions)
-		d.execQuery(dbCreate, "CREATE DATABASE IF NOT EXISTS "+d.DatabaseName)
-		d.closeDb(close)
+		dbCreate.MustExec("CREATE DATABASE IF NOT EXISTS " + d.DatabaseName)
 	}
 }
 
@@ -48,32 +45,12 @@ func (d *DbSQLInstance) CreateDatabase(close bool) {
 func (d *DbSQLInstance) DropDatabase(close bool) {
 	if d.DriverName == "mysql" {
 		dbDrop := d.openDb(d.Dsn + dsnOptions)
-		d.execQuery(dbDrop, "DROP DATABASE IF EXISTS "+d.DatabaseName)
-		d.closeDb(close)
-	}
-}
-
-func (d *DbSQLInstance) execQuery(dbCreate *sqlx.DB, query string) {
-	_, err := dbCreate.Exec(query)
-	if err != nil {
-		log.Fatalf("could not create database... %v", err)
-	}
-}
-
-func (d *DbSQLInstance) closeDb(close bool) {
-	if !close {
-		err := d.Connection.Close()
-		if err != nil {
-			log.Fatalf("Could not close database... %v", err)
-		}
+		dbDrop.MustExec("DROP DATABASE IF EXISTS " + d.DatabaseName)
 	}
 }
 
 func (d *DbSQLInstance) openDb(dsn string) *sqlx.DB {
-	dbDrop, err := sqlx.Open(d.DriverName, dsn)
-	if err != nil {
-		log.Fatalf("Could not connect to database... %v", err)
-	}
+	dbDrop := sqlx.MustOpen(d.DriverName, dsn)
 	return dbDrop
 }
 
