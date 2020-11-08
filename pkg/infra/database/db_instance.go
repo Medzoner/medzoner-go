@@ -1,6 +1,9 @@
 package database
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/jmoiron/sqlx"
+)
 
 //IDbInstance IDbInstance
 type IDbInstance interface {
@@ -9,4 +12,5 @@ type IDbInstance interface {
 	CreateDatabase(close bool)
 	DropDatabase(close bool)
 	GetDatabaseName() string
+	GetDatabaseDriver() database.Driver
 }

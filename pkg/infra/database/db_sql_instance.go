@@ -2,7 +2,10 @@ package database
 
 import (
 	"flag"
+	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/jmoiron/sqlx"
+	"log"
 )
 
 //DbSQLInstance DbSQLInstance
@@ -57,4 +60,16 @@ func (d *DbSQLInstance) openDb(dsn string) *sqlx.DB {
 //GetDatabaseName GetDatabaseName
 func (d *DbSQLInstance) GetDatabaseName() string {
 	return d.DatabaseName
+}
+
+func (d *DbSQLInstance) GetDatabaseDriver() database.Driver {
+	driver, err := mysql.WithInstance(d.Connection.DB, &mysql.Config{})
+	if err != nil {
+		log.Fatalf("could not start sql migration... %v", err)
+	}
+
+	if driver == nil {
+		log.Fatalf("driver fail %v", d.Connection.DriverName())
+	}
+	return driver
 }

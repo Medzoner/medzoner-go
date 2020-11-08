@@ -6,8 +6,6 @@ import (
 	//hack
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
 	//hack
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"log"
@@ -22,25 +20,25 @@ type DbMigration struct {
 //MigrateUp MigrateUp
 func (d *DbMigration) MigrateUp() {
 	err := d.getNewWithDatabaseInstance().Up()
-	if err != nil && err != migrate.ErrNoChange {
-		log.Fatalf("An error occurred while syncing the database.. %v", err)
-	}
-
+	d.checkMigrateErrors(err)
 	log.Println("Database migrated ok: up")
 }
 
 //MigrateDown MigrateDown
 func (d *DbMigration) MigrateDown() {
 	err := d.getNewWithDatabaseInstance().Down()
-	if err != nil && err != migrate.ErrNoChange {
-		log.Fatalf("An error occurred while syncing the database.. %v", err)
-	}
-
+	d.checkMigrateErrors(err)
 	log.Println("Database migrated ok: down")
 }
 
+func (d *DbMigration) checkMigrateErrors(err error) {
+	if err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("An error occurred while syncing the database.. %v", err)
+	}
+}
+
 func (d *DbMigration) getNewWithDatabaseInstance() *migrate.Migrate {
-	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *d.getMigrationDir()), d.DbInstance.GetDatabaseName(), d.getMigrateDriver())
+	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *d.getMigrationDir()), d.DbInstance.GetDatabaseName(), d.DbInstance.GetDatabaseDriver())
 
 	if err != nil {
 		log.Fatalf("migration failed... %v", err)
@@ -51,16 +49,4 @@ func (d *DbMigration) getNewWithDatabaseInstance() *migrate.Migrate {
 func (d *DbMigration) getMigrationDir() *string {
 	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
 	return migrationDir
-}
-
-func (d *DbMigration) getMigrateDriver() database.Driver {
-	driver, err := mysql.WithInstance(d.DbInstance.GetConnection().DB, &mysql.Config{})
-	if err != nil {
-		log.Fatalf("could not start sql migration... %v", err)
-	}
-
-	if driver == nil {
-		log.Fatalf("driver fail %v", d.DbInstance.GetConnection().DriverName())
-	}
-	return driver
 }
