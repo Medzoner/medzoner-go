@@ -10,7 +10,7 @@ import (
 //MysqlContactRepository MysqlContactRepository
 type MysqlContactRepository struct {
 	DbInstance database.IDbInstance
-	Logger logger.ILogger
+	Logger     logger.ILogger
 }
 
 //Save Save

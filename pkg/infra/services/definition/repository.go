@@ -15,7 +15,7 @@ var ContactRepositoryDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		r := repository.MysqlContactRepository{
 			DbInstance: ctn.Get("database").(database.IDbInstance),
-			Logger: ctn.Get("logger").(logger.ILogger),
+			Logger:     ctn.Get("logger").(logger.ILogger),
 		}
 		return &r, nil
 	},
