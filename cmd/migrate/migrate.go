@@ -14,6 +14,6 @@ func main() {
 		RootPath: rootPath,
 	}
 	app.LoadContainer()
-	app.Container.Get("database").(*database.DbSQLInstance).CreateDatabase(false)
+	app.Container.Get("database").(*database.DbSQLInstance).CreateDatabase()
 	app.Container.Get("db-manager").(*database.DbMigration).MigrateUp()
 }

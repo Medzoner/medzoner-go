@@ -37,7 +37,7 @@ func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 }
 
 //CreateDatabase CreateDatabase
-func (d *DbSQLInstance) CreateDatabase(close bool) {
+func (d *DbSQLInstance) CreateDatabase() {
 	if d.DriverName == "mysql" {
 		dbCreate := d.openDb(d.Dsn + dsnOptions)
 		dbCreate.MustExec("CREATE DATABASE IF NOT EXISTS " + d.DatabaseName)
@@ -45,7 +45,7 @@ func (d *DbSQLInstance) CreateDatabase(close bool) {
 }
 
 //DropDatabase DropDatabase
-func (d *DbSQLInstance) DropDatabase(close bool) {
+func (d *DbSQLInstance) DropDatabase() {
 	if d.DriverName == "mysql" {
 		dbDrop := d.openDb(d.Dsn + dsnOptions)
 		dbDrop.MustExec("DROP DATABASE IF EXISTS " + d.DatabaseName)

@@ -9,8 +9,8 @@ import (
 type IDbInstance interface {
 	New(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB)
 	GetConnection() (db *sqlx.DB)
-	CreateDatabase(close bool)
-	DropDatabase(close bool)
+	CreateDatabase()
+	DropDatabase()
 	GetDatabaseName() string
 	GetDatabaseDriver() database.Driver
 }
