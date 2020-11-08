@@ -16,17 +16,14 @@ type DbSQLInstance struct {
 }
 
 //DbConn DbConn
-func (d *DbSQLInstance) DbConn(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
+func (d *DbSQLInstance) New(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
+	d.DatabaseName = databaseName
+	d.DriverName = dbDriverName
 	var sqlDSN = flag.String(dbDriverName, dsn+"/"+databaseName+"?multiStatements=true&parseTime=true", d.DriverName+" DSN")
-	c, err := sql.Open(dbDriverName, *sqlDSN)
-	if err != nil {
-		panic(err.Error())
-	}
+	c := d.openDb(*sqlDSN)
 	orm := sqlx.NewDb(c, dbDriverName)
 	d.Connection = orm
 	d.Dsn = dsn
-	d.DatabaseName = databaseName
-	d.DriverName = dbDriverName
 
 	return orm
 }
@@ -39,41 +36,43 @@ func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 //CreateDatabase CreateDatabase
 func (d *DbSQLInstance) CreateDatabase(close bool) {
 	if d.DriverName == "mysql" {
-		dbCreate, err := sql.Open(d.DriverName, d.Dsn+"/?multiStatements=true&parseTime=true")
-		if err != nil {
-			log.Fatalf("could not connect for create database... %v", err)
-		}
-		_, err = dbCreate.Exec("CREATE DATABASE IF NOT EXISTS " + d.DatabaseName)
-		if err != nil {
-			log.Fatalf("could not create database... %v", err)
-		}
-		if !close {
-			err = d.Connection.Close()
-			if err != nil {
-				log.Fatalf("could not close database... %v", err)
-			}
-		}
+		dbCreate := d.openDb(d.Dsn + "/?multiStatements=true&parseTime=true")
+		d.execQuery(dbCreate, "CREATE DATABASE IF NOT EXISTS "+d.DatabaseName)
+		d.closeDb(close)
 	}
 }
 
 //DropDatabase DropDatabase
 func (d *DbSQLInstance) DropDatabase(close bool) {
 	if d.DriverName == "mysql" {
-		dbDrop, err := sql.Open(d.DriverName, d.Dsn+"/?multiStatements=true&parseTime=true")
+		dbDrop := d.openDb(d.Dsn + "/?multiStatements=true&parseTime=true")
+		d.execQuery(dbDrop, "DROP DATABASE IF EXISTS "+d.DatabaseName)
+		d.closeDb(close)
+	}
+}
+
+func (d *DbSQLInstance) execQuery(dbCreate *sql.DB, query string) {
+	_, err := dbCreate.Exec(query)
+	if err != nil {
+		log.Fatalf("could not create database... %v", err)
+	}
+}
+
+func (d *DbSQLInstance) closeDb(close bool) {
+	if !close {
+		err := d.Connection.Close()
 		if err != nil {
-			log.Fatalf("Could not connect for drop database... %v", err)
-		}
-		_, err = dbDrop.Exec("DROP DATABASE IF EXISTS " + d.DatabaseName)
-		if err != nil {
-			log.Fatalf("Could not drop database... %v", err)
-		}
-		if !close {
-			err = d.Connection.Close()
-			if err != nil {
-				log.Fatalf("Could not close database... %v", err)
-			}
+			log.Fatalf("Could not close database... %v", err)
 		}
 	}
+}
+
+func (d *DbSQLInstance) openDb(dsn string) *sql.DB {
+	dbDrop, err := sql.Open(d.DriverName, dsn)
+	if err != nil {
+		log.Fatalf("Could not connect to database... %v", err)
+	}
+	return dbDrop
 }
 
 //GetDatabaseName GetDatabaseName
