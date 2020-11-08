@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"flag"
 	"github.com/jmoiron/sqlx"
 	"log"
@@ -15,22 +14,20 @@ type DbSQLInstance struct {
 	DriverName   string
 }
 
+const dsnOptions = "?multiStatements=true&parseTime=true"
+
 //DbConn DbConn
 func (d *DbSQLInstance) New(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
-	d.Dsn = dsn
+	d.Dsn = dsn + "/"
 	d.DatabaseName = databaseName
 	d.DriverName = dbDriverName
-	c := d.openDb(
-		*flag.String(
-			dbDriverName,
-			dsn+"/"+databaseName+"?multiStatements=true&parseTime=true",
-			dbDriverName+" DSN",
-		),
-	)
-	orm := sqlx.NewDb(c, dbDriverName)
-	d.Connection = orm
+	c := d.openDb(*flag.String(dbDriverName, d.Dsn+databaseName+dsnOptions, dbDriverName+" DSN"))
+	c.MustExec("USE " + databaseName)
+	defer d.closeDb(true)
 
-	return orm
+	d.Connection = c
+
+	return c
 }
 
 //GetConnection GetConnection
@@ -41,7 +38,7 @@ func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 //CreateDatabase CreateDatabase
 func (d *DbSQLInstance) CreateDatabase(close bool) {
 	if d.DriverName == "mysql" {
-		dbCreate := d.openDb(d.Dsn + "/?multiStatements=true&parseTime=true")
+		dbCreate := d.openDb(d.Dsn + dsnOptions)
 		d.execQuery(dbCreate, "CREATE DATABASE IF NOT EXISTS "+d.DatabaseName)
 		d.closeDb(close)
 	}
@@ -50,13 +47,13 @@ func (d *DbSQLInstance) CreateDatabase(close bool) {
 //DropDatabase DropDatabase
 func (d *DbSQLInstance) DropDatabase(close bool) {
 	if d.DriverName == "mysql" {
-		dbDrop := d.openDb(d.Dsn + "/?multiStatements=true&parseTime=true")
+		dbDrop := d.openDb(d.Dsn + dsnOptions)
 		d.execQuery(dbDrop, "DROP DATABASE IF EXISTS "+d.DatabaseName)
 		d.closeDb(close)
 	}
 }
 
-func (d *DbSQLInstance) execQuery(dbCreate *sql.DB, query string) {
+func (d *DbSQLInstance) execQuery(dbCreate *sqlx.DB, query string) {
 	_, err := dbCreate.Exec(query)
 	if err != nil {
 		log.Fatalf("could not create database... %v", err)
@@ -72,8 +69,8 @@ func (d *DbSQLInstance) closeDb(close bool) {
 	}
 }
 
-func (d *DbSQLInstance) openDb(dsn string) *sql.DB {
-	dbDrop, err := sql.Open(d.DriverName, dsn)
+func (d *DbSQLInstance) openDb(dsn string) *sqlx.DB {
+	dbDrop, err := sqlx.Open(d.DriverName, dsn)
 	if err != nil {
 		log.Fatalf("Could not connect to database... %v", err)
 	}
