@@ -2,13 +2,16 @@ package main
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg"
+	"github.com/sarulabs/di"
 	"os"
 )
 
 func main() {
 	rootPath, _ := os.Getwd()
-	App := pkg.App{
+	app := pkg.App{
 		RootPath: rootPath,
 	}
-	App.Handle("web")
+	builder, _ := di.NewBuilder()
+	app.LoadContainer(builder)
+	app.Handle("web")
 }

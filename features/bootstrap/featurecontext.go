@@ -298,9 +298,10 @@ func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *godog.DocStri
 }
 
 func (a *APIFeature) resetBdd() {
-	a.App.Container.Get("database").(*database.DbSQLInstance).CreateDatabase()
-	a.App.Container.Get("database").(*database.DbSQLInstance).DropDatabase()
-	a.App.Container.Get("database").(*database.DbSQLInstance).CreateDatabase()
+	dbName := a.App.Container.Get("database-entity").(*database.DbSQLInstance).DatabaseName
+	a.App.Container.Get("database").(*database.DbSQLInstance).CreateDatabase(dbName)
+	a.App.Container.Get("database").(*database.DbSQLInstance).DropDatabase(dbName)
+	a.App.Container.Get("database").(*database.DbSQLInstance).CreateDatabase(dbName)
 	a.App.Container.Get("db-manager").(*database.DbMigration).MigrateUp()
 	return
 }

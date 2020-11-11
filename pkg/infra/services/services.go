@@ -15,6 +15,7 @@ var Definitions = []di.Def{
 	definition.LoggerDefinition,
 	definition.MailerDefinition,
 	definition.DatabaseDefinition,
+	definition.DatabaseEntityDefinition,
 	definition.DatabaseManagerDefinition,
 	definition.WebDefinition,
 	definition.TemplaterDefinition,

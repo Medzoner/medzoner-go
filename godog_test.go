@@ -9,6 +9,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
+	"github.com/sarulabs/di"
 	"gotest.tools/assert"
 	"log"
 	"os"
@@ -32,9 +33,10 @@ func TestMain(m *testing.M) {
 	app := &pkg.App{
 		RootPath: rootPath,
 	}
-	ctn := app.LoadContainer()
+	builder, _ := di.NewBuilder()
+	app.LoadContainer(builder)
 
-	appWeb := ctn.Get("app-web").(*web.Web)
+	appWeb := app.Container.Get("app-web").(*web.Web)
 	go func() {
 		log.Println("server starting")
 		appWeb.Start()
