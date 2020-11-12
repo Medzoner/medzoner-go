@@ -28,6 +28,7 @@ var IndexHandlerDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		return &handler.IndexHandler{
 			Template: ctn.Get("templater").(templater.Templater),
+			ListTechnoQueryHandler: ctn.Get("list-techno-query-handler").(query.ListTechnoQueryHandler),
 		}, nil
 	},
 }

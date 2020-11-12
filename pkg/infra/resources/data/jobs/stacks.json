@@ -53,12 +53,6 @@
       "img": "lxc.png"
     }
   ],
-  "Orchestration": [
-    {
-      "title": "Kubernetes",
-      "img": "kubernetes.png"
-    }
-  ],
   "Data, Message Broker": [
     {
       "title": "MySQL",
@@ -123,8 +117,8 @@
       "img": "kubernetes.png"
     },
     {
-      "title": "Capisrano",
-      "img": "capistrano.png"
+      "title": "Terraform",
+      "img": "terraform.png"
     }
   ],
   "Application": [

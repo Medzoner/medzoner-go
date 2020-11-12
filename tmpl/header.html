@@ -1,22 +1,54 @@
 {{define "header"}}
-    <nav class="top-bar" data-topbar>
-        <ul class="title-area">
-
-            <li class="name">
-                <h1>
-                    <a href="/"><img style="height: 45px;" src="/public/images/logo.png" alt="WWW.MEDZONER.COM"/></a>
-                </h1>
-            </li>
-            <li class="toggle-topbar menu-icon"><a href="#"><span>menu</span></a></li>
-        </ul>
-        <div class="top-bar-section">
-
-            <ul class="right">
-                <li class="divider"></li>
-                <li><a href="/technos">TECHNOS</a></li>
-                <li class="divider"></li>
-                <li><a href="/contact">CONTACT</a></li>
-            </ul>
+    <nav class="navbar navbar-transparent navbar-color-on-scroll fixed-top navbar-expand-lg" color-on-scroll="100" id="sectionsNav">
+        <div class="container">
+            <div class="navbar-translate">
+                <a href="/"><img style="height: 45px;" src="/public/images/logo.png" alt="WWW.MEDZONER.COM"/></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a href="/technos" class="nav-link">
+                            <i class="material-icons">cloud_download</i> Technos
+                        </a>
+                    </li>
+                    <li class="dropdown nav-item">
+                        <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                            <i class="material-icons">apps</i> Contact
+                        </a>
+                        <div class="dropdown-menu dropdown-with-icons">
+{{/*                            <a class="dropdown-item" href="javascript:void(0)" onclick="scrollToDownload()">*/}}
+                            <a href="/contact" class="dropdown-item" onclick="scrollToDownload()">
+                                <i class="material-icons">layers</i> Formulaire
+                            </a>
+                            <a href="https://github.com/Medzoner" class="dropdown-item">
+                                <i class="material-icons">content_paste</i> Github
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" rel="tooltip" title="" data-placement="bottom" href="https://www.linkedin.com/in/mehdi-youb-53905210" target="_blank" data-original-title="Contact me on Linkedin" rel="nofollow">
+                            <i class="fa fa-linkedin"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" rel="tooltip" title="" data-placement="bottom" href="https://github.com/Medzoner" target="_blank" data-original-title="Code with me on Github" rel="nofollow">
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" rel="tooltip" title="" data-placement="bottom" href="https://hub.docker.com/r/medzoner" target="_blank" data-original-title="See my dockerhub" rel="nofollow">
+                            <i class="tf-docker tf-32"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
+    <div class="page-header header-filter" data-parallax="true" style="background-image: url('/public/images/background.jpg');"></div>
 {{end}}

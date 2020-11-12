@@ -2,7 +2,7 @@
     <!doctype html>
     <html class="no-js" lang="{{ .Locale }}">
     {{template "head" .}}
-    <body>
+    <body class="profile-page sidebar-collapse">
     {{template "header" .}}
     {{template "index_body" .}}
     {{template "footer" .}}
@@ -10,11 +10,201 @@
     </html>
 {{end}}
 {{define "index_body"}}
-    <div class="row">
-        <div style="color: #ffffff;">
+    <div class="main main-raised">
+        <div class="profile-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 ml-auto mr-auto">
+                        <div class="profile">
+                            <div class="avatar">
+                                <img src="/public/images/profile.jpg" alt="Mehdi Youb" class="img-raised rounded-circle img-fluid">
+                            </div>
+                            <div class="name">
+                                <h3 class="title">Mehdi Y.</h3>
+                                <h6>Developper / Devops.</h6>
+                                <a href="https://github.com/Medzoner" class="btn btn-just-icon btn-link btn-github"><i class="fa fa-github"></i></a>
+                                <a href="https://hub.docker.com/r/medzoner" class="btn btn-just-icon btn-link btn-dockerhub"><i class="tf-docker tf-32"></i></a>
+                                <a href="https://www.linkedin.com/in/mehdi-youb-53905210" class="btn btn-just-icon btn-link btn-linkedin"><i class="fa fa-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="description text-center">
+                    <p>Developper / Devops.</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 ml-auto mr-auto">
+                        <div class="profile-tabs">
+                            <ul class="nav nav-pills nav-pills-icons justify-content-center" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#code" role="tab" data-toggle="tab">
+                                        <i class="material-icons">code</i> Languages
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#data" role="tab" data-toggle="tab">
+                                        <i class="material-icons">storage</i> Data
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#infrastructure" role="tab" data-toggle="tab" style="background-color: #2f2e2f !important;;">
+                                        <i class="material-icons">cloud</i> Infrastructure
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content tab-space">
+                    <div class="tab-pane active text-center gallery" id="code">
+                        <div class="row">
+                            <div>
+                                {{range $i, $stack := .Stacks}}
+                                    {{ if eq $i "Application" }}
+                                        {{ range $item := $stack }}
+                                            {{ if $item.title }}
+                                                <img class="noprint" style="width: 100px; margin: 15px;"
+                                                     src="/public/images/technos/{{ $item.img }}"
+                                                     alt="{{ $item.title }}"
+                                                     title="{{ $item.title }}" />
+                                            {{end}}
+                                            {{ if not $item.title }}
+                                                {{range $k, $substack := $item}}
+                                                    {{ range $subitem := $substack }}
+                                                        <img class="noprint" style="width: 100px; margin: 15px;"
+                                                             src="/public/images/technos/{{ $subitem.img }}"
+                                                             alt="{{ $subitem.title }}"
+                                                             title="{{ $subitem.title }}" />
+                                                    {{end}}
+                                                {{end}}
+                                            {{end}}
+                                        {{end}}
+                                    {{end}}
+                                {{end}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane text-center gallery" id="data">
+                        <div class="row">
+                            <div>
+                                {{range $i, $stack := .Stacks}}
+                                    {{ if eq $i "Data, Message Broker" }}
+                                        {{ range $item := $stack }}
+                                            {{ if $item.title }}
+                                                <img class="noprint" style="width: 150px; margin: 15px;"
+                                                     src="/public/images/technos/{{ $item.img }}"
+                                                     alt="{{ $item.title }}"
+                                                     title="{{ $item.title }}" />
+                                            {{end}}
+                                            {{ if not $item.title }}
+                                                {{range $k, $substack := $item}}
+                                                    {{ range $subitem := $substack }}
+                                                        <img class="noprint" style="width: 150px; margin: 15px;"
+                                                             src="/public/images/technos/{{ $subitem.img }}"
+                                                             alt="{{ $subitem.title }}"
+                                                             title="{{ $subitem.title }}" />
+                                                    {{end}}
+                                                {{end}}
+                                            {{end}}
+                                        {{end}}
+                                    {{end}}
+                                {{end}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane text-center gallery" id="infrastructure">
+                        <div class="row">
+                            <div>
+                                {{range $i, $stack := .Stacks}}
+                                    {{ if or (eq "Déploiement" $i) (eq "Intégration continue" $i) (eq "Webserver" $i) (eq "Orchestration" $i) (eq "Containers" $i) (eq "Virtualization" $i) (eq "OS" $i) (eq "Infrastructure" $i) }}
+                                        {{ range $item := $stack }}
+                                            {{ if $item.title }}
+                                                <img class="noprint" style="width: 100px; margin: 15px;"
+                                                     src="/public/images/technos/{{ $item.img }}"
+                                                     alt="{{ $item.title }}"
+                                                     title="{{ $item.title }}" />
+                                            {{end}}
+                                            {{ if not $item.title }}
+                                                {{range $k, $substack := $item}}
+                                                    {{ range $subitem := $substack }}
+                                                        <img class="noprint" style="width: 100px; margin: 15px;"
+                                                             src="/public/images/technos/{{ $subitem.img }}"
+                                                             alt="{{ $subitem.title }}"
+                                                             title="{{ $subitem.title }}" />
+                                                    {{end}}
+                                                {{end}}
+                                            {{end}}
+                                        {{end}}
+                                    {{end}}
+                                {{end}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="large-12 columns">
-
-        </div>
+        <section class="section-image" id="contact" data-parallax="true" style="background-image: url('/public/images/background.jpg'); background-size: cover;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 ml-auto mr-auto">
+                        <div class="card card-login">
+                            <div class="row hestia-about-content"></div>
+                            <form class="form" method="" action="">
+                                <p class="description text-center">Contact me</p>
+                                <div class="card-body">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="material-icons">face</i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="First Name...">
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="material-icons">mail</i>
+                                            </span>
+                                        </div>
+                                        <input type="email" class="form-control" placeholder="Email...">
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="material-icons">lock_outline</i>
+                                            </span>
+                                        </div>
+                                        <input type="password" class="form-control" placeholder="Password...">
+                                    </div>
+                                </div>
+                                <div class="footer text-center">
+                                    <a href="#pablo" class="btn btn-primary btn-link btn-wd btn-lg">Get Started</a>
+                                </div>
+                            </form>
+                            {{ if .Message }}
+                                <div class="row">
+                                    <div class="large-12 columns">
+                                        <div class="blogger-notice">
+                                            {{ .Message }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {{ else }}
+                                <div class="row">
+                                    <div class="large-12 columns">
+                                        <div>
+                                            {{range $k, $error := .Errors}}
+                                                {{ . }}
+                                            {{end}}
+                                            {{template "contact_form" .}}
+                                        </div>
+                                    </div>
+                                </div>
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 {{end}}
