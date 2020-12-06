@@ -15,7 +15,7 @@ func TestSession(t *testing.T) {
 			Values:     map[interface{}]interface{}{},
 		}
 		request := httptest.NewRequest("GET", "/", nil)
-		sessionerInstance := sessioner.Init(request)
+		sessionerInstance, _ := sessioner.Init(request)
 		_ = sessionerInstance.Save(request, httptest.NewRecorder())
 		_ = sessionerInstance.GetValue("key")
 		sessionerInstance.SetValue("key", "true")
@@ -33,6 +33,6 @@ func TestSession(t *testing.T) {
 				t.Errorf("The code did not panic")
 			}
 		}()
-		_ = sessioner.Init(request)
+		_, _ = sessioner.Init(request)
 	})
 }

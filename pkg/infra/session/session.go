@@ -10,7 +10,7 @@ type Sessioner interface {
 	GetValue(name string) interface{}
 	Save(r *http.Request, w http.ResponseWriter) error
 	SetValue(name string, value string)
-	Init(request *http.Request) Sessioner
+	Init(request *http.Request) (Sessioner, error)
 }
 
 //SessionerAdapter SessionerAdapter
@@ -22,13 +22,10 @@ type SessionerAdapter struct {
 }
 
 //Init Init
-func (s SessionerAdapter) Init(request *http.Request) Sessioner {
+func (s SessionerAdapter) Init(request *http.Request) (Sessioner, error) {
 	newSesion, err := s.Store.Get(request, s.SessionKey)
-	if err != nil {
-		panic(err)
-	}
 	s.sessionInstance = newSesion
-	return s
+	return s, err
 }
 
 //Save Save

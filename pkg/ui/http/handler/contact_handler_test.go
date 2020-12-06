@@ -196,6 +196,27 @@ func TestContactHandler(t *testing.T) {
 
 		assert.Equal(t, responseWriter.Code, 500)
 	})
+	t.Run("Unit: test ContactHandler with session init failed when not submit", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+
+		contactHandler := handler.ContactHandler{
+			Template: &TemplaterTest{},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterFailOnInitSessionTest{},
+			Validation: validation.ValidatorAdapter{}.New(),
+		}
+
+		responseWriter := httptest.NewRecorder()
+		request := httptest.NewRequest("Get", "/contact", nil)
+		contactHandler.IndexHandle(responseWriter, request)
+
+		assert.Equal(t, responseWriter.Code, 500)
+	})
 }
 
 type ContactCreatedEventHandlerTest struct{}
@@ -236,9 +257,9 @@ type SessionAdapterTest struct{}
 func (s SessionAdapterTest) New() session.Sessioner {
 	return &SessionAdapterTest{}
 }
-func (s SessionAdapterTest) Init(request *http.Request) session.Sessioner {
+func (s SessionAdapterTest) Init(request *http.Request) (session.Sessioner, error) {
 	_ = request
-	return s
+	return s, nil
 }
 func (s SessionAdapterTest) Save(r *http.Request, w http.ResponseWriter) error {
 	_ = r
@@ -282,12 +303,34 @@ func (s SessionAdapterFailOnSaveSessionTest) SetValue(name string, value string)
 	_ = name
 	_ = value
 }
-func (s SessionAdapterFailOnSaveSessionTest) Init(request *http.Request) session.Sessioner {
+func (s SessionAdapterFailOnSaveSessionTest) Init(request *http.Request) (session.Sessioner, error) {
 	_ = request
-	return s
+	return s, nil
 }
 func (s SessionAdapterFailOnSaveSessionTest) New() session.Sessioner {
 	return &SessionAdapterFailOnSaveSessionTest{}
+}
+
+type SessionAdapterFailOnInitSessionTest struct{}
+
+func (s SessionAdapterFailOnInitSessionTest) GetValue(name string) interface{} {
+	return name
+}
+func (s SessionAdapterFailOnInitSessionTest) Save(r *http.Request, w http.ResponseWriter) error {
+	_ = r
+	_ = w
+	return nil
+}
+func (s SessionAdapterFailOnInitSessionTest) SetValue(name string, value string) {
+	_ = name
+	_ = value
+}
+func (s SessionAdapterFailOnInitSessionTest) Init(request *http.Request) (session.Sessioner, error) {
+	_ = request
+	return nil, errors.New("error init session")
+}
+func (s SessionAdapterFailOnInitSessionTest) New() session.Sessioner {
+	return &SessionAdapterFailOnInitSessionTest{}
 }
 
 type TemplaterRanderFailedTest struct {
