@@ -114,7 +114,7 @@
   "D\u00e9ploiement": [
     {
       "title": "Kubernetes",
-      "img": "kubernetes.png"
+      "img": "kubernetes.svg"
     },
     {
       "title": "Terraform",
