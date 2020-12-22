@@ -3,9 +3,9 @@ package definition
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
-	"github.com/gorilla/mux"
 	"github.com/sarulabs/di"
 	"net/http"
 )
@@ -17,7 +17,7 @@ var WebDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		return &web.Web{
 			Logger:          ctn.Get("logger").(logger.ILogger),
-			Router:          ctn.Get("router").(*mux.Router),
+			Router:          ctn.Get("router").(router.IRouter),
 			Server:          ctn.Get("server").(*http.Server),
 			NotFoundHandler: ctn.Get("notfound-handler").(*handler.NotFoundHandler),
 			IndexHandler:    ctn.Get("index-handler").(*handler.IndexHandler),
