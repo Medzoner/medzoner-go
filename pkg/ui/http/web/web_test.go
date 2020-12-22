@@ -16,9 +16,9 @@ import (
 func TestStart(t *testing.T) {
 	t.Run("Unit: test Start failed on ListenAndServe", func(t *testing.T) {
 		webTest := web.Web{
-			Logger: &LoggerTest{},
-			Router: RouterMock{},
-			Server: ServerFailedMock{},
+			Logger:          &LoggerTest{},
+			Router:          RouterMock{},
+			Server:          ServerFailedMock{},
 			IndexHandler:    nil,
 			TechnoHandler:   nil,
 			ContactHandler:  nil,
@@ -85,7 +85,7 @@ func (s ServerFailedMock) Shutdown(ctx context.Context) error {
 	return errors.New("failed Shutdown")
 }
 
-type RouterMock struct {}
+type RouterMock struct{}
 
 func (r RouterMock) HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route {
 	return &mux.Route{}
