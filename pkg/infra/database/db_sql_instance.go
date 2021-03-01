@@ -49,6 +49,7 @@ func (d *DbSQLInstance) GetDatabaseName() string {
 	return d.DatabaseName
 }
 
+//GetDatabaseDriver GetDatabaseDriver
 func (d *DbSQLInstance) GetDatabaseDriver() database.Driver {
 	driver, err := mysql.WithInstance(d.Connection.DB, &mysql.Config{})
 	if err != nil {

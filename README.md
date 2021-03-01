@@ -9,7 +9,7 @@ My website https://www.medzoner.com rewrite in golang from php (https://github.c
 
 ## Configuration
 
-Configuration can be specified in .env or exported as environnement variable:
+Configuration can be specified in .env or exported as environment variable:
 
 | Name  | Value |
 | ------------- | ------------- |

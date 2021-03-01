@@ -7,8 +7,9 @@ test_unit:
 	go test -v -cover -coverpkg=./... ./pkg/...
 
 test_all:
-	gotest -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
+	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
+	go tool cover -html=coverage.out -o coverage.html
 
 build:
 	CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/main.go

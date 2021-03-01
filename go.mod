@@ -33,7 +33,7 @@ require (
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
 	golang.org/x/net v0.0.0-20201031054903-ff519b6c9102 // indirect
-	golang.org/x/sys v0.0.0-20201221093633-bc327ba9c2f0 // indirect
+	golang.org/x/sys v0.0.0-20210226181700-f36f78243c0c // indirect
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/tools v0.0.0-20201105220310-78b158585360 // indirect
 	google.golang.org/genproto v0.0.0-20201105153401-9d023cd09d72 // indirect
