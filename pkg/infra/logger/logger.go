@@ -10,7 +10,7 @@ import (
 type ILogger interface {
 	Log(msg string) error
 	Error(msg string) error
-	New() ILogger
+	New() (ILogger, error)
 }
 
 //Logger Logger
@@ -31,10 +31,8 @@ func (l *Logger) Error(msg string) error {
 }
 
 //New New
-func (l Logger) New() ILogger {
-	return &Logger{
-		RootPath: l.RootPath,
-	}
+func (l Logger) New() (ILogger, error) {
+	return &Logger{RootPath: l.RootPath}, nil
 }
 
 //InfoBasePath InfoBasePath

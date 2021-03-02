@@ -11,6 +11,7 @@ require (
 	github.com/dhui/dktest v0.3.3 // indirect
 	github.com/docker/distribution v2.7.1+incompatible
 	github.com/fatih/color v1.10.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect

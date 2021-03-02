@@ -15,7 +15,7 @@ type ZapLoggerAdapter struct {
 }
 
 //New New
-func (z ZapLoggerAdapter) New() ILogger {
+func (z ZapLoggerAdapter) New() (ILogger, error) {
 	rawJSON := []byte(`{
 		"level": "debug",
 		"outputPaths": ["stdout", "` + z.RootPath + `var/log/info.log"],
@@ -32,7 +32,7 @@ func (z ZapLoggerAdapter) New() ILogger {
 
 	cfg := zap.Config{}
 	if err := json.Unmarshal(rawJSON, &cfg); err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
@@ -40,12 +40,12 @@ func (z ZapLoggerAdapter) New() ILogger {
 	}
 	zapLogger, err := cfg.Build()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	defer z.deferLogger(zapLogger)
 	z.Zap = zapLogger
-	return &z
+	return z, nil
 }
 
 func (z ZapLoggerAdapter) deferLogger(zapLogger *zap.Logger) {

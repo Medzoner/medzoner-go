@@ -69,8 +69,8 @@ func (l *LoggerTest) Error(msg string) error {
 	fmt.Println(msg)
 	return nil
 }
-func (l LoggerTest) New() logger.ILogger {
-	return &LoggerTest{}
+func (l LoggerTest) New() (logger.ILogger, error) {
+	return &LoggerTest{}, nil
 }
 
 type ServerFailedMock struct {
