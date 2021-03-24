@@ -18,6 +18,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
+	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/rakyll/gotest v0.0.5 // indirect
 	github.com/rakyll/hey v0.1.4 // indirect

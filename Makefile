@@ -4,10 +4,12 @@ test_behavior:
 	docker-compose stop
 
 test_unit:
-	go test -v -cover -coverpkg=./... ./pkg/...
+	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out
 
 build:
 	go build -o bin/app ./cmd/app/app.go
+	go build -o bin/app ./cmd/migrate/migrate.go
 
 start:
 	go run ./cmd/app/app.go
