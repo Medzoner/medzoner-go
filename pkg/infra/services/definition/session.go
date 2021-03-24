@@ -2,6 +2,7 @@ package definition
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
+	"github.com/gorilla/sessions"
 	"github.com/sarulabs/di"
 )
 
@@ -12,6 +13,7 @@ var SessionDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		return session.SessionerAdapter{
 			SessionKey: "medzoner-sessid",
-		}.New(), nil
+			Store:      sessions.NewCookieStore([]byte("medzoner-sessid")),
+		}, nil
 	},
 }

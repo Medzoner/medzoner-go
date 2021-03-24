@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - '1.14.1'
+  - '1.14.7'
 
 branches:
   only:
@@ -17,31 +17,22 @@ env:
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose && chmod +x docker-compose && sudo mv docker-compose /usr/local/bin
+  - go get github.com/modocache/gover
+  - go get github.com/mattn/goveralls
 
 before_script:
   - docker-compose -f ./docker-compose-travis.yml -p medzoner up -d --force-recreate
-  - sleep 20
-  - go get github.com/modocache/gover
-  - go get github.com/mattn/goveralls
+  - .travis/wait_mysql.sh
 
 script:
   - mysql -h 127.0.0.1 -u root -e "create database test" -pchangeme
   - cp .env.travis .env
-  - go get -u github.com/rakyll/gotest
-  - gotest -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
-  - go tool cover -func=coverage.out
-  - if [ ${TRAVIS_BRANCH} = "master" ]; then $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN; else ls; fi
-  - rm .env
-  - CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/app.go
-  - CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/migrate/migrate.go
-  - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-  - docker build -t ${DOCKER_USERNAME}/medzoner-go -f ./docker/Dockerfile .
-  - docker images
-  - docker tag "${DOCKER_USERNAME}/medzoner-go" "${DOCKER_USERNAME}/medzoner-go:${TRAVIS_BRANCH}-${TRAVIS_COMMIT}"
-  - docker push "${DOCKER_USERNAME}/medzoner-go:${TRAVIS_BRANCH}-${TRAVIS_COMMIT}"
+  - make test_all
+  - go vet ./...
+  - .travis/gofmt.sh
+  - make build
+  - .travis/push.sh
 
 after_script:
-  - docker-compose -f ./docker-compose-travis.yml -p medzoner stop
+  - .travis/coverall.sh

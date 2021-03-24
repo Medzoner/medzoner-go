@@ -1,6 +1,7 @@
 /vendor/*
 
 .idea
+.air.toml
 /config/parameters.yml
 /patches
 /web/media/cache
@@ -31,3 +32,5 @@
 /var/log/*.log
 !/var/test/
 /coverage.out
+/coverage.html
+/.config/

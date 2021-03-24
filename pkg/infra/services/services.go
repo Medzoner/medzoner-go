@@ -11,6 +11,29 @@ type Service struct {
 	Definitions []di.Def
 }
 
+var Definitions = []di.Def{
+	definition.LoggerDefinition,
+	definition.MailerDefinition,
+	definition.DatabaseDefinition,
+	definition.DatabaseEntityDefinition,
+	definition.DatabaseManagerDefinition,
+	definition.WebDefinition,
+	definition.TemplaterDefinition,
+	definition.RouterDefinition,
+	definition.SessionDefinition,
+	definition.ValidationDefinition,
+	definition.ServerDefinition,
+	definition.ContactRepositoryDefinition,
+	definition.TechnoRepositoryDefinition,
+	definition.NotFoundHandlerDefinition,
+	definition.IndexHandlerDefinition,
+	definition.TechnoHandlerDefinition,
+	definition.ContactHandlerDefinition,
+	application.ListTechnoQueryHandlerDefinition,
+	application.CreateContactCommandHandlerDefinition,
+	application.ContactCreatedEventHandlerDefinition,
+}
+
 //GetDefinitions GetDefinitions
 func (s Service) GetDefinitions(rootPath string) []di.Def {
 	var services []di.Def
@@ -19,27 +42,9 @@ func (s Service) GetDefinitions(rootPath string) []di.Def {
 	config.InitConfig(rootPath)
 	services = append(services, config.GetDefinition())
 
-	services = append(services, definition.LoggerDefinition)
-	services = append(services, definition.MailerDefinition)
-	services = append(services, definition.DatabaseDefinition)
-	services = append(services, definition.DatabaseManagerDefinition)
-	services = append(services, definition.WebDefinition)
-	services = append(services, definition.TemplaterDefinition)
-	services = append(services, definition.RouterDefinition)
-	services = append(services, definition.SessionDefinition)
-	services = append(services, definition.ValidationDefinition)
-	services = append(services, definition.ServerDefinition)
-	services = append(services, definition.ContactRepositoryDefinition)
-	services = append(services, definition.TechnoRepositoryDefinition)
-
-	services = append(services, definition.IndexHandlerDefinition)
-	services = append(services, definition.TechnoHandlerDefinition)
-	services = append(services, definition.ContactHandlerDefinition)
-
-	services = append(services, application.ListTechnoQueryHandlerDefinition)
-	services = append(services, application.CreateContactCommandHandlerDefinition)
-
-	services = append(services, application.ContactCreatedEventHandlerDefinition)
+	for _, def := range Definitions {
+		services = append(services, def)
+	}
 
 	return services
 }

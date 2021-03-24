@@ -6,17 +6,34 @@ import (
 	"github.com/sarulabs/di"
 )
 
+//DatabaseEntityDefinition DatabaseEntityDefinition
+var DatabaseEntityDefinition = di.Def{
+	Name:  "database-entity",
+	Scope: di.App,
+	Build: func(ctn di.Container) (interface{}, error) {
+		d := database.DbSQLInstance{
+			Connection:   nil,
+			Dsn:          ctn.Get("config").(config.IConfig).GetMysqlDsn(),
+			DatabaseName: ctn.Get("config").(config.IConfig).GetDatabaseName(),
+			DriverName:   ctn.Get("config").(config.IConfig).GetDatabaseDriver(),
+		}
+		d.Connect()
+		return &d, nil
+	},
+}
+
 //DatabaseDefinition DatabaseDefinition
 var DatabaseDefinition = di.Def{
 	Name:  "database",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		d := database.DbSQLInstance{}
-		d.DbConn(
-			ctn.Get("config").(config.IConfig).GetDatabaseDriver(),
-			ctn.Get("config").(config.IConfig).GetMysqlDsn(),
-			ctn.Get("config").(config.IConfig).GetDatabaseName(),
-		)
+		d := database.DbSQLInstance{
+			Connection:   nil,
+			Dsn:          ctn.Get("config").(config.IConfig).GetMysqlDsn(),
+			DatabaseName: "",
+			DriverName:   ctn.Get("config").(config.IConfig).GetDatabaseDriver(),
+		}
+		d.Connect()
 		return &d, nil
 	},
 }
@@ -27,9 +44,9 @@ var DatabaseManagerDefinition = di.Def{
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
 		d := database.DbMigration{
-			DbInstance: ctn.Get("database").(database.IDbInstance),
+			DbInstance: ctn.Get("database-entity").(database.IDbInstance),
 			RootPath:   ctn.Get("config").(config.IConfig).GetRootPath() + "/",
 		}
-		return &d, nil
+		return d.New(), nil
 	},
 }

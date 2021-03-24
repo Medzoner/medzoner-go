@@ -11,7 +11,7 @@ import (
 func TestLoggerSuccess(t *testing.T) {
 	t.Run("Unit: test logger log success", func(t *testing.T) {
 		loggerTest := &logger.Logger{RootPath: "../../../"}
-		loggerInstanceTest := loggerTest.New()
+		loggerInstanceTest, _ := loggerTest.New()
 		message := "good test"
 		_ = loggerInstanceTest.Log(message)
 
@@ -48,14 +48,14 @@ func TestLoggerErrorSuccess(t *testing.T) {
 func TestLoggerFailed(t *testing.T) {
 	t.Run("Unit: test logger log error failed with bad RootPath", func(t *testing.T) {
 		loggerTest := logger.Logger{RootPath: "../../"}
-		loggerInstanceTest := loggerTest.New()
+		loggerInstanceTest, _ := loggerTest.New()
 		message := "this is a log error failed"
 
 		_ = loggerInstanceTest.Error(message)
 	})
 	t.Run("Unit: test logger log failed with bad RootPath", func(t *testing.T) {
 		loggerTest := logger.Logger{RootPath: "../../"}
-		loggerInstanceTest := loggerTest.New()
+		loggerInstanceTest, _ := loggerTest.New()
 		message := "this is a log failed"
 
 		_ = loggerInstanceTest.Log(message)

@@ -14,6 +14,6 @@ var LoggerDefinition = di.Def{
 		return logger.ZapLoggerAdapter{
 			RootPath: ctn.Get("config").(config.IConfig).GetRootPath() + "/",
 			UseSugar: false,
-		}.New(), nil
+		}.New()
 	},
 }

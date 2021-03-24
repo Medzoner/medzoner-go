@@ -1,16 +1,6 @@
 version: '3'
 
 services:
-    app:
-        image: golang:1.12.1-alpine
-        volumes:
-            - .:/go/src/go-with-compose
-        working_dir: /go/src/go-with-compose
-        command: go run cmd/app.go
-        links:
-            - mariadb_test
-            - mariadb
-
     mariadb:
         image: "mariadb"
         container_name: "mariadb"
@@ -34,20 +24,18 @@ services:
             - "3307:3306"
         networks:
             - "default"
-        volumes:
-            - "./var/mysqltest:/var/lib/mysql"
 
-    postgres:
-        image: "postgres:10.4"
-        container_name: "postgres"
-        restart: "no"
-        environment:
-            POSTGRES_USER: "root"
-            POSTGRES_PASSWORD: "changeme"
-            POSTGRES_DB: "medzoner"
-        ports:
-            - "5432:5432"
-        networks:
-            - "default"
-        volumes:
-            - "./var/lib/postgresql:/var/lib/postgresql"
+#    postgres:
+#        image: "postgres:10.4"
+#        container_name: "postgres"
+#        restart: "no"
+#        environment:
+#            POSTGRES_USER: "root"
+#            POSTGRES_PASSWORD: "changeme"
+#            POSTGRES_DB: "medzoner"
+#        ports:
+#            - "5432:5432"
+#        networks:
+#            - "default"
+#        volumes:
+#            - "./var/lib/postgresql:/var/lib/postgresql"

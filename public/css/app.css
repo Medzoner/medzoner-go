@@ -6589,7 +6589,7 @@ section.content3 {
 
 body {
   margin: 0;
-  background: url("/images/background.jpg") no-repeat fixed;
+  background: url("/public/images/background.jpg") no-repeat fixed;
   background-size: cover; }
 
 header {

@@ -28,7 +28,12 @@ type ContactView struct {
 
 //IndexHandle IndexHandle
 func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
-	c.Session = c.Session.Init(request)
+	newSession, err := c.Session.Init(request)
+	if err != nil {
+		http.Error(response, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	c.Session = newSession
 	view := ContactView{
 		Locale:    "fr",
 		PageTitle: "MedZoner.com",
@@ -60,12 +65,14 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 		view.Errors = vErrors
 	}
 	c.Session.SetValue("message", "")
-	err := c.Session.Save(request, response)
+	err = c.Session.Save(request, response)
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response.WriteHeader(statusCode)
+	if statusCode != http.StatusOK {
+		response.WriteHeader(statusCode)
+	}
 
 	view.TorHost = request.Header.Get("TOR-HOST")
 	_, err = c.Template.Render("contact", view, response, statusCode)

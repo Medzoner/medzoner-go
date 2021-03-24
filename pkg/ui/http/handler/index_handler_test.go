@@ -10,14 +10,14 @@ import (
 )
 
 func TestIndexHandler(t *testing.T) {
-	t.Run("Unit: test ContactHandler success", func(t *testing.T) {
+	t.Run("Unit: test IndexHandler success", func(t *testing.T) {
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 		}
 		request := httptest.NewRequest("GET", "/", nil)
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)
 	})
-	t.Run("Unit: test ContactHandler failed", func(t *testing.T) {
+	t.Run("Unit: test IndexHandler failed", func(t *testing.T) {
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTestFailed{},
 		}

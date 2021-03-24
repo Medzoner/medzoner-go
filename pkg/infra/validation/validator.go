@@ -1,6 +1,8 @@
 package validation
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/go-playground/validator/v10"
+)
 
 //MzValidator MzValidator
 type MzValidator interface {
@@ -11,7 +13,7 @@ type MzValidator interface {
 
 //ValidatorAdapter ValidatorAdapter
 type ValidatorAdapter struct {
-	ValidationErrors []interface{}
+	ValidationErrors []validator.FieldError
 	validatorLib     *validator.Validate
 }
 
@@ -29,8 +31,7 @@ func (v ValidatorAdapter) New() MzValidator {
 //GetErrors GetErrors
 func (v ValidatorAdapter) GetErrors() []CustomError {
 	var customErrors []CustomError
-	var libErrors = validator.ValidationErrors{}
-	for _, itemError := range libErrors {
+	for _, itemError := range v.ValidationErrors {
 		customErrors = append(customErrors, CustomError{Tag: itemError.ActualTag()})
 	}
 	return customErrors

@@ -2,11 +2,18 @@ package services_test
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/services"
+	"github.com/sarulabs/di"
 	"testing"
 )
 
-func TestApp(t *testing.T) {
+func TestGetDefinitions(t *testing.T) {
 	t.Run("Unit: test services success", func(t *testing.T) {
-		services.Service{}.GetDefinitions("../../../")
+		srvs := services.Service{}.GetDefinitions("../../../")
+		builder, _ := di.NewBuilder()
+		err := builder.Add(srvs...)
+		if err != nil {
+			panic(err)
+		}
+		_ = builder.Build()
 	})
 }

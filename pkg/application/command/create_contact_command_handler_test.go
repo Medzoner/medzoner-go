@@ -34,6 +34,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		handler.Handle(createContactCommand)
 		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
 		assert.Equal(t, handler.GetName(), "CreateContactCommand")
+		assert.Equal(t, "", contact.GetEmailString())
 	})
 }
 
@@ -51,8 +52,8 @@ func (l *LoggerTest) Error(msg string) error {
 	fmt.Println(msg)
 	return nil
 }
-func (l LoggerTest) New() logger.ILogger {
-	return &LoggerTest{}
+func (l LoggerTest) New() (logger.ILogger, error) {
+	return &LoggerTest{}, nil
 }
 
 type ContactRepositoryTest struct{}

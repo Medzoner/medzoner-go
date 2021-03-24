@@ -6,9 +6,6 @@ import (
 	//hack
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
-	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	//hack
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"log"
@@ -16,75 +13,51 @@ import (
 
 //DbMigration DbMigration
 type DbMigration struct {
-	DbInstance IDbInstance
-	RootPath   string
+	DbInstance   IDbInstance
+	RootPath     string
+	MigrationDir *string
+}
+
+//MigrateUp MigrateUp
+func (d *DbMigration) New() *DbMigration {
+	db := DbMigration{
+		DbInstance:   d.DbInstance,
+		RootPath:     d.RootPath,
+		MigrationDir: d.getMigrationDir(),
+	}
+	return &db
 }
 
 //MigrateUp MigrateUp
 func (d *DbMigration) MigrateUp() {
-	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
-	var driverInstance database.Driver
-	// Run migrations
-	if d.DbInstance.GetConnection().DriverName() == "mysql" {
-		driver, err := mysql.WithInstance(d.DbInstance.GetConnection().DB, &mysql.Config{})
-		if err != nil {
-			log.Fatalf("could not start sql migration... %v", err)
-		}
-		driverInstance = driver
-	}
-	if d.DbInstance.GetConnection().DriverName() == "sqlite3" {
-		driver, err := sqlite3.WithInstance(d.DbInstance.GetConnection().DB, &sqlite3.Config{})
-		if err != nil {
-			log.Fatalf("could not start sql migration... %v", err)
-		}
-		driverInstance = driver
-	}
-
-	if driverInstance == nil {
-		log.Fatalf("driver fail %v", d.DbInstance.GetConnection().DriverName())
-	}
-
-	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *migrationDir), d.DbInstance.GetDatabaseName(), driverInstance)
-
-	if err != nil {
-		log.Fatalf("migration failed... %v", err)
-	}
-
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatalf("An error occurred while syncing the database.. %v", err)
-	}
-
-	//_, err = m.Close()
-	//if err != nil {
-	//	log.Fatalf("could not close database... %v", err)
-	//}
+	err := d.getNewWithDatabaseInstance().Up()
+	d.checkMigrateErrors(err)
 	log.Println("Database migrated ok: up")
 }
 
 //MigrateDown MigrateDown
 func (d *DbMigration) MigrateDown() {
-	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
-	// Run migrations
-	driverInstance, err := mysql.WithInstance(d.DbInstance.GetConnection().DB, &mysql.Config{})
-	if err != nil {
-		log.Fatalf("could not start sql migration... %v", err)
-	}
+	err := d.getNewWithDatabaseInstance().Down()
+	d.checkMigrateErrors(err)
+	log.Println("Database migrated ok: down")
+}
 
-	m, err := migrate.NewWithDatabaseInstance(
-		fmt.Sprintf("file://%s", *migrationDir), d.DbInstance.GetDatabaseName(), driverInstance,
-	)
+func (d *DbMigration) checkMigrateErrors(err error) {
+	if err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("An error occurred while syncing the database.. %v", err)
+	}
+}
+
+func (d *DbMigration) getNewWithDatabaseInstance() *migrate.Migrate {
+	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *d.MigrationDir), d.DbInstance.GetDatabaseName(), d.DbInstance.GetDatabaseDriver())
 
 	if err != nil {
 		log.Fatalf("migration failed... %v", err)
 	}
+	return m
+}
 
-	if err := m.Down(); err != nil && err != migrate.ErrNoChange {
-		log.Fatalf("An error occurred while syncing the database.. %v", err)
-	}
-
-	//_, err = m.Close()
-	//if err != nil {
-	//	log.Fatalf("could not close database... %v", err)
-	//}
-	log.Println("Database migrated ok: down")
+func (d *DbMigration) getMigrationDir() *string {
+	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
+	return migrationDir
 }

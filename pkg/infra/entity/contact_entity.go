@@ -8,12 +8,13 @@ import (
 
 //Contact Contact
 type Contact struct {
-	ID      int                   `json:"id" db:"id"`
-	UUID    string                `json:"uuid" db:"uuid"`
-	Name    string                `db:"name"`
-	Message string                `db:"message"`
-	Email   customtype.NullString `db:"email"`
-	DateAdd time.Time             `db:"date_add"`
+	ID          int                   `json:"id" db:"id"`
+	UUID        string                `json:"uuid" db:"uuid"`
+	Name        string                `db:"name"`
+	Message     string                `db:"message"`
+	Email       customtype.NullString `db:"email"`
+	DateAdd     time.Time             `db:"date_add"`
+	EmailString string
 }
 
 //New New
@@ -73,6 +74,17 @@ func (c *Contact) GetEmail() customtype.NullString {
 //SetEmail SetEmail
 func (c *Contact) SetEmail(email customtype.NullString) model.IContact {
 	c.Email = email
+	return c
+}
+
+//GetEmailString GetEmailString
+func (c *Contact) GetEmailString() string {
+	return c.Email.String
+}
+
+//SetEmailString SetEmailString
+func (c *Contact) SetEmailString() model.IContact {
+	c.EmailString = c.Email.String
 	return c
 }
 

@@ -1,8 +1,8 @@
 package database
 
 import (
-	"database/sql"
-	"flag"
+	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/jmoiron/sqlx"
 	"log"
 )
@@ -15,20 +15,12 @@ type DbSQLInstance struct {
 	DriverName   string
 }
 
-//DbConn DbConn
-func (d *DbSQLInstance) DbConn(dbDriverName string, dsn string, databaseName string) (db *sqlx.DB) {
-	var sqlDSN = flag.String(dbDriverName, dsn+"/"+databaseName+"?multiStatements=true&parseTime=true", d.DriverName+" DSN")
-	c, err := sql.Open(dbDriverName, *sqlDSN)
-	if err != nil {
-		panic(err.Error())
-	}
-	orm := sqlx.NewDb(c, dbDriverName)
-	d.Connection = orm
-	d.Dsn = dsn
-	d.DatabaseName = databaseName
-	d.DriverName = dbDriverName
+const dsnOptions = "?multiStatements=true&parseTime=true"
 
-	return orm
+//DbConn DbConn
+func (d *DbSQLInstance) Connect() (db *sqlx.DB) {
+	d.Connection = d.openDb(d.Dsn + "/" + d.DatabaseName + dsnOptions)
+	return d.Connection
 }
 
 //GetConnection GetConnection
@@ -37,42 +29,40 @@ func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 }
 
 //CreateDatabase CreateDatabase
-func (d *DbSQLInstance) CreateDatabase() {
+func (d *DbSQLInstance) CreateDatabase(databaseName string) {
 	if d.DriverName == "mysql" {
-		dbCreate, err := sql.Open(d.DriverName, d.Dsn+"/?multiStatements=true&parseTime=true")
-		if err != nil {
-			log.Fatalf("could not connect for create database... %v", err)
-		}
-		_, err = dbCreate.Exec("CREATE DATABASE IF NOT EXISTS " + d.DatabaseName)
-		if err != nil {
-			log.Fatalf("could not create database... %v", err)
-		}
-		err = dbCreate.Close()
-		if err != nil {
-			log.Fatalf("could not close database... %v", err)
-		}
+		dbCreate := d.openDb(d.Dsn + "/" + dsnOptions)
+		dbCreate.MustExec("CREATE DATABASE IF NOT EXISTS " + databaseName)
 	}
 }
 
 //DropDatabase DropDatabase
-func (d *DbSQLInstance) DropDatabase() {
+func (d *DbSQLInstance) DropDatabase(databaseName string) {
 	if d.DriverName == "mysql" {
-		dbDrop, err := sql.Open(d.DriverName, d.Dsn+"/?multiStatements=true&parseTime=true")
-		if err != nil {
-			log.Fatalf("Could not connect for drop database... %v", err)
-		}
-		_, err = dbDrop.Exec("DROP DATABASE IF EXISTS " + d.DatabaseName)
-		if err != nil {
-			log.Fatalf("Could not drop database... %v", err)
-		}
-		err = dbDrop.Close()
-		if err != nil {
-			log.Fatalf("Could not close database... %v", err)
-		}
+		dbDrop := d.openDb(d.Dsn + "/" + dsnOptions)
+		dbDrop.MustExec("DROP DATABASE IF EXISTS " + databaseName)
 	}
 }
 
 //GetDatabaseName GetDatabaseName
 func (d *DbSQLInstance) GetDatabaseName() string {
 	return d.DatabaseName
+}
+
+//GetDatabaseDriver GetDatabaseDriver
+func (d *DbSQLInstance) GetDatabaseDriver() database.Driver {
+	driver, err := mysql.WithInstance(d.Connection.DB, &mysql.Config{})
+	if err != nil {
+		log.Fatalf("could not start sql migration... %v", err)
+	}
+
+	if driver == nil {
+		log.Fatalf("driver fail %v", d.Connection.DriverName())
+	}
+	return driver
+}
+
+func (d *DbSQLInstance) openDb(dsn string) *sqlx.DB {
+	dbDrop := sqlx.MustOpen(d.DriverName, dsn)
+	return dbDrop
 }

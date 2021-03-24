@@ -3,16 +3,14 @@ package session
 import (
 	"github.com/gorilla/sessions"
 	"net/http"
-	"os"
 )
 
 //Sessioner Sessioner
 type Sessioner interface {
 	GetValue(name string) interface{}
-	New() Sessioner
 	Save(r *http.Request, w http.ResponseWriter) error
 	SetValue(name string, value string)
-	Init(request *http.Request) Sessioner
+	Init(request *http.Request) (Sessioner, error)
 }
 
 //SessionerAdapter SessionerAdapter
@@ -20,27 +18,14 @@ type SessionerAdapter struct {
 	SessionKey      string
 	sessionInstance *sessions.Session
 	Values          map[interface{}]interface{}
-	store           *sessions.CookieStore
-}
-
-//New New
-func (s SessionerAdapter) New() Sessioner {
-	return SessionerAdapter{
-		SessionKey:      s.SessionKey,
-		sessionInstance: s.sessionInstance,
-		Values:          s.Values,
-		store:           sessions.NewCookieStore([]byte(os.Getenv(s.SessionKey))),
-	}
+	Store           *sessions.CookieStore
 }
 
 //Init Init
-func (s SessionerAdapter) Init(request *http.Request) Sessioner {
-	newSesion, err := s.store.Get(request, s.SessionKey)
-	if err != nil {
-		panic(err)
-	}
+func (s SessionerAdapter) Init(request *http.Request) (Sessioner, error) {
+	newSesion, err := s.Store.Get(request, s.SessionKey)
 	s.sessionInstance = newSesion
-	return s
+	return s, err
 }
 
 //Save Save
