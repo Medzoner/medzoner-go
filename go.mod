@@ -26,13 +26,10 @@ require (
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
-<<<<<<< HEAD
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
-=======
 	github.com/mattn/go-sqlite3 v1.14.4 // indirect
->>>>>>> 54472a5b7c0d65228f7e2f9f710ea6f3096ac00f
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/sarulabs/di v2.0.0+incompatible
 	github.com/sirupsen/logrus v1.7.0 // indirect

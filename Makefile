@@ -13,16 +13,11 @@ test_all:
 	go tool cover -html=coverage.out -o coverage.html
 
 build:
-<<<<<<< HEAD
-	go build -o bin/app ./cmd/app/app.go
-	go build -o bin/app ./cmd/migrate/migrate.go
-=======
 	CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/main.go
 	CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/migrate/migrate.go
 
 watch:
 	~/go/bin/air -d -c .air.toml
->>>>>>> 54472a5b7c0d65228f7e2f9f710ea6f3096ac00f
 
 start:
 	go run ./cmd/app/main.go
