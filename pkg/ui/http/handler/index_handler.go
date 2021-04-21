@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"net/http"
@@ -34,7 +35,7 @@ func (h *IndexHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := h.Template.Render("index", view, w, http.StatusOK)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	_ = r
 }

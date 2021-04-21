@@ -12,13 +12,13 @@ Feature: Global behavior "Medzoner"
 
     Scenario: [Medzoner - GET_ALL] "Contact page"
         When    I send a GET request to "/contact"
-        Then    the response status code should be 200
+        Then    the response status code should be 405
 
 #------------------------------------------------------------------------------------------
 # POST "CONTACT" - Test success
 #------------------------------------------------------------------------------------------
 
-    Scenario: [Medzoner - POST] "Contact page"
+    Scenario: [Medzoner - POST] "Contact page - Test success"
         And I add "Content-Type" header equal to "text/html"
         When    I send a POST request to "/contact" with body:
           """
@@ -30,7 +30,7 @@ Feature: Global behavior "Medzoner"
 # POST "CONTACT" - Test failed
 #------------------------------------------------------------------------------------------
 
-    Scenario: [Medzoner - POST] "Contact page"
+    Scenario: [Medzoner - POST] "Contact page - Test failed"
         And I add "Content-Type" header equal to "application/x-www-form-urlencoded"
         When    I send a POST request to "/contact" with body:
           """

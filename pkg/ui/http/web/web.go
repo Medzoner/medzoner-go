@@ -31,9 +31,7 @@ type Web struct {
 func (a *Web) Start() {
 	a.Router.SetNotFoundHandler(a.NotFoundHandler.Handle)
 	a.Router.HandleFunc("/", a.IndexHandler.IndexHandle).Methods("GET")
-	a.Router.HandleFunc("/contact", a.ContactHandler.IndexHandle).Methods("GET")
 	a.Router.HandleFunc("/contact", a.ContactHandler.IndexHandle).Methods("POST")
-	a.Router.HandleFunc("/technos", a.TechnoHandler.IndexHandle).Methods("GET")
 	a.Router.Use(middleware.APIMiddleware{Logger: a.Logger}.Middleware)
 
 	a.Router.PathPrefix("/public").Handler(http.FileServer(http.Dir(".")))

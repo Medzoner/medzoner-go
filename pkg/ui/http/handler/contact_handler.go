@@ -34,12 +34,12 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 		return
 	}
 	c.Session = newSession
-	view := ContactView{
-		Locale:    "fr",
-		PageTitle: "MedZoner.com",
-		Message:   c.Session.GetValue("message"),
+	c.Session.SetValue("message", "")
+	err = c.Session.Save(request, response)
+	if err != nil {
+		http.Error(response, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("Envoyer") == "" {
 		createContactCommand := command.CreateContactCommand{
 			DateAdd: time.Now(),
@@ -57,27 +57,9 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 				http.Error(response, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			http.Redirect(response, request, "/contact", http.StatusSeeOther)
+			http.Redirect(response, request, "/", http.StatusSeeOther)
 			return
 		}
-		statusCode = http.StatusBadRequest
-		vErrors := v.GetErrors()
-		view.Errors = vErrors
-	}
-	c.Session.SetValue("message", "")
-	err = c.Session.Save(request, response)
-	if err != nil {
-		http.Error(response, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if statusCode != http.StatusOK {
-		response.WriteHeader(statusCode)
-	}
-
-	view.TorHost = request.Header.Get("TOR-HOST")
-	_, err = c.Template.Render("contact", view, response, statusCode)
-	if err != nil {
-		panic(err)
 	}
 
 	_ = request

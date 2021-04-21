@@ -12,4 +12,4 @@ Feature: Global behavior "Medzoner"
 
     Scenario: [Medzoner - GET_ALL] "Technos page"
         When    I send a GET request to "/technos"
-        Then    the response status code should be 200
+        Then    the response status code should be 404

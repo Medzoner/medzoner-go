@@ -3,6 +3,8 @@ package handler_test
 import (
 	"errors"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +15,12 @@ func TestIndexHandler(t *testing.T) {
 	t.Run("Unit: test IndexHandler success", func(t *testing.T) {
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					Logger:   &LoggerTest{},
+					RootPath: "./../../../../",
+				},
+			},
 		}
 		request := httptest.NewRequest("GET", "/", nil)
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)

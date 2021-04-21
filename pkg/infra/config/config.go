@@ -38,15 +38,15 @@ type Config struct {
 //Init Init
 func (c *Config) Init() {
 	err := godotenv.Load(c.RootPath + "/.env")
-	c.Environment = getEnv("ENV", "test")
+	c.Environment = getEnv("ENV", "dev")
 	if c.Environment == "test" {
 		err = godotenv.Load(c.RootPath + "/.env.test")
 	}
 	c.MailerUser = getEnv("MAILER_USER", "medzoner@xxx.fake")
 	c.MailerPassword = getEnv("MAILER_PASSWORD", "xxxxxxxxxxxx")
-	c.DatabaseDsn = getEnv("DATABASE_DSN", "dev")
+	c.DatabaseDsn = getEnv("DATABASE_DSN", "root:changeme@tcp(0.0.0.0:3366)")
 	c.DatabaseDriver = getEnv("DATABASE_DRIVER", "mysql")
-	c.DatabaseName = getEnv("DATABASE_NAME", "dev")
+	c.DatabaseName = getEnv("DATABASE_NAME", "dev_medzoner")
 	c.DebugMode = getEnvAsBool("DEBUG", false)
 	c.Options = getEnvAsSlice("OPTIONS", []string{}, ",")
 	_ = getEnvAsBool("DEBUG_TEST", false)

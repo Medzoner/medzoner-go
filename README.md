@@ -16,7 +16,7 @@ Configuration can be specified in .env or exported as environment variable:
 | ENV  | string  |
 | DEBUG  | bool  |
 | OPTIONS  | []string{} (option1,option2....)  |
-| DATABASE_DSN  | string (ex: root:changeme@tcp(database:3306))  |
+| DATABASE_DSN  | string (ex: root:changeme@tcp(database:3366))  |
 | DATABASE_NAME  | string  |
 | DATABASE_DRIVER  | string  |
 | MAILER_USER  | string  |

@@ -18,7 +18,7 @@ type MuxRouterAdapter struct {
 	MuxRouter *mux.Router
 }
 
-//HandleFunc HandleFunc
+//Handle Handle
 func (a MuxRouterAdapter) Handle(path string) {
 	http.Handle(path, a)
 }

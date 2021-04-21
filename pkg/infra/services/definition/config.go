@@ -29,7 +29,7 @@ func (cd *ConfigDependency) InitConfig(rootPath string) config.Config {
 		RootPath:  rootPath,
 		DebugMode: false,
 		Options:   nil,
-		APIPort:   8000,
+		APIPort:   8002,
 	}
 	c.Init()
 	cd.ConfigInstance = c

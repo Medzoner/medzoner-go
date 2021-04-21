@@ -8,7 +8,7 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: "changeme"
         ports:
-            - "3306:3306"
+            - "3366:3306"
         networks:
             - "default"
         volumes:
@@ -21,7 +21,7 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: "changeme"
         ports:
-            - "3307:3306"
+            - "3367:3306"
         networks:
             - "default"
 

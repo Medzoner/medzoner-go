@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 	}()
 	fmt.Println("server started")
 
-	baseURL := "http://127.0.0.1:8000"
+	baseURL := "http://127.0.0.1:8002"
 
 	opts := godog.Options{
 		Output: colors.Colored(os.Stdout),
