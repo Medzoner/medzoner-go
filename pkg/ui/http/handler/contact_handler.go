@@ -40,6 +40,7 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("Envoyer") == "" {
 		createContactCommand := command.CreateContactCommand{
 			DateAdd: time.Now(),
@@ -60,7 +61,8 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 			http.Redirect(response, request, "/", http.StatusSeeOther)
 			return
 		}
+		statusCode = http.StatusBadRequest
 	}
-
+	response.WriteHeader(statusCode)
 	_ = request
 }

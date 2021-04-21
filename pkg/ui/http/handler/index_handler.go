@@ -19,16 +19,16 @@ type IndexView struct {
 	PageTitle string
 	TorHost   string
 	TechnoView
-	Message   interface{}
-	Errors    interface{}
+	Message interface{}
+	Errors  interface{}
 }
 
 //IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 	view := IndexView{
-		Locale: "fr",
+		Locale:    "fr",
 		PageTitle: "MedZoner.com",
-		TorHost: r.Header.Get("TOR-HOST"),
+		TorHost:   r.Header.Get("TOR-HOST"),
 		TechnoView: TechnoView{
 			Stacks: h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "stack"}),
 		},
