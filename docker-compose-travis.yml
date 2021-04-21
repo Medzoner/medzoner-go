@@ -8,8 +8,6 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: "changeme"
         ports:
-            - "3366:3306"
+            - "3306:3306"
         networks:
             - "default"
-        volumes:
-            - "./var/mysql:/var/lib/mysql"
