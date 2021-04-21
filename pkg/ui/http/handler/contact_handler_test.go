@@ -70,33 +70,6 @@ func TestContactHandler(t *testing.T) {
 		assert.Equal(t, repositoryMock.ContactSaved.GetEmail().String, "email@fake.com")
 		assert.Equal(t, repositoryMock.ContactSaved.GetMessage(), "a message")
 	})
-	t.Run("Unit: test ContactHandler with templater render failed", func(t *testing.T) {
-		repositoryMock := &ContactRepositoryTest{}
-
-		contactHandler := handler.ContactHandler{
-			Template: &TemplaterRanderFailedTest{},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
-				ContactRepository:          repositoryMock,
-				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
-				Logger:                     &LoggerTest{},
-			},
-			Session:    SessionAdapterTest{},
-			Validation: validation.ValidatorAdapter{}.New(),
-		}
-
-		responseWriter := httptest.NewRecorder()
-		request := httptest.NewRequest("Get", "/contact", nil)
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("The code did not panic")
-			}
-		}()
-		contactHandler.IndexHandle(responseWriter, request)
-
-		assert.Equal(t, responseWriter.Code, 500)
-	})
-
 	t.Run("Unit: test ContactHandler with form submit failed on struct", func(t *testing.T) {
 		repositoryMock := &ContactRepositoryTest{}
 
