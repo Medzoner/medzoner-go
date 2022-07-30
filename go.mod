@@ -7,7 +7,7 @@ require (
 	github.com/containerd/containerd v1.4.1 // indirect
 	github.com/cucumber/godog v0.10.0
 	github.com/dhui/dktest v0.3.3 // indirect
-	github.com/docker/distribution v2.7.1+incompatible
+	github.com/docker/distribution v2.8.0+incompatible
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
