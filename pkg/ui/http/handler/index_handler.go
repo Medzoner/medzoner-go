@@ -23,6 +23,7 @@ type IndexView struct {
 	Message          interface{}
 	Errors           interface{}
 	RecaptchaSiteKey string
+	PageDescription  string
 }
 
 //IndexHandle IndexHandle
@@ -35,6 +36,7 @@ func (h *IndexHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 			Stacks: h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "stack"}),
 		},
 		RecaptchaSiteKey: "6LeisDMhAAAAAPVU3SExc1nzrIUlZvL9SIKfMMye",
+		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
 	}
 	_, err := h.Template.Render("index", view, w, http.StatusOK)
 	if err != nil {
