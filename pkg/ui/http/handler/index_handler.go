@@ -35,7 +35,7 @@ func (h *IndexHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 		TechnoView: TechnoView{
 			Stacks: h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "stack"}),
 		},
-		RecaptchaSiteKey: "6LeisDMhAAAAAPVU3SExc1nzrIUlZvL9SIKfMMye",
+		RecaptchaSiteKey: h.RecaptchaSiteKey,
 		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
 	}
 	_, err := h.Template.Render("index", view, w, http.StatusOK)
