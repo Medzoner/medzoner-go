@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
+	"github.com/dpapathanasiou/go-recaptcha"
+	"log"
 	"net/http"
 	"time"
 )
@@ -26,6 +29,18 @@ type ContactView struct {
 	TorHost   string
 }
 
+func processRequest(request *http.Request) (result bool) {
+	recaptchaResponse, responseFound := request.Form["g-recaptcha-response"]
+	if responseFound {
+		result, err := recaptcha.Confirm("127.0.0.1", recaptchaResponse[0])
+		if err != nil {
+			log.Println("recaptcha server error", err)
+		}
+		return result
+	}
+	return false
+}
+
 //IndexHandle IndexHandle
 func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
 	newSession, err := c.Session.Init(request)
@@ -42,6 +57,15 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 	}
 	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("Envoyer") == "" {
+
+		_, buttonClicked := request.Form["button"]
+		if buttonClicked {
+			if processRequest(request) {
+				fmt.Fprint(response, fmt.Sprintf("anAck", "Recaptcha was correct!"))
+			} else {
+				fmt.Fprintf(response, fmt.Sprintf("anError", "Recaptcha was incorrect; try again."))
+			}
+		}
 		createContactCommand := command.CreateContactCommand{
 			DateAdd: time.Now(),
 			Name:    request.FormValue("name"),

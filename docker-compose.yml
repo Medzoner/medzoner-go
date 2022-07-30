@@ -17,7 +17,7 @@ services:
             - mariadb
 
     mariadb:
-        image: "mariadb"
+        image: "mariadb:10.5.2"
         container_name: "mariadb"
         restart: "no"
         environment:
@@ -30,7 +30,7 @@ services:
             - "./var/mysql:/var/lib/mysql"
 
     mariadb_test:
-        image: "mariadb"
+        image: "mariadb:10.5.2"
         container_name: "mariadb_test"
         restart: "no"
         environment:

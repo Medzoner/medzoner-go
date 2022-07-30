@@ -15,6 +15,7 @@ type MysqlContactRepository struct {
 
 //Save Save
 func (m *MysqlContactRepository) Save(contact model.IContact) {
+	fmt.Sprintln(m.DbInstance.GetDatabaseName())
 	conn := m.DbInstance.GetConnection().MustBegin()
 	contact.SetEmailString()
 	query := `INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (:name, :message, :emailstring, :date_add, :uuid)`

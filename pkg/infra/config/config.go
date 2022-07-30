@@ -19,20 +19,24 @@ type IConfig interface {
 	GetDatabaseDriver() string
 	GetMailerUser() string
 	GetMailerPassword() string
+	GetRecaptchaSiteKey() string
+	GetRecaptchaSecretKey() string
 }
 
 //Config Config
 type Config struct {
-	Environment    string
-	RootPath       string
-	DebugMode      bool
-	Options        []string
-	DatabaseDsn    string
-	DatabaseName   string
-	APIPort        int
-	DatabaseDriver string
-	MailerUser     string
-	MailerPassword string
+	Environment        string
+	RootPath           string
+	DebugMode          bool
+	Options            []string
+	DatabaseDsn        string
+	DatabaseName       string
+	APIPort            int
+	DatabaseDriver     string
+	MailerUser         string
+	MailerPassword     string
+	RecaptchaSiteKey   string
+	RecaptchaSecretKey string
 }
 
 //Init Init
@@ -51,6 +55,8 @@ func (c *Config) Init() {
 	c.Options = getEnvAsSlice("OPTIONS", []string{}, ",")
 	_ = getEnvAsBool("DEBUG_TEST", false)
 	_ = getEnvAsInt("WAIT_MYSQL", 2)
+	c.RecaptchaSiteKey = getEnv("RECAPTCHA_SITE_KEY", "")
+	c.RecaptchaSecretKey = getEnv("RECAPTCHA_SECRET_KEY", "")
 
 	if err == nil {
 		fmt.Println(".env file found")
@@ -129,4 +135,14 @@ func getEnvAsSlice(name string, defaultVal []string, sep string) []string {
 	}
 	val := strings.Split(valStr, sep)
 	return val
+}
+
+//GetRecaptchaSiteKey GetRecaptchaSiteKey
+func (c *Config) GetRecaptchaSiteKey() string {
+	return c.RecaptchaSiteKey
+}
+
+//GetRecaptchaSecretKey GetRecaptchaSecretKey
+func (c *Config) GetRecaptchaSecretKey() string {
+	return c.RecaptchaSecretKey
 }

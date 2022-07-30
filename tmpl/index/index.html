@@ -209,6 +209,10 @@
                                                   name="message"
                                                   required="required"></textarea>
                                     </div>
+                                    <div class="input-group">
+                                        <script src="https://www.google.com/recaptcha/api.js"></script>
+                                        <div class="g-recaptcha" data-sitekey="{{ .RecaptchaSiteKey }}"></div>
+                                    </div>
                                 </div>
                                 <div class="footer text-center">
                                     <button class="btn btn-primary btn-link btn-wd btn-lg" type="submit" id="registration_Envoyer" name="Envoyer">Send</button>

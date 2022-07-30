@@ -3,6 +3,7 @@ package definition
 import (
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
@@ -29,6 +30,7 @@ var IndexHandlerDefinition = di.Def{
 		return &handler.IndexHandler{
 			Template:               ctn.Get("templater").(templater.Templater),
 			ListTechnoQueryHandler: ctn.Get("list-techno-query-handler").(query.ListTechnoQueryHandler),
+			RecaptchaSiteKey:       ctn.Get("config").(config.IConfig).GetRecaptchaSiteKey(),
 		}, nil
 	},
 }

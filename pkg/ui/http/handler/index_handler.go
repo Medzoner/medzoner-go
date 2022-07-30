@@ -11,6 +11,7 @@ import (
 type IndexHandler struct {
 	Template               templater.Templater
 	ListTechnoQueryHandler query.ListTechnoQueryHandler
+	RecaptchaSiteKey       string
 }
 
 //IndexView IndexView
@@ -19,8 +20,9 @@ type IndexView struct {
 	PageTitle string
 	TorHost   string
 	TechnoView
-	Message interface{}
-	Errors  interface{}
+	Message          interface{}
+	Errors           interface{}
+	RecaptchaSiteKey string
 }
 
 //IndexHandle IndexHandle
@@ -32,6 +34,7 @@ func (h *IndexHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 		TechnoView: TechnoView{
 			Stacks: h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "stack"}),
 		},
+		RecaptchaSiteKey: "6LeisDMhAAAAAPVU3SExc1nzrIUlZvL9SIKfMMye",
 	}
 	_, err := h.Template.Render("index", view, w, http.StatusOK)
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
+	"github.com/dpapathanasiou/go-recaptcha"
 	"net/http"
 )
 
@@ -17,18 +18,20 @@ type IWeb interface {
 
 //Web Web
 type Web struct {
-	Logger          logger.ILogger
-	Router          router.IRouter
-	Server          server.IServer
-	NotFoundHandler *handler.NotFoundHandler
-	IndexHandler    *handler.IndexHandler
-	TechnoHandler   *handler.TechnoHandler
-	ContactHandler  *handler.ContactHandler
-	APIPort         int
+	Logger             logger.ILogger
+	Router             router.IRouter
+	Server             server.IServer
+	NotFoundHandler    *handler.NotFoundHandler
+	IndexHandler       *handler.IndexHandler
+	TechnoHandler      *handler.TechnoHandler
+	ContactHandler     *handler.ContactHandler
+	APIPort            int
+	RecaptchaSecretKey string
 }
 
 //Start Start
 func (a *Web) Start() {
+	recaptcha.Init(a.RecaptchaSecretKey)
 	a.Router.SetNotFoundHandler(a.NotFoundHandler.Handle)
 	a.Router.HandleFunc("/", a.IndexHandler.IndexHandle).Methods("GET")
 	a.Router.HandleFunc("/contact", a.ContactHandler.IndexHandle).Methods("POST")
