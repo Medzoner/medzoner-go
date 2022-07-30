@@ -61,9 +61,9 @@ func (c *ContactHandler) IndexHandle(response http.ResponseWriter, request *http
 		_, buttonClicked := request.Form["button"]
 		if buttonClicked {
 			if processRequest(request) {
-				fmt.Fprint(response, fmt.Sprintf("anAck", "Recaptcha was correct!"))
+				fmt.Println("Recaptcha was correct!")
 			} else {
-				fmt.Fprintf(response, fmt.Sprintf("anError", "Recaptcha was incorrect; try again."))
+				fmt.Println("Recaptcha was incorrect; try again.")
 			}
 		}
 		createContactCommand := command.CreateContactCommand{
