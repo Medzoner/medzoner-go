@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//Server Server
+// IServer Server Server
 type IServer interface {
 	ListenAndServe() error
 	Shutdown(ctx context.Context) error
