@@ -7,6 +7,8 @@ services:
         restart: "no"
         working_dir: /var/www
         command: make start
+        environment:
+            DATABASE_DSN: "root:changeme@tcp(mariadb:3306)"
         ports:
             - "8989:8002"
         networks:
@@ -17,7 +19,7 @@ services:
             - mariadb
 
     mariadb:
-        image: "mariadb:10.5.2"
+        image: "mariadb:10.5.9"
         container_name: "mariadb"
         restart: "no"
         environment:
@@ -30,7 +32,7 @@ services:
             - "./var/mysql:/var/lib/mysql"
 
     mariadb_test:
-        image: "mariadb:10.5.2"
+        image: "mariadb:10.5.9"
         container_name: "mariadb_test"
         restart: "no"
         environment:

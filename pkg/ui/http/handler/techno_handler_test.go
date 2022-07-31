@@ -15,7 +15,6 @@ func TestTechnoHandler(t *testing.T) {
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
-					Logger:   &LoggerTest{},
 					RootPath: "./../../../../",
 				},
 			},
@@ -31,10 +30,9 @@ func TestTechnoHandler(t *testing.T) {
 	t.Run("Unit: test TechnoHandler with templater render failed", func(t *testing.T) {
 
 		technoHandler := handler.TechnoHandler{
-			Template: &TemplaterRanderFailedTest{},
+			Template: &TemplaterTestFailed{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
-					Logger:   &LoggerTest{},
 					RootPath: "./../../../../",
 				},
 			},

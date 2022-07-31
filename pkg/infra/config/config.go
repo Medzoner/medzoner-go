@@ -55,8 +55,8 @@ func (c *Config) Init() {
 	c.Options = getEnvAsSlice("OPTIONS", []string{}, ",")
 	_ = getEnvAsBool("DEBUG_TEST", false)
 	_ = getEnvAsInt("WAIT_MYSQL", 2)
-	c.RecaptchaSiteKey = getEnv("RECAPTCHA_SITE_KEY", "")
-	c.RecaptchaSecretKey = getEnv("RECAPTCHA_SECRET_KEY", "")
+	c.RecaptchaSiteKey = getEnv("RECAPTCHA_SITE_KEY", "xxxxxxxxxxxx")
+	c.RecaptchaSecretKey = getEnv("RECAPTCHA_SECRET_KEY", "xxxxxxxxxxxx")
 
 	if err == nil {
 		fmt.Println(".env file found")

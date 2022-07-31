@@ -28,7 +28,6 @@ var Definitions = []di.Def{
 	definition.NotFoundHandlerDefinition,
 	definition.IndexHandlerDefinition,
 	definition.TechnoHandlerDefinition,
-	definition.ContactHandlerDefinition,
 	application.ListTechnoQueryHandlerDefinition,
 	application.CreateContactCommandHandlerDefinition,
 	application.ContactCreatedEventHandlerDefinition,

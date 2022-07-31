@@ -11,6 +11,5 @@ func TestHandlerDefinition(t *testing.T) {
 		fmt.Println(definition.NotFoundHandlerDefinition)
 		fmt.Println(definition.IndexHandlerDefinition)
 		fmt.Println(definition.TechnoHandlerDefinition)
-		fmt.Println(definition.ContactHandlerDefinition)
 	})
 }

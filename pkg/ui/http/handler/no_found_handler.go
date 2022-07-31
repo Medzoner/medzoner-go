@@ -12,21 +12,24 @@ type NotFoundHandler struct {
 
 //NotFoundView NotFoundView
 type NotFoundView struct {
-	Locale    string
-	PageTitle string
-	TorHost   string
+	Locale          string
+	PageTitle       string
+	TorHost         string
+	PageDescription string
 }
 
 //Handle Handle
 func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	view := &NotFoundView{
-		Locale:    "fr",
-		PageTitle: "MedZoner.com - Not Found",
-		TorHost:   r.Header.Get("TOR-HOST"),
+		Locale:          "fr",
+		PageTitle:       "MedZoner.com - Not Found",
+		TorHost:         r.Header.Get("TOR-HOST"),
+		PageDescription: "MedZoner.com - Not Found",
 	}
 	_, err := h.Template.Render("404", view, w, http.StatusNotFound)
 	if err != nil {
 		panic(err)
 	}
 	_ = r
+	return
 }

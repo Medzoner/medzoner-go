@@ -22,7 +22,6 @@ var WebDefinition = di.Def{
 			NotFoundHandler:    ctn.Get("notfound-handler").(*handler.NotFoundHandler),
 			IndexHandler:       ctn.Get("index-handler").(*handler.IndexHandler),
 			TechnoHandler:      ctn.Get("techno-handler").(*handler.TechnoHandler),
-			ContactHandler:     ctn.Get("contact-handler").(*handler.ContactHandler),
 			APIPort:            ctn.Get("config").(config.IConfig).GetAPIPort(),
 			RecaptchaSecretKey: ctn.Get("config").(config.IConfig).GetRecaptchaSecretKey(),
 		}, nil

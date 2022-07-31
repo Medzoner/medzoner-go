@@ -21,7 +21,6 @@ func TestStart(t *testing.T) {
 			Server:          ServerFailedMock{},
 			IndexHandler:    nil,
 			TechnoHandler:   nil,
-			ContactHandler:  nil,
 			NotFoundHandler: nil,
 			APIPort:         8123,
 		}
@@ -37,7 +36,6 @@ func TestStart(t *testing.T) {
 			},
 			IndexHandler:    nil,
 			TechnoHandler:   nil,
-			ContactHandler:  nil,
 			NotFoundHandler: nil,
 			APIPort:         8123,
 		}
