@@ -20,6 +20,7 @@ require (
 )
 
 require (
+	github.com/aimuz/go-sass v0.0.0-20210823101131-05ae0cec7c86 // indirect
 	github.com/cucumber/gherkin-go/v19 v19.0.3 // indirect
 	github.com/cucumber/messages-go/v16 v16.0.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
