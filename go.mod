@@ -1,43 +1,43 @@
 module github.com/Medzoner/medzoner-go
 
-go 1.14
+go 1.17
 
 require (
-	github.com/Microsoft/go-winio v0.4.15 // indirect
-	github.com/containerd/containerd v1.4.1 // indirect
-	github.com/cucumber/godog v0.10.0
-	github.com/dhui/dktest v0.3.3 // indirect
-	github.com/docker/distribution v2.7.1+incompatible
+	github.com/cucumber/godog v0.12.5
+	github.com/docker/distribution v2.8.1+incompatible
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
-	github.com/go-playground/universal-translator v0.17.0
-	github.com/go-playground/validator/v10 v10.4.1
-	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gofrs/uuid v3.3.0+incompatible // indirect
-	github.com/golang-migrate/migrate/v4 v4.13.0
-	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/google/go-cmp v0.5.2 // indirect
+	github.com/go-playground/universal-translator v0.18.0
+	github.com/go-playground/validator/v10 v10.11.0
+	github.com/go-sql-driver/mysql v1.6.0
+	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1
-	github.com/hashicorp/errwrap v1.1.0 // indirect
-	github.com/hashicorp/go-memdb v1.3.0 // indirect
-	github.com/hashicorp/go-uuid v1.0.2 // indirect
-	github.com/jmoiron/sqlx v1.2.0
-	github.com/joho/godotenv v1.3.0
-	github.com/mattn/go-sqlite3 v1.14.6 // indirect
+	github.com/jmoiron/sqlx v1.3.5
+	github.com/joho/godotenv v1.4.0
 	github.com/sarulabs/di v2.0.0+incompatible
-	github.com/sirupsen/logrus v1.7.0 // indirect
-	go.uber.org/multierr v1.6.0 // indirect
-	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
-	golang.org/x/net v0.0.0-20201031054903-ff519b6c9102 // indirect
-	golang.org/x/sys v0.0.0-20210226181700-f36f78243c0c // indirect
-	golang.org/x/text v0.3.4 // indirect
-	golang.org/x/tools v0.0.0-20201105220310-78b158585360 // indirect
-	google.golang.org/genproto v0.0.0-20201105153401-9d023cd09d72 // indirect
-	google.golang.org/grpc v1.33.1 // indirect
-	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
+	go.uber.org/zap v1.21.0
 	gotest.tools v2.2.0+incompatible
-	honnef.co/go/tools v0.0.1-2020.1.6 // indirect
+)
+
+require (
+	github.com/cucumber/gherkin-go/v19 v19.0.3 // indirect
+	github.com/cucumber/messages-go/v16 v16.0.1 // indirect
+	github.com/go-playground/locales v0.14.0 // indirect
+	github.com/gofrs/uuid v4.2.0+incompatible // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-memdb v1.3.3 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/testify v1.8.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.8.0 // indirect
+	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
+	golang.org/x/sys v0.0.0-20220730100132-1609e554cd39 // indirect
+	golang.org/x/text v0.3.7 // indirect
 )

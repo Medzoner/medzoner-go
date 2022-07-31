@@ -2,7 +2,7 @@ version: '3'
 
 services:
     app:
-        image: "golang:1.14"
+        image: "golang:1.17.6"
         container_name: "app"
         restart: "no"
         working_dir: /var/www
