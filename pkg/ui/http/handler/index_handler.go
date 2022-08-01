@@ -29,10 +29,10 @@ type IndexView struct {
 	PageTitle string
 	TorHost   string
 	TechnoView
-	Message          interface{}
 	Errors           interface{}
 	RecaptchaSiteKey string
 	PageDescription  string
+	FormMessage      string
 }
 
 func processRequest(request *http.Request) (result bool) {
@@ -49,6 +49,12 @@ func processRequest(request *http.Request) (result bool) {
 
 //IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
+	newSession, err := h.Session.Init(request)
+	if err != nil {
+		http.Error(response, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	h.Session = newSession
 	view := IndexView{
 		Locale:    "fr",
 		PageTitle: "MedZoner.com",
@@ -58,22 +64,14 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		},
 		RecaptchaSiteKey: h.RecaptchaSiteKey,
 		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
+		FormMessage:      h.Session.GetValue("message").(string),
 	}
-
-	newSession, err := h.Session.Init(request)
-	if err != nil {
-		http.Error(response, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	h.Session = newSession
-	h.Session.SetValue("message", "")
-	err = h.Session.Save(request, response)
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	statusCode := http.StatusOK
-	if request.Method == "POST" && request.FormValue("Envoyer") == "" {
+	if request.Method == "POST" && request.FormValue("submit") == "" {
 		if processRequest(request) {
 			createContactCommand := command.CreateContactCommand{
 				DateAdd: time.Now(),
@@ -85,13 +83,13 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			err := v.Struct(createContactCommand)
 			if err == nil {
 				h.CreateContactCommandHandler.Handle(createContactCommand)
-				h.Session.SetValue("message", "Votre message a bien été envoyé. Merci!")
+				h.Session.SetValue("message", "Your Message has been sent")
 				err = h.Session.Save(request, response)
 				if err != nil {
 					http.Error(response, err.Error(), http.StatusInternalServerError)
 					return
 				}
-				http.Redirect(response, request, "/", http.StatusSeeOther)
+				http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 				return
 			}
 			statusCode = http.StatusBadRequest
@@ -100,13 +98,18 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			fmt.Println("Recaptcha was incorrect; try again.")
 			h.Session.SetValue("message", "Recaptcha was incorrect; try again.")
 			_ = h.Session.Save(request, response)
-			http.Redirect(response, request, "/", http.StatusSeeOther)
+			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 			return
 		}
+	}
+	if view.FormMessage != "" {
+		h.Session.SetValue("message", "")
+		err = h.Session.Save(request, response)
 	}
 	_, err = h.Template.Render("index", view, response, statusCode)
 	if err != nil {
 		fmt.Println(err)
 	}
+	view.FormMessage = ""
 	_ = request
 }

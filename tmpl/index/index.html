@@ -151,25 +151,21 @@
                     <div class="col-lg-4 col-md-6 ml-auto mr-auto">
                         <div class="card card-login">
                             <div class="row hestia-about-content"></div>
-                            {{ if .Message }}
-                                <div class="row">
-                                    <div class="large-12 columns">
-                                        <div class="blogger-notice">
-                                            {{ .Message }}
-                                        </div>
-                                    </div>
-                                </div>
-                            {{ else }}
+                            <form class="form" method="post" action="/">
+                                <p class="description text-center">Contact me</p>
+                                {{ if .FormMessage }}
+                                <p class="form-message text-center">
+                                    {{ .FormMessage }}
+                                </p>
+                                {{ else }}
                                 <div class="large-12 columns">
                                     <div>
                                         {{range $k, $error := .Errors}}
-                                            {{ . }}
+                                        {{ . }}
                                         {{end}}
                                     </div>
                                 </div>
-                            {{end}}
-                            <form class="form" method="post" action="/">
-                                <p class="description text-center">Contact me</p>
+                                {{end}}
                                 <div class="card-body">
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -210,11 +206,11 @@
                                                   required="required"></textarea>
                                     </div>
                                     <div class="input-group">
-                                        <div class="g-recaptcha" data-sitekey="{{ .RecaptchaSiteKey }}"></div>
+                                        <div id="google-recaptcha-js" class="g-recaptcha" data-sitekey="{{ .RecaptchaSiteKey }}"></div>
                                     </div>
                                 </div>
                                 <div class="footer text-center">
-                                    <button class="btn btn-primary btn-link btn-wd btn-lg" type="submit" id="registration_Envoyer" name="Envoyer">Send</button>
+                                    <button class="btn btn-primary btn-link btn-wd btn-lg" type="submit" id="registration_Envoyer" name="submit">Send</button>
                                 </div>
                             </form>
                         </div>
