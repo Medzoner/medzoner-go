@@ -64,7 +64,10 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		},
 		RecaptchaSiteKey: h.RecaptchaSiteKey,
 		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
-		FormMessage:      h.Session.GetValue("message").(string),
+		FormMessage:      "",
+	}
+	if h.Session.GetValue("message") != nil {
+		view.FormMessage = h.Session.GetValue("message").(string)
 	}
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
