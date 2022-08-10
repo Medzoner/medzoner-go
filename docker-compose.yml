@@ -6,17 +6,23 @@ services:
         container_name: "app"
         restart: "no"
         working_dir: /var/www
-        command: make start
+        command: "./run_debug.sh"
+        #command: make start
         environment:
             DATABASE_DSN: "root:changeme@tcp(mariadb:3306)"
         ports:
             - "8989:8002"
+            - "4000:4000"
         networks:
             - "default"
         volumes:
             - "./:/var/www"
         depends_on:
             - mariadb
+        cap_add:
+            - SYS_PTRACE
+        security_opt:
+            - "apparmor=unconfined"
 
     mariadb:
         image: "mariadb:10.5.9"
