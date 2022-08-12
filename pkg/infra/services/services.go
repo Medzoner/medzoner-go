@@ -19,6 +19,7 @@ var Definitions = []di.Def{
 	definition.DatabaseManagerDefinition,
 	definition.WebDefinition,
 	definition.TemplaterDefinition,
+	definition.CaptchaDefinition,
 	definition.RouterDefinition,
 	definition.SessionDefinition,
 	definition.ValidationDefinition,

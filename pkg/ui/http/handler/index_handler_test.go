@@ -13,8 +13,10 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
+	"gotest.tools/assert"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
@@ -40,9 +42,28 @@ func TestIndexHandler(t *testing.T) {
 		request := httptest.NewRequest("GET", "/", nil)
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)
 	})
-	t.Run("Unit: test IndexHandler failed", func(t *testing.T) {
+	//t.Run("Unit: test IndexHandler failed with template error", func(t *testing.T) {
+	//	indexHandler := handler.IndexHandler{
+	//		Template: &TemplaterTestFailed{},
+	//	}
+	//	request := httptest.NewRequest("GET", "/", nil)
+	//
+	//	defer func() {
+	//		if r := recover(); r == nil {
+	//			t.Errorf("The code did not panic")
+	//		}
+	//	}()
+	//	indexHandler.IndexHandle(httptest.NewRecorder(), request)
+	//})
+	t.Run("Unit: test IndexHandler failed with template error on handle", func(t *testing.T) {
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTestFailed{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			Session: SessionAdapterTest{},
 		}
 		request := httptest.NewRequest("GET", "/", nil)
 
@@ -52,6 +73,309 @@ func TestIndexHandler(t *testing.T) {
 			}
 		}()
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)
+	})
+	t.Run("Unit: test IndexHandler failed with session error on Init", func(t *testing.T) {
+		indexHandler := handler.IndexHandler{
+			Session: &SessionAdapterTestFailed{
+				onInit: true,
+			},
+		}
+		request := httptest.NewRequest("GET", "/", nil)
+
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("The code did not panic")
+			}
+		}()
+		indexHandler.IndexHandle(httptest.NewRecorder(), request)
+	})
+
+	t.Run("Unit: test IndexHandler success", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+		indexHandler := handler.IndexHandler{
+			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterTest{},
+			Validation: validation.ValidatorAdapter{}.New(),
+		}
+
+		request := httptest.NewRequest("GET", "/", nil)
+		indexHandler.IndexHandle(httptest.NewRecorder(), request)
+
+		assert.Equal(t, repositoryMock.ContactSaved, nil)
+	})
+
+	t.Run("Unit: test IndexHandler with form submit success", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+
+		indexHandler := handler.IndexHandler{
+			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterTest{},
+			Validation: validation.ValidatorAdapter{}.New(),
+			Recaptcha:  RecaptchaAdapterTest{},
+		}
+
+		responseWriter := httptest.NewRecorder()
+		request := httptest.NewRequest("POST", "/", nil)
+		v := url.Values{}
+		v.Set("name", "a name")
+		v.Set("email", "email@fake.com")
+		v.Set("message", "a message")
+		v.Set("g-captcha-response", "captcha")
+		request.Form = v
+		indexHandler.IndexHandle(responseWriter, request)
+
+		assert.Equal(t, repositoryMock.ContactSaved.GetID(), 0)
+		assert.Assert(t, len(repositoryMock.ContactSaved.GetUUID()) > 0)
+		assert.Assert(t, len(repositoryMock.ContactSaved.GetDateAdd().String()) > 0)
+		assert.Equal(t, repositoryMock.ContactSaved.GetName(), "a name")
+		assert.Equal(t, repositoryMock.ContactSaved.GetEmail().String, "email@fake.com")
+		assert.Equal(t, repositoryMock.ContactSaved.GetMessage(), "a message")
+	})
+	t.Run("Unit: test IndexHandler with form submit failed on struct", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+
+		indexHandler := handler.IndexHandler{
+			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterTest{},
+			Validation: ValidatorFailOnStructTest{}.New(),
+			Recaptcha:  RecaptchaAdapterTest{},
+		}
+
+		responseWriter := httptest.NewRecorder()
+		request := httptest.NewRequest("POST", "/", nil)
+		v := url.Values{}
+		v.Set("name", "a name")
+		v.Set("email", "email@fake.com")
+		v.Set("message", "a message")
+		v.Set("g-captcha-response", "captcha")
+		request.Form = v
+		indexHandler.IndexHandle(responseWriter, request)
+
+		assert.Equal(t, responseWriter.Code, 400)
+	})
+	t.Run("Unit: test IndexHandler with session save failed when submit and valid", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+
+		indexHandler := handler.IndexHandler{
+			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterFailOnSaveSessionTest{},
+			Validation: validation.ValidatorAdapter{}.New(),
+			Recaptcha:  RecaptchaAdapterTest{},
+		}
+
+		responseWriter := httptest.NewRecorder()
+		request := httptest.NewRequest("POST", "/", nil)
+		v := url.Values{}
+		v.Set("name", "a name")
+		v.Set("email", "email@fake.com")
+		v.Set("message", "a message")
+		v.Set("g-captcha-response", "captcha")
+		request.Form = v
+		indexHandler.IndexHandle(responseWriter, request)
+
+		assert.Equal(t, responseWriter.Code, 500)
+	})
+	t.Run("Unit: test IndexHandler with form submit failed on struct", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+
+		indexHandler := handler.IndexHandler{
+			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterTest{},
+			Validation: ValidatorFailOnStructTest{}.New(),
+			Recaptcha:  RecaptchaAdapterTest{},
+		}
+
+		responseWriter := httptest.NewRecorder()
+		request := httptest.NewRequest("POST", "/", nil)
+		v := url.Values{}
+		v.Set("name", "a name")
+		v.Set("email", "email@fake.com")
+		v.Set("message", "a message")
+		v.Set("g-captcha-response", "captcha")
+		request.Form = v
+		indexHandler.IndexHandle(responseWriter, request)
+
+		assert.Equal(t, responseWriter.Code, 400)
+	})
+	//t.Run("Unit: test IndexHandler with session save failed when not submit", func(t *testing.T) {
+	//	repositoryMock := &ContactRepositoryTest{}
+	//
+	//	indexHandler := handler.IndexHandler{
+	//		Template: &TemplaterTest{},
+	//		ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+	//			TechnoRepository: &repository.TechnoJSONRepository{
+	//				RootPath: "./../../../../",
+	//			},
+	//		},
+	//		CreateContactCommandHandler: command.CreateContactCommandHandler{
+	//			ContactFactory:             &entity.Contact{},
+	//			ContactRepository:          repositoryMock,
+	//			ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+	//			Logger:                     &LoggerTest{},
+	//		},
+	//		Session:    SessionAdapterFailOnSaveSessionTest{},
+	//		Validation: validation.ValidatorAdapter{}.New(),
+	//		Recaptcha:  RecaptchaAdapterTest{},
+	//	}
+	//
+	//	responseWriter := httptest.NewRecorder()
+	//	request := httptest.NewRequest("Get", "/", nil)
+	//	indexHandler.IndexHandle(responseWriter, request)
+	//
+	//	assert.Equal(t, responseWriter.Code, 500)
+	//})
+	t.Run("Unit: test IndexHandler with session init failed when not submit", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+
+		indexHandler := handler.IndexHandler{
+			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterFailOnInitSessionTest{},
+			Validation: validation.ValidatorAdapter{}.New(),
+			Recaptcha:  RecaptchaAdapterTest{},
+		}
+
+		responseWriter := httptest.NewRecorder()
+		request := httptest.NewRequest("Get", "/", nil)
+
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("The code did not panic")
+			}
+		}()
+		indexHandler.IndexHandle(responseWriter, request)
+	})
+	t.Run("Unit: test IndexHandler with form submit failed on recaptcha confirm", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+
+		indexHandler := handler.IndexHandler{
+			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterTest{},
+			Validation: validation.ValidatorAdapter{}.New(),
+			Recaptcha: RecaptchaAdapterTest{
+				isFail: true,
+			},
+		}
+
+		responseWriter := httptest.NewRecorder()
+		request := httptest.NewRequest("POST", "/", nil)
+		v := url.Values{}
+		v.Set("name", "a name")
+		v.Set("email", "email@fake.com")
+		v.Set("message", "a message")
+		v.Set("g-captcha-response", "captcha")
+		request.Form = v
+		indexHandler.IndexHandle(responseWriter, request)
+
+		assert.Equal(t, responseWriter.Code, 303)
+	})
+	t.Run("Unit: test IndexHandler with form submit failed without recaptcha field", func(t *testing.T) {
+		repositoryMock := &ContactRepositoryTest{}
+
+		indexHandler := handler.IndexHandler{
+			Template: &TemplaterTest{},
+			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+				TechnoRepository: &repository.TechnoJSONRepository{
+					RootPath: "./../../../../",
+				},
+			},
+			CreateContactCommandHandler: command.CreateContactCommandHandler{
+				ContactFactory:             &entity.Contact{},
+				ContactRepository:          repositoryMock,
+				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
+				Logger:                     &LoggerTest{},
+			},
+			Session:    SessionAdapterTest{},
+			Validation: validation.ValidatorAdapter{}.New(),
+			Recaptcha:  RecaptchaAdapterTest{},
+		}
+
+		responseWriter := httptest.NewRecorder()
+		request := httptest.NewRequest("POST", "/", nil)
+		v := url.Values{}
+		v.Set("name", "a name")
+		v.Set("email", "email@fake.com")
+		v.Set("message", "a message")
+		request.Form = v
+		indexHandler.IndexHandle(responseWriter, request)
+
+		assert.Equal(t, responseWriter.Code, 303)
 	})
 }
 
@@ -127,6 +451,28 @@ func (s SessionAdapterTest) SetValue(name string, value string) {
 	_ = value
 }
 
+type SessionAdapterTestFailed struct {
+	SessionAdapterTest
+	onInit bool
+	onGet  bool
+}
+
+func (s SessionAdapterTestFailed) Init(request *http.Request) (session.Sessioner, error) {
+	_ = request
+	if s.onInit {
+		return nil, errors.New("SessionAdapterTestFailed - Init")
+	}
+	return s, nil
+}
+
+func (s SessionAdapterTestFailed) GetValue(name string) interface{} {
+	_ = name
+	if s.onGet {
+		return errors.New("SessionAdapterTestFailed - Init")
+	}
+	return name
+}
+
 type ValidatorFailOnStructTest struct{}
 
 func (v ValidatorFailOnStructTest) GetErrors() []validation.CustomError {
@@ -184,4 +530,17 @@ func (s SessionAdapterFailOnInitSessionTest) Init(request *http.Request) (sessio
 }
 func (s SessionAdapterFailOnInitSessionTest) New() session.Sessioner {
 	return &SessionAdapterFailOnInitSessionTest{}
+}
+
+type RecaptchaAdapterTest struct {
+	isFail bool
+}
+
+func (s RecaptchaAdapterTest) Confirm(remoteip, response string) (result bool, err error) {
+	_ = remoteip
+	_ = response
+	if !s.isFail {
+		return true, nil
+	}
+	return false, errors.New("error Confirm Recaptcha")
 }

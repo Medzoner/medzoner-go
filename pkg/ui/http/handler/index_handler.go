@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-	"github.com/dpapathanasiou/go-recaptcha"
 	"log"
 	"net/http"
 	"time"
@@ -21,6 +21,7 @@ type IndexHandler struct {
 	CreateContactCommandHandler command.CreateContactCommandHandler
 	Session                     session.Sessioner
 	Validation                  validation.MzValidator
+	Recaptcha                   captcha.Captcher
 }
 
 //IndexView IndexView
@@ -35,12 +36,12 @@ type IndexView struct {
 	FormMessage      string
 }
 
-func processRequest(request *http.Request) (result bool) {
-	recaptchaResponse, responseFound := request.Form["g-recaptcha-response"]
+func (h *IndexHandler) processRequest(request *http.Request) (result bool) {
+	recaptchaResponse, responseFound := request.Form["g-captcha-response"]
 	if responseFound {
-		result, err := recaptcha.Confirm("127.0.0.1", recaptchaResponse[0])
+		result, err := h.Recaptcha.Confirm("127.0.0.1", recaptchaResponse[0])
 		if err != nil {
-			log.Println("recaptcha server error", err)
+			log.Println("captcha server error", err)
 		}
 		return result
 	}
@@ -52,7 +53,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	newSession, err := h.Session.Init(request)
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
-		return
+		panic(err.Error())
 	}
 	h.Session = newSession
 	view := IndexView{
@@ -69,13 +70,9 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	if h.Session.GetValue("message") != nil {
 		view.FormMessage = h.Session.GetValue("message").(string)
 	}
-	if err != nil {
-		http.Error(response, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("submit") == "" {
-		if processRequest(request) {
+		if h.processRequest(request) {
 			createContactCommand := command.CreateContactCommand{
 				DateAdd: time.Now(),
 				Name:    request.FormValue("name"),
@@ -105,13 +102,14 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			return
 		}
 	}
+	response.WriteHeader(statusCode)
 	if view.FormMessage != "" {
 		h.Session.SetValue("message", "")
 		err = h.Session.Save(request, response)
 	}
 	_, err = h.Template.Render("index", view, response, statusCode)
 	if err != nil {
-		fmt.Println(err)
+		panic(err.Error())
 	}
 	view.FormMessage = ""
 	_ = request

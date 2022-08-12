@@ -63,4 +63,18 @@ func TestHandle(t *testing.T) {
 			cancel()
 		}()
 	})
+	t.Run("Unit: test App success migrate", func(t *testing.T) {
+		app := pkg.App{
+			DebugMode: true,
+			RootPath:  "../fake",
+		}
+		builder, _ := di.NewBuilder()
+		app.LoadContainer(builder)
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("The code did not panic")
+			}
+		}()
+		app.Handle("migrate")
+	})
 }
