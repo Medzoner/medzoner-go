@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medzoner-go
+spec:
+  selector:
+    matchLabels:
+      app: medzoner-go
+  template:
+    metadata:
+      labels:
+        app: medzoner-go
+    spec:
+      containers:
+        - name: medzoner-go
+          image: localhost:5000/medzoner-go
+          workingDir: /var/www
+          ports:
+            - containerPort: 8002
+            - containerPort: 4000
+          command:
+            - /bin/sh
+            - -c
+            - |
+              dlv debug --headless --listen=:4000 --only-same-user=false --api-version=2 --accept-multiclient --log --log-output=rpc ./cmd/app/main.go

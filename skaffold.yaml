@@ -1,0 +1,34 @@
+apiVersion: skaffold/v2beta23
+kind: Config
+metadata:
+  name: k-s-skaffold
+#build:
+#  artifacts:
+#  - image: localhost:5000/medzoner-go
+#    context: docker/local
+#  local:
+#    useDockerCLI: false
+#    useBuildkit: false
+
+deploy:
+  kubectl:
+    manifests:
+      - k8s/deployment.yaml
+      - k8s/service.yaml
+      - k8s/ingress.yaml
+
+profiles:
+  - name: dev
+    activation:
+      - command: dev
+    build:
+      artifacts:
+        - image: localhost:5000/medzoner-go
+          context: ''
+          docker:
+            buildArgs:
+              ENV: development
+          sync:
+            manual:
+              - src: 'pkg/**/*.go'
+                dest: /var/www/.

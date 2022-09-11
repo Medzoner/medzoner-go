@@ -1,4 +1,4 @@
-FROM alpine AS runner
+FROM alpine:3.16.2 AS runner
 
 COPY ./bin /opt/bin
 COPY ./tmpl /opt/tmpl

@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: medzoner-go
+spec:
+  ports:
+    - port: 8002
+      name: http
+    - port: 4000
+      name: debug
+  type: ClusterIP
+  selector:
+    app: medzoner-go

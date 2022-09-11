@@ -26,4 +26,4 @@ db_run:
 	docker-compose up -d --force-recreate
 
 migrate:
-	go run cmd/migrate/migrate.go
+	go run ./cmd/migrate/migrate.go

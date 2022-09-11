@@ -1,2 +1,4 @@
 ./var/mysql
-./var/mysqltest
+./var/portainer-data
+./.idea
+./.git

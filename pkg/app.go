@@ -11,11 +11,9 @@ import (
 
 //App App
 type App struct {
-	DebugMode  bool
-	RootPath   string
-	Container  di.Container
-	DbInstance database.IDbInstance
-	AppWeb     web.IWeb
+	DebugMode bool
+	RootPath  string
+	Container di.Container
 }
 
 //Handle Handle
@@ -24,7 +22,7 @@ func (a *App) Handle(action string) {
 		a.Container.Get("app-web").(web.IWeb).Start()
 	}
 	if action == "migrate" {
-		a.DbInstance.CreateDatabase(
+		a.Container.Get("database").(database.IDbInstance).CreateDatabase(
 			a.Container.Get("config").(config.IConfig).GetDatabaseName(),
 		)
 		a.Container.Get("db-manager").(*database.DbMigration).MigrateUp()

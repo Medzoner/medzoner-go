@@ -32,6 +32,7 @@ script:
   - go vet ./...
   - .travis/gofmt.sh
   - make build
+  - docker run --rm -i hadolint/hadolint < docker/Dockerfile
   - .travis/push.sh
 
 after_script:

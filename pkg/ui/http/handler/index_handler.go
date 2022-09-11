@@ -102,8 +102,8 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			return
 		}
 	}
-	response.WriteHeader(statusCode)
 	if view.FormMessage != "" {
+		response.WriteHeader(statusCode)
 		h.Session.SetValue("message", "")
 		err = h.Session.Save(request, response)
 	}
@@ -111,6 +111,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	if err != nil {
 		panic(err.Error())
 	}
+
 	view.FormMessage = ""
 	_ = request
 }

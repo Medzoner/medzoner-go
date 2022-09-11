@@ -30,9 +30,17 @@ go build -o bin/migrate ./cmd/migrate.go
 
 ## Run
 ```
-./bin/migrate
-./bin/app
+go run ./cmd/app/main.go
+go run ./cmd/migrate.go
 ```
+![run](doc/run.png)
+
+## Debug
+```
+go install github.com/go-delve/delve/cmd/dlv@master
+dlv debug --headless --listen=:4000 --only-same-user=false --api-version=2 --accept-multiclient --log --log-output=rpc ./cmd/app/main.go
+```
+![run](doc/dlv.png)
 
 ## Test
 
@@ -40,12 +48,14 @@ go build -o bin/migrate ./cmd/migrate.go
 ```
 go test -v -cover -coverpkg=./... ./pkg/...
 ```
+![run](doc/unit-test.png)
 
 ### BehaviorTest
 Database (mysql) must be up and configured before run.
 ```
 go test godog_test.go
 ```
+![run](doc/behavior-test.png)
 
 ## Developed & Maintained by
 [Mehdi Youb](https://github.com/Medzoner) 
