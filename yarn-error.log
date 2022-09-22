@@ -1,0 +1,31 @@
+Arguments: 
+  /home/medzoner/.nvm/versions/node/v16.10.0/bin/node /home/medzoner/.nvm/versions/node/v16.10.0/bin/yarn init
+
+PATH: 
+  /snap/go/current/bin:/home/medzoner/go/bin:/home/medzoner/.nvm/versions/node/v16.10.0/bin:/home/medzoner/.cargo/bin:/home/medzoner/.local/bin:/home/medzoner/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/ssl/bin:/home/medzoner/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin:/home/medzoner/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin:/media/medzoner/storage/www/medzoner-go/node_modules/.bin
+
+Yarn version: 
+  1.22.17
+
+Node version: 
+  16.10.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /media/medzoner/storage/www/medzoner-go/package.json: Unexpected end of JSON input
+      at JSON.parse (<anonymous>)
+      at /home/medzoner/.nvm/versions/node/v16.10.0/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/home/medzoner/.nvm/versions/node/v16.10.0/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /home/medzoner/.nvm/versions/node/v16.10.0/lib/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

@@ -27,3 +27,10 @@ db_run:
 
 migrate:
 	go run ./cmd/migrate/migrate.go
+
+install_proto:
+	sudo mv ~/Téléchargements/protoc-gen-grpc-web-1.3.1-linux-x86_64 /usr/bin/protoc-gen-grpc-web
+	sudoo chmod +x /usr/local/bin/protoc-gen-grpc-web
+
+gen_rpc:
+	protoc --js_out=import_style=commonjs:./   --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./ ./calculator/calculator.proto
