@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-//WebDefinition WebDefinition
+// WebDefinition WebDefinition
 var WebDefinition = di.Def{
 	Name:  "app-web",
 	Scope: di.App,

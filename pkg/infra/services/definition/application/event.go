@@ -7,7 +7,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//ContactCreatedEventHandlerDefinition ContactCreatedEventHandlerDefinition
+// ContactCreatedEventHandlerDefinition ContactCreatedEventHandlerDefinition
 var ContactCreatedEventHandlerDefinition = di.Def{
 	Name:  "contact-event-created-handler",
 	Scope: di.App,

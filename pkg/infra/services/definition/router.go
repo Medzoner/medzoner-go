@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//RouterDefinition RouterDefinition
+// RouterDefinition RouterDefinition
 var RouterDefinition = di.Def{
 	Name:  "router",
 	Scope: di.App,

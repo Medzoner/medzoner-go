@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//Service Service
+// Service Service
 type Service struct {
 	Definitions []di.Def
 }
@@ -34,7 +34,7 @@ var Definitions = []di.Def{
 	application.ContactCreatedEventHandlerDefinition,
 }
 
-//GetDefinitions GetDefinitions
+// GetDefinitions GetDefinitions
 func (s Service) GetDefinitions(rootPath string) []di.Def {
 	var services []di.Def
 

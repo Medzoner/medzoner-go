@@ -8,7 +8,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//ContactRepositoryDefinition ContactRepositoryDefinition
+// ContactRepositoryDefinition ContactRepositoryDefinition
 var ContactRepositoryDefinition = di.Def{
 	Name:  "contact-repository",
 	Scope: di.App,
@@ -21,7 +21,7 @@ var ContactRepositoryDefinition = di.Def{
 	},
 }
 
-//TechnoRepositoryDefinition TechnoRepositoryDefinition
+// TechnoRepositoryDefinition TechnoRepositoryDefinition
 var TechnoRepositoryDefinition = di.Def{
 	Name:  "techno-repository",
 	Scope: di.App,

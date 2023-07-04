@@ -1,6 +1,6 @@
 package model
 
-//UserAuth UserAuth
+// UserAuth UserAuth
 type UserAuth struct {
 	UUID string
 }

@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-//IConfig IConfig
+// IConfig IConfig
 type IConfig interface {
 	Init()
 	GetRootPath() string
@@ -23,7 +23,7 @@ type IConfig interface {
 	GetRecaptchaSecretKey() string
 }
 
-//Config Config
+// Config Config
 type Config struct {
 	Environment        string
 	RootPath           string
@@ -39,7 +39,7 @@ type Config struct {
 	RecaptchaSecretKey string
 }
 
-//Init Init
+// Init Init
 func (c *Config) Init() {
 	err := godotenv.Load(c.RootPath + "/.env")
 	c.Environment = getEnv("ENV", "dev")
@@ -65,42 +65,42 @@ func (c *Config) Init() {
 	fmt.Println("No .env file found")
 }
 
-//GetMysqlDsn GetMysqlDsn
+// GetMysqlDsn GetMysqlDsn
 func (c *Config) GetMysqlDsn() string {
 	return c.DatabaseDsn
 }
 
-//GetDatabaseDriver GetDatabaseDriver
+// GetDatabaseDriver GetDatabaseDriver
 func (c *Config) GetDatabaseDriver() string {
 	return c.DatabaseDriver
 }
 
-//GetDatabaseName GetDatabaseName
+// GetDatabaseName GetDatabaseName
 func (c *Config) GetDatabaseName() string {
 	return c.DatabaseName
 }
 
-//GetAPIPort GetAPIPort
+// GetAPIPort GetAPIPort
 func (c *Config) GetAPIPort() int {
 	return c.APIPort
 }
 
-//GetRootPath GetRootPath
+// GetRootPath GetRootPath
 func (c *Config) GetRootPath() string {
 	return c.RootPath
 }
 
-//GetEnvironment GetEnvironment
+// GetEnvironment GetEnvironment
 func (c *Config) GetEnvironment() string {
 	return c.Environment
 }
 
-//GetMailerUser GetMailerUser
+// GetMailerUser GetMailerUser
 func (c *Config) GetMailerUser() string {
 	return c.MailerUser
 }
 
-//GetMailerPassword GetMailerPassword
+// GetMailerPassword GetMailerPassword
 func (c *Config) GetMailerPassword() string {
 	return c.MailerPassword
 }
@@ -137,12 +137,12 @@ func getEnvAsSlice(name string, defaultVal []string, sep string) []string {
 	return val
 }
 
-//GetRecaptchaSiteKey GetRecaptchaSiteKey
+// GetRecaptchaSiteKey GetRecaptchaSiteKey
 func (c *Config) GetRecaptchaSiteKey() string {
 	return c.RecaptchaSiteKey
 }
 
-//GetRecaptchaSecretKey GetRecaptchaSecretKey
+// GetRecaptchaSecretKey GetRecaptchaSecretKey
 func (c *Config) GetRecaptchaSecretKey() string {
 	return c.RecaptchaSecretKey
 }

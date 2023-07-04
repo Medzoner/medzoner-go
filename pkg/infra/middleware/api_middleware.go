@@ -5,17 +5,17 @@ import (
 	"net/http"
 )
 
-//IMiddleware IMiddleware
+// IMiddleware IMiddleware
 type IMiddleware interface {
 	Middleware(next http.Handler) http.Handler
 }
 
-//APIMiddleware APIMiddleware
+// APIMiddleware APIMiddleware
 type APIMiddleware struct {
 	Logger logger.ILogger
 }
 
-//Middleware Middleware
+// Middleware Middleware
 func (m APIMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

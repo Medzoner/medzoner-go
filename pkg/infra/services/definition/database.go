@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//DatabaseEntityDefinition DatabaseEntityDefinition
+// DatabaseEntityDefinition DatabaseEntityDefinition
 var DatabaseEntityDefinition = di.Def{
 	Name:  "database-entity",
 	Scope: di.App,
@@ -22,7 +22,7 @@ var DatabaseEntityDefinition = di.Def{
 	},
 }
 
-//DatabaseDefinition DatabaseDefinition
+// DatabaseDefinition DatabaseDefinition
 var DatabaseDefinition = di.Def{
 	Name:  "database",
 	Scope: di.App,
@@ -38,7 +38,7 @@ var DatabaseDefinition = di.Def{
 	},
 }
 
-//DatabaseManagerDefinition DatabaseManagerDefinition
+// DatabaseManagerDefinition DatabaseManagerDefinition
 var DatabaseManagerDefinition = di.Def{
 	Name:  "db-manager",
 	Scope: di.App,

@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//ValidationDefinition ValidationDefinition
+// ValidationDefinition ValidationDefinition
 var ValidationDefinition = di.Def{
 	Name:  "validation",
 	Scope: di.App,

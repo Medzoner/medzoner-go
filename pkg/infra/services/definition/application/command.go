@@ -9,7 +9,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//CreateContactCommandHandlerDefinition CreateContactCommandHandlerDefinition
+// CreateContactCommandHandlerDefinition CreateContactCommandHandlerDefinition
 var CreateContactCommandHandlerDefinition = di.Def{
 	Name:  "create-contact-command-handler",
 	Scope: di.App,

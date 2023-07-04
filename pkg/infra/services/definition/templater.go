@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//TemplaterDefinition TemplaterDefinition
+// TemplaterDefinition TemplaterDefinition
 var TemplaterDefinition = di.Def{
 	Name:  "templater",
 	Scope: di.App,

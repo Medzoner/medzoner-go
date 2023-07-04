@@ -11,7 +11,7 @@ type IServer interface {
 	Shutdown(ctx context.Context) error
 }
 
-//Server Server
+// Server Server
 type Server struct {
 	HTTPServer *http.Server
 }

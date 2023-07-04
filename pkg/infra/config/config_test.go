@@ -31,7 +31,7 @@ func TestEnv(t *testing.T) {
 			fmt.Println(err)
 			panic("err")
 		}
-		err = ioutil.WriteFile(conf.RootPath+".env", []byte(string([]byte{})), 0644)
+		err = ioutil.WriteFile(conf.RootPath+".env", []byte([]byte{}), 0644)
 		if err != nil {
 			fmt.Println(err)
 			panic("err")

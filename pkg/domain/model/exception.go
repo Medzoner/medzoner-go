@@ -1,6 +1,6 @@
 package model
 
-//Exception Exception
+// Exception Exception
 type Exception struct {
 	Message string `json:"message"`
 }

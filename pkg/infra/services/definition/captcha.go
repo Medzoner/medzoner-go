@@ -5,7 +5,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//CaptchaDefinition CaptchaDefinition
+// CaptchaDefinition CaptchaDefinition
 var CaptchaDefinition = di.Def{
 	Name:  "captcha",
 	Scope: di.App,

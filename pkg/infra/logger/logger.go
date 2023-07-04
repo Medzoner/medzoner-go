@@ -6,41 +6,41 @@ import (
 	"os"
 )
 
-//ILogger ILogger
+// ILogger ILogger
 type ILogger interface {
 	Log(msg string) error
 	Error(msg string) error
 	New() (ILogger, error)
 }
 
-//Logger Logger
+// Logger Logger
 type Logger struct {
 	RootPath string
 }
 
-//Log Log
+// Log Log
 func (l *Logger) Log(msg string) error {
 	fmt.Println(msg)
 	return logFile(msg, l.RootPath+l.InfoBasePath())
 }
 
-//Error Error
+// Error Error
 func (l *Logger) Error(msg string) error {
 	fmt.Println(msg)
 	return errorFile(msg, l.RootPath+l.ErrorBasePath())
 }
 
-//New New
+// New New
 func (l Logger) New() (ILogger, error) {
 	return &Logger{RootPath: l.RootPath}, nil
 }
 
-//InfoBasePath InfoBasePath
+// InfoBasePath InfoBasePath
 func (l *Logger) InfoBasePath() string {
 	return "var/log/info.log"
 }
 
-//ErrorBasePath ErrorBasePath
+// ErrorBasePath ErrorBasePath
 func (l *Logger) ErrorBasePath() string {
 	return "var/log/error.log"
 }

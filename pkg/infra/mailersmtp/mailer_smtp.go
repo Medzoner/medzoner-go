@@ -6,7 +6,7 @@ import (
 	"net/smtp"
 )
 
-//MailerSMTP MailerSMTP
+// MailerSMTP MailerSMTP
 type MailerSMTP struct {
 	RootPath string
 	User     string
@@ -15,7 +15,7 @@ type MailerSMTP struct {
 	Port     string
 }
 
-//Request Request
+// Request Request
 type Request struct {
 	from    string
 	to      []string
@@ -23,7 +23,7 @@ type Request struct {
 	body    string
 }
 
-//NewRequest NewRequest
+// NewRequest NewRequest
 func NewRequest(to []string, subject, body string) *Request {
 	return &Request{
 		to:      to,
@@ -32,7 +32,7 @@ func NewRequest(to []string, subject, body string) *Request {
 	}
 }
 
-//Send Send
+// Send Send
 func (m *MailerSMTP) Send(view interface{}) (bool, error) {
 	auth := smtp.PlainAuth("", m.User, m.Password, m.Host)
 
@@ -55,7 +55,7 @@ func (m *MailerSMTP) Send(view interface{}) (bool, error) {
 	return true, nil
 }
 
-//ParseTemplate ParseTemplate
+// ParseTemplate ParseTemplate
 func (r *Request) ParseTemplate(templateFileName string, data interface{}) error {
 	t, err := template.ParseFiles(templateFileName)
 	if err != nil {

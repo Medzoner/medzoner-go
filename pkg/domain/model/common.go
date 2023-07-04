@@ -1,6 +1,6 @@
 package model
 
-//ICommon ICommon
+// ICommon ICommon
 type ICommon interface {
 	GetID() int
 	SetID(id int) ICommon

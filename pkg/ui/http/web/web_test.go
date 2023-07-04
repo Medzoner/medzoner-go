@@ -80,27 +80,34 @@ func (s ServerFailedMock) ListenAndServe() error {
 }
 
 func (s ServerFailedMock) Shutdown(ctx context.Context) error {
+	_ = ctx
 	return errors.New("failed Shutdown")
 }
 
 type RouterMock struct{}
 
 func (r RouterMock) HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route {
+	_ = path
+	_ = f
 	return &mux.Route{}
 }
 
 func (r RouterMock) PathPrefix(tpl string) *mux.Route {
+	_ = tpl
 	return &mux.Route{}
 }
 
 func (r RouterMock) Use(mwf ...mux.MiddlewareFunc) {
+	_ = mwf
 }
 
 func (r RouterMock) SetNotFoundHandler(handler func(http.ResponseWriter, *http.Request)) {
+	_ = handler
 }
 
 func (r RouterMock) ServeHTTP(http.ResponseWriter, *http.Request) {
 }
 
 func (r RouterMock) Handle(path string) {
+	_ = path
 }

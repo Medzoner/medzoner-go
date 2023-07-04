@@ -5,12 +5,12 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//ConfigDependency ConfigDependency
+// ConfigDependency ConfigDependency
 type ConfigDependency struct {
 	ConfigInstance config.Config
 }
 
-//GetDefinition GetDefinition
+// GetDefinition GetDefinition
 func (cd *ConfigDependency) GetDefinition() di.Def {
 	var ConfigDefinition = di.Def{
 		Name:  "config",
@@ -23,7 +23,7 @@ func (cd *ConfigDependency) GetDefinition() di.Def {
 	return ConfigDefinition
 }
 
-//InitConfig InitConfig
+// InitConfig InitConfig
 func (cd *ConfigDependency) InitConfig(rootPath string) config.Config {
 	c := config.Config{
 		RootPath:  rootPath,

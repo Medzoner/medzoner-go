@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-//DbSQLInstance DbSQLInstance
+// DbSQLInstance DbSQLInstance
 type DbSQLInstance struct {
 	Connection   *sqlx.DB
 	Dsn          string
@@ -17,18 +17,18 @@ type DbSQLInstance struct {
 
 const dsnOptions = "?multiStatements=true&parseTime=true"
 
-//DbConn DbConn
+// Connect Connect
 func (d *DbSQLInstance) Connect() (db *sqlx.DB) {
 	d.Connection = d.openDb(d.Dsn + "/" + d.DatabaseName + dsnOptions)
 	return d.Connection
 }
 
-//GetConnection GetConnection
+// GetConnection GetConnection
 func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 	return d.Connection
 }
 
-//CreateDatabase CreateDatabase
+// CreateDatabase CreateDatabase
 func (d *DbSQLInstance) CreateDatabase(databaseName string) {
 	if d.DriverName == "mysql" {
 		dbCreate := d.openDb(d.Dsn + "/" + dsnOptions)
@@ -36,7 +36,7 @@ func (d *DbSQLInstance) CreateDatabase(databaseName string) {
 	}
 }
 
-//DropDatabase DropDatabase
+// DropDatabase DropDatabase
 func (d *DbSQLInstance) DropDatabase(databaseName string) {
 	if d.DriverName == "mysql" {
 		dbDrop := d.openDb(d.Dsn + "/" + dsnOptions)
@@ -44,12 +44,12 @@ func (d *DbSQLInstance) DropDatabase(databaseName string) {
 	}
 }
 
-//GetDatabaseName GetDatabaseName
+// GetDatabaseName GetDatabaseName
 func (d *DbSQLInstance) GetDatabaseName() string {
 	return d.DatabaseName
 }
 
-//GetDatabaseDriver GetDatabaseDriver
+// GetDatabaseDriver GetDatabaseDriver
 func (d *DbSQLInstance) GetDatabaseDriver() database.Driver {
 	driver, err := mysql.WithInstance(d.Connection.DB, &mysql.Config{})
 	if err != nil {

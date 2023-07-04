@@ -2,7 +2,7 @@ package factory
 
 import "github.com/Medzoner/medzoner-go/pkg/domain/model"
 
-//IContactFactory IContactFactory
+// IContactFactory IContactFactory
 type IContactFactory interface {
 	New() model.IContact
 }

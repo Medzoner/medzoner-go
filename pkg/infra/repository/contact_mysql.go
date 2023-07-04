@@ -7,13 +7,13 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 )
 
-//MysqlContactRepository MysqlContactRepository
+// MysqlContactRepository MysqlContactRepository
 type MysqlContactRepository struct {
 	DbInstance database.IDbInstance
 	Logger     logger.ILogger
 }
 
-//Save Save
+// Save Save
 func (m *MysqlContactRepository) Save(contact model.IContact) {
 	fmt.Sprintln(m.DbInstance.GetDatabaseName())
 	conn := m.DbInstance.GetConnection().MustBegin()

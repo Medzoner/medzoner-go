@@ -9,14 +9,14 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//App App
+// App App
 type App struct {
 	DebugMode bool
 	RootPath  string
 	Container di.Container
 }
 
-//Handle Handle
+// Handle Handle
 func (a *App) Handle(action string) {
 	if action == "web" {
 		a.Container.Get("app-web").(web.IWeb).Start()
@@ -31,7 +31,7 @@ func (a *App) Handle(action string) {
 	return
 }
 
-//LoadContainer LoadContainer
+// LoadContainer LoadContainer
 func (a *App) LoadContainer(containerBuilder *di.Builder) {
 	err := containerBuilder.Add(services.Service{}.GetDefinitions(a.RootPath)...)
 	if err != nil {

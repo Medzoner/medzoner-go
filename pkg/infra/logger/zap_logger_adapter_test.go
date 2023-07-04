@@ -1,6 +1,7 @@
 package logger_test
 
 import (
+	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"testing"
 )
@@ -11,7 +12,10 @@ func TestZapLoggerAdapterSuccess(t *testing.T) {
 			RootPath: "../../../",
 			UseSugar: false,
 		}.New()
-		_ = loggerTest.Log("log zap")
+		err := loggerTest.Log("log zap")
+		if err != nil {
+			fmt.Println(err)
+		}
 	})
 	t.Run("Unit: test ZapLoggerAdapter error log success", func(t *testing.T) {
 		loggerTest, _ := logger.ZapLoggerAdapter{
@@ -25,13 +29,19 @@ func TestZapLoggerAdapterSuccess(t *testing.T) {
 			RootPath: "../../../",
 			UseSugar: true,
 		}.New()
-		_ = loggerTest.Log("log (sugared) zap")
+		err := loggerTest.Log("log (sugared) zap")
+		if err != nil {
+			fmt.Println(err)
+		}
 	})
 	t.Run("Unit: test ZapLoggerAdapter (sugared) error log success", func(t *testing.T) {
-		loggerTest, _ := logger.ZapLoggerAdapter{
+		loggerTest, err := logger.ZapLoggerAdapter{
 			RootPath: "../../../",
 			UseSugar: true,
 		}.New()
+		if err != nil {
+			fmt.Println(err)
+		}
 		_ = loggerTest.Error("error (sugared) zap")
 	})
 }

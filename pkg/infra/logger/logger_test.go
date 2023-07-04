@@ -1,6 +1,7 @@
 package logger_test
 
 import (
+	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"gotest.tools/assert"
 	"io/ioutil"
@@ -13,7 +14,10 @@ func TestLoggerSuccess(t *testing.T) {
 		loggerTest := &logger.Logger{RootPath: "../../../"}
 		loggerInstanceTest, _ := loggerTest.New()
 		message := "good test"
-		_ = loggerInstanceTest.Log(message)
+		err := loggerInstanceTest.Log(message)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		b, err := ioutil.ReadFile("../../../" + loggerTest.InfoBasePath())
 		if err != nil {
@@ -58,6 +62,9 @@ func TestLoggerFailed(t *testing.T) {
 		loggerInstanceTest, _ := loggerTest.New()
 		message := "this is a log failed"
 
-		_ = loggerInstanceTest.Log(message)
+		err := loggerInstanceTest.Log(message)
+		if err != nil {
+			fmt.Println(err)
+		}
 	})
 }

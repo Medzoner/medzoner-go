@@ -11,7 +11,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//NotFoundHandlerDefinition NotFoundHandlerDefinition
+// NotFoundHandlerDefinition NotFoundHandlerDefinition
 var NotFoundHandlerDefinition = di.Def{
 	Name:  "notfound-handler",
 	Scope: di.App,
@@ -22,7 +22,7 @@ var NotFoundHandlerDefinition = di.Def{
 	},
 }
 
-//IndexHandlerDefinition IndexHandlerDefinition
+// IndexHandlerDefinition IndexHandlerDefinition
 var IndexHandlerDefinition = di.Def{
 	Name:  "index-handler",
 	Scope: di.App,
@@ -38,7 +38,7 @@ var IndexHandlerDefinition = di.Def{
 	},
 }
 
-//TechnoHandlerDefinition TechnoHandlerDefinition
+// TechnoHandlerDefinition TechnoHandlerDefinition
 var TechnoHandlerDefinition = di.Def{
 	Name:  "techno-handler",
 	Scope: di.App,

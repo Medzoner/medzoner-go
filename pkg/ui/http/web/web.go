@@ -15,12 +15,12 @@ import (
 	"regexp"
 )
 
-//IWeb IWeb
+// IWeb IWeb
 type IWeb interface {
 	Start()
 }
 
-//Web Web
+// Web Web
 type Web struct {
 	Logger             logger.ILogger
 	Router             router.IRouter
@@ -32,7 +32,7 @@ type Web struct {
 	RecaptchaSecretKey string
 }
 
-//Start Start
+// Start Start
 func (a *Web) Start() {
 	recaptcha.Init(a.RecaptchaSecretKey)
 	a.Router.SetNotFoundHandler(a.NotFoundHandler.Handle)
@@ -49,8 +49,11 @@ func (a *Web) Start() {
 	a.Router.PathPrefix("/public").Handler(fs)
 	a.Router.Handle("/")
 
-	_ = a.Logger.Log(fmt.Sprintf("Server up on port '%d'", a.APIPort))
-	err := a.Server.ListenAndServe()
+	err := a.Logger.Log(fmt.Sprintf("Server up on port '%d'", a.APIPort))
+	if err != nil {
+		_ = a.Logger.Error(fmt.Sprintln(err))
+	}
+	err = a.Server.ListenAndServe()
 	if err != nil {
 		_ = a.Logger.Error(fmt.Sprintln(err))
 	}

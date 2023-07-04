@@ -1,6 +1,6 @@
 package model
 
-//Token Token
+// Token Token
 type Token struct {
 	UserID uint
 	Name   string

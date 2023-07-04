@@ -11,14 +11,14 @@ import (
 	"log"
 )
 
-//DbMigration DbMigration
+// DbMigration DbMigration
 type DbMigration struct {
 	DbInstance   IDbInstance
 	RootPath     string
 	MigrationDir *string
 }
 
-//MigrateUp MigrateUp
+// New New
 func (d *DbMigration) New() *DbMigration {
 	db := DbMigration{
 		DbInstance:   d.DbInstance,
@@ -28,14 +28,14 @@ func (d *DbMigration) New() *DbMigration {
 	return &db
 }
 
-//MigrateUp MigrateUp
+// MigrateUp MigrateUp
 func (d *DbMigration) MigrateUp() {
 	err := d.getNewWithDatabaseInstance().Up()
 	d.checkMigrateErrors(err)
 	log.Println("Database migrated ok: up")
 }
 
-//MigrateDown MigrateDown
+// MigrateDown MigrateDown
 func (d *DbMigration) MigrateDown() {
 	err := d.getNewWithDatabaseInstance().Down()
 	d.checkMigrateErrors(err)

@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-//IndexHandler IndexHandler
+// IndexHandler IndexHandler
 type IndexHandler struct {
 	Template                    templater.Templater
 	ListTechnoQueryHandler      query.ListTechnoQueryHandler
@@ -24,7 +24,7 @@ type IndexHandler struct {
 	Recaptcha                   captcha.Captcher
 }
 
-//IndexView IndexView
+// IndexView IndexView
 type IndexView struct {
 	Locale    string
 	PageTitle string
@@ -48,7 +48,7 @@ func (h *IndexHandler) processRequest(request *http.Request) (result bool) {
 	return false
 }
 
-//IndexHandle IndexHandle
+// IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
 	newSession, err := h.Session.Init(request)
 	if err != nil {

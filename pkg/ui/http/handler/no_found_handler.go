@@ -5,12 +5,12 @@ import (
 	"net/http"
 )
 
-//NotFoundHandler NotFoundHandler
+// NotFoundHandler NotFoundHandler
 type NotFoundHandler struct {
 	Template templater.Templater
 }
 
-//NotFoundView NotFoundView
+// NotFoundView NotFoundView
 type NotFoundView struct {
 	Locale          string
 	PageTitle       string
@@ -18,7 +18,7 @@ type NotFoundView struct {
 	PageDescription string
 }
 
-//Handle Handle
+// Handle Handle
 func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	view := &NotFoundView{
 		Locale:          "fr",

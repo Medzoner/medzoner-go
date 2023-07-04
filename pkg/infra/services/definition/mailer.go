@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//MailerDefinition MailerDefinition
+// MailerDefinition MailerDefinition
 var MailerDefinition = di.Def{
 	Name:  "mailer",
 	Scope: di.App,

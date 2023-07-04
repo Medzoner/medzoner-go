@@ -7,14 +7,14 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-//ZapLoggerAdapter ZapLoggerAdapter
+// ZapLoggerAdapter ZapLoggerAdapter
 type ZapLoggerAdapter struct {
 	RootPath string
 	Zap      *zap.Logger
 	UseSugar bool
 }
 
-//New New
+// New New
 func (z ZapLoggerAdapter) New() (ILogger, error) {
 	rawJSON := []byte(`{
 		"level": "debug",
@@ -55,7 +55,7 @@ func (z ZapLoggerAdapter) deferLogger(zapLogger *zap.Logger) {
 	}
 }
 
-//Log Log
+// Log Log
 func (z ZapLoggerAdapter) Log(msg string) error {
 	if z.UseSugar {
 		sugar := z.Zap.Sugar()
@@ -67,7 +67,7 @@ func (z ZapLoggerAdapter) Log(msg string) error {
 	return nil
 }
 
-//Error Error
+// Error Error
 func (z ZapLoggerAdapter) Error(msg string) error {
 	if z.UseSugar {
 		sugar := z.Zap.Sugar()

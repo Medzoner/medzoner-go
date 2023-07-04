@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//Contact Contact
+// Contact Contact
 type Contact struct {
 	ID          int                   `json:"id" db:"id"`
 	UUID        string                `json:"uuid" db:"uuid"`
@@ -17,83 +17,83 @@ type Contact struct {
 	EmailString string
 }
 
-//New New
+// New New
 func (*Contact) New() model.IContact {
 	return &Contact{}
 }
 
-//GetID GetID
+// GetID GetID
 func (c *Contact) GetID() int {
 	return c.ID
 }
 
-//SetID SetID
+// SetID SetID
 func (c *Contact) SetID(id int) model.ICommon {
 	c.ID = id
 	return c
 }
 
-//GetUUID GetUUID
+// GetUUID GetUUID
 func (c *Contact) GetUUID() string {
 	return c.UUID
 }
 
-//SetUUID SetUUID
+// SetUUID SetUUID
 func (c *Contact) SetUUID(uuid string) model.ICommon {
 	c.UUID = uuid
 	return c
 }
 
-//GetName GetName
+// GetName GetName
 func (c *Contact) GetName() string {
 	return c.Name
 }
 
-//SetName SetName
+// SetName SetName
 func (c *Contact) SetName(name string) model.IContact {
 	c.Name = name
 	return c
 }
 
-//GetMessage GetMessage
+// GetMessage GetMessage
 func (c *Contact) GetMessage() string {
 	return c.Message
 }
 
-//SetMessage SetMessage
+// SetMessage SetMessage
 func (c *Contact) SetMessage(message string) model.IContact {
 	c.Message = message
 	return c
 }
 
-//GetEmail GetEmail
+// GetEmail GetEmail
 func (c *Contact) GetEmail() customtype.NullString {
 	return c.Email
 }
 
-//SetEmail SetEmail
+// SetEmail SetEmail
 func (c *Contact) SetEmail(email customtype.NullString) model.IContact {
 	c.Email = email
 	return c
 }
 
-//GetEmailString GetEmailString
+// GetEmailString GetEmailString
 func (c *Contact) GetEmailString() string {
 	return c.Email.String
 }
 
-//SetEmailString SetEmailString
+// SetEmailString SetEmailString
 func (c *Contact) SetEmailString() model.IContact {
 	c.EmailString = c.Email.String
 	return c
 }
 
-//GetDateAdd GetDateAdd
+// GetDateAdd GetDateAdd
 func (c *Contact) GetDateAdd() time.Time {
 	return c.DateAdd
 }
 
-//SetDateAdd SetDateAdd
+// SetDateAdd SetDateAdd
 func (c *Contact) SetDateAdd(dateAdd time.Time) model.IContact {
 	c.DateAdd = dateAdd
 	return c

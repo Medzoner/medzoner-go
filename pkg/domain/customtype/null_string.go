@@ -1,6 +1,6 @@
 package customtype
 
-//NullString NullString
+// NullString NullString
 type NullString struct {
 	String string
 	Valid  bool

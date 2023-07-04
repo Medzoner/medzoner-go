@@ -5,7 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-//IDbInstance IDbInstance
+// IDbInstance IDbInstance
 type IDbInstance interface {
 	GetConnection() (db *sqlx.DB)
 	CreateDatabase(databaseName string)

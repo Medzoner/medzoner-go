@@ -8,17 +8,17 @@ import (
 	"strings"
 )
 
-//Templater Templater
+// Templater Templater
 type Templater interface {
 	Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error)
 }
 
-//TemplateHTML TemplateHTML
+// TemplateHTML TemplateHTML
 type TemplateHTML struct {
 	RootPath string
 }
 
-//Render Render
+// Render Render
 func (t *TemplateHTML) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
 	response.WriteHeader(status)
 

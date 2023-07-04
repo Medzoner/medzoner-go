@@ -384,6 +384,10 @@ type TemplaterTestFailed struct {
 }
 
 func (t *TemplaterTestFailed) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
+	_ = name
+	_ = view
+	_ = response
+	_ = status
 	return nil, errors.New("panic")
 }
 
@@ -392,6 +396,9 @@ type TemplaterTest struct {
 }
 
 func (t *TemplaterTest) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
+	_ = name
+	_ = response
+	_ = status
 	fmt.Println(view)
 	return nil, nil
 }

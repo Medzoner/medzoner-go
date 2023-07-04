@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//SessionDefinition SessionDefinition
+// SessionDefinition SessionDefinition
 var SessionDefinition = di.Def{
 	Name:  "session",
 	Scope: di.App,

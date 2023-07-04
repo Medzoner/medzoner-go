@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-//ListTechnoQueryHandlerDefinition ListTechnoQueryHandlerDefinition
+// ListTechnoQueryHandlerDefinition ListTechnoQueryHandlerDefinition
 var ListTechnoQueryHandlerDefinition = di.Def{
 	Name:  "list-techno-query-handler",
 	Scope: di.App,

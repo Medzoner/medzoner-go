@@ -4,12 +4,12 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
 )
 
-//ListTechnoQueryHandler ListTechnoQueryHandler
+// ListTechnoQueryHandler ListTechnoQueryHandler
 type ListTechnoQueryHandler struct {
 	TechnoRepository repository.TechnoRepository
 }
 
-//Handle Handle
+// Handle handles ListTechnoQuery and return map[string]interface{}
 func (l *ListTechnoQueryHandler) Handle(query ListTechnoQuery) map[string]interface{} {
 	if query.Type == "stack" {
 		return l.TechnoRepository.FetchStack()
