@@ -23,7 +23,10 @@ start:
 	go run ./cmd/app/main.go
 
 db_run:
-	docker-compose up -d --force-recreate
+	docker compose up -d --force-recreate --build
+
+db_down:
+	docker compose down
 
 migrate:
 	go run ./cmd/migrate/migrate.go

@@ -11,6 +11,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
+	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"gotest.tools/assert"
@@ -38,6 +39,7 @@ func TestIndexHandler(t *testing.T) {
 			},
 			Session:    SessionAdapterTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
+			Tracer:     tracer.NewHttpTracer(),
 		}
 		request := httptest.NewRequest("GET", "/", nil)
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)
@@ -107,6 +109,7 @@ func TestIndexHandler(t *testing.T) {
 			},
 			Session:    SessionAdapterTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
+			Tracer:     tracer.NewHttpTracer(),
 		}
 
 		request := httptest.NewRequest("GET", "/", nil)
@@ -134,6 +137,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
+			Tracer:     tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -172,6 +176,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterTest{},
 			Validation: ValidatorFailOnStructTest{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
+			Tracer:     tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -205,6 +210,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterFailOnSaveSessionTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
+			Tracer:     tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -238,6 +244,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterTest{},
 			Validation: ValidatorFailOnStructTest{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
+			Tracer:     tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -298,6 +305,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterFailOnInitSessionTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
+			Tracer:     tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -331,6 +339,7 @@ func TestIndexHandler(t *testing.T) {
 			Recaptcha: RecaptchaAdapterTest{
 				isFail: true,
 			},
+			Tracer: tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -364,6 +373,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
+			Tracer:     tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()

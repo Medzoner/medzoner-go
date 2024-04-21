@@ -15,6 +15,16 @@ type DbSQLInstance struct {
 	DriverName   string
 }
 
+// NewDbSQLInstance NewDbSQLInstance
+func NewDbSQLInstance(conn *sqlx.DB, dsn string, databaseName string, driverName string) IDbInstance {
+	return &DbSQLInstance{
+		Dsn:          dsn,
+		DatabaseName: databaseName,
+		DriverName:   driverName,
+		Connection:   conn,
+	}
+}
+
 const dsnOptions = "?multiStatements=true&parseTime=true"
 
 // Connect Connect

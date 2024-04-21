@@ -32,12 +32,35 @@ type Web struct {
 	RecaptchaSecretKey string
 }
 
+// NewWeb NewWeb
+func NewWeb(
+	logger logger.ILogger,
+	router router.IRouter,
+	server server.IServer,
+	notFoundHandler *handler.NotFoundHandler,
+	indexHandler *handler.IndexHandler,
+	technoHandler *handler.TechnoHandler,
+	apiPort int,
+	recaptchaSecretKey string,
+) IWeb {
+	return &Web{
+		Logger:             logger,
+		Router:             router,
+		Server:             server,
+		NotFoundHandler:    notFoundHandler,
+		IndexHandler:       indexHandler,
+		TechnoHandler:      technoHandler,
+		APIPort:            apiPort,
+		RecaptchaSecretKey: recaptchaSecretKey,
+	}
+}
+
 // Start Start
 func (a *Web) Start() {
 	recaptcha.Init(a.RecaptchaSecretKey)
 	a.Router.SetNotFoundHandler(a.NotFoundHandler.Handle)
 	a.Router.HandleFunc("/", a.IndexHandler.IndexHandle).Methods("GET", "POST")
-	a.Router.Use(middleware.APIMiddleware{Logger: a.Logger}.Middleware)
+	a.Router.Use(middleware.NewAPIMiddleware(a.Logger).Middleware)
 	fs := http.FileServer(http.Dir("."))
 
 	m := minify.New()

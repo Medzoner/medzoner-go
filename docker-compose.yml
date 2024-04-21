@@ -49,7 +49,7 @@ services:
         networks:
             - "default"
         volumes:
-            - "./var/mysql:/var/lib/mysql"
+            - "./.var/mysql:/.var/lib/mysql"
 
     mariadb_test:
         image: "mariadb:10.5.9"
@@ -75,4 +75,4 @@ services:
 #        networks:
 #            - "default"
 #        volumes:
-#            - "./var/lib/postgresql:/var/lib/postgresql"
+#            - "./.var/lib/postgresql:/.var/lib/postgresql"

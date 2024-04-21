@@ -37,12 +37,12 @@ func (l Logger) New() (ILogger, error) {
 
 // InfoBasePath InfoBasePath
 func (l *Logger) InfoBasePath() string {
-	return "var/log/info.log"
+	return ".var/log/info.log"
 }
 
 // ErrorBasePath ErrorBasePath
 func (l *Logger) ErrorBasePath() string {
-	return "var/log/error.log"
+	return ".var/log/error.log"
 }
 
 func logFile(msg string, fileLog string) error {

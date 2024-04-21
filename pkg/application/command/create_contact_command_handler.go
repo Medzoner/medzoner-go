@@ -19,6 +19,21 @@ type CreateContactCommandHandler struct {
 	Logger                     logger.ILogger
 }
 
+// NewCreateContactCommandHandler is a function that returns a new CreateContactCommandHandler
+func NewCreateContactCommandHandler(
+	contactFactory factory.IContactFactory,
+	contactRepository repository.ContactRepository,
+	contactCreatedEventHandler event.IEventHandler,
+	logger logger.ILogger,
+) CreateContactCommandHandler {
+	return CreateContactCommandHandler{
+		ContactFactory:             contactFactory,
+		ContactRepository:          contactRepository,
+		ContactCreatedEventHandler: contactCreatedEventHandler,
+		Logger:                     logger,
+	}
+}
+
 // Handle handles command CreateContactCommand and create contact in database and send mail to admin with event ContactCreatedEvent
 // @param command CreateContactCommand struct that contains contact data
 // @return void

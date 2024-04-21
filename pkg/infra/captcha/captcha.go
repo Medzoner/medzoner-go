@@ -13,6 +13,11 @@ type Captcher interface {
 type RecaptchaAdapter struct {
 }
 
+// NewRecaptchaAdapter NewRecaptchaAdapter
+func NewRecaptchaAdapter() RecaptchaAdapter {
+	return RecaptchaAdapter{}
+}
+
 // Confirm Confirm
 func (s RecaptchaAdapter) Confirm(remoteip, response string) (result bool, err error) {
 	return recaptcha.Confirm(remoteip, response)

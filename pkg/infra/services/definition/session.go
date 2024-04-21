@@ -11,9 +11,9 @@ var SessionDefinition = di.Def{
 	Name:  "session",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		return session.SessionerAdapter{
-			SessionKey: "medzoner-sessid",
-			Store:      sessions.NewCookieStore([]byte("medzoner-sessid")),
-		}, nil
+		return session.NewSessionerAdapter(
+			"medzoner-sessid",
+			sessions.NewCookieStore([]byte("medzoner-sessid")),
+		), nil
 	},
 }

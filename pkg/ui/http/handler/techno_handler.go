@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"net/http"
 )
@@ -10,6 +11,16 @@ import (
 type TechnoHandler struct {
 	Template               templater.Templater
 	ListTechnoQueryHandler query.ListTechnoQueryHandler
+	Tracer                 tracer.Tracer
+}
+
+// NewTechnoHandler NewTechnoHandler
+func NewTechnoHandler(template templater.Templater, listTechnoQueryHandler query.ListTechnoQueryHandler, tracer tracer.Tracer) *TechnoHandler {
+	return &TechnoHandler{
+		Template:               template,
+		ListTechnoQueryHandler: listTechnoQueryHandler,
+		Tracer:                 tracer,
+	}
 }
 
 // TechnoView TechnoView
@@ -26,6 +37,7 @@ type TechnoView struct {
 
 // IndexHandle IndexHandle
 func (h *TechnoHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
+	h.Tracer.WriteLog(r.Context(), "TechnoHandle")
 	view := TechnoView{
 		Locale:      "fr",
 		PageTitle:   "MedZoner.com",

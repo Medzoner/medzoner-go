@@ -14,6 +14,14 @@ type TechnoJSONRepository struct {
 	RootPath string
 }
 
+// NewTechnoJSONRepository NewTechnoJSONRepository
+func NewTechnoJSONRepository(logger logger.ILogger, rootPath string) *TechnoJSONRepository {
+	return &TechnoJSONRepository{
+		Logger:   logger,
+		RootPath: rootPath,
+	}
+}
+
 // FetchStack FetchStack
 func (m *TechnoJSONRepository) FetchStack() map[string]interface{} {
 	jsonFile, err := os.Open(m.RootPath + "/pkg/infra/resources/data/jobs/stacks.json")

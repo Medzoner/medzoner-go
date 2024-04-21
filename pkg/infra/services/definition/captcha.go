@@ -10,6 +10,6 @@ var CaptchaDefinition = di.Def{
 	Name:  "captcha",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		return captcha.RecaptchaAdapter{}, nil
+		return captcha.NewRecaptchaAdapter(), nil
 	},
 }

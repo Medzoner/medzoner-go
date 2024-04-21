@@ -17,6 +17,14 @@ type ValidatorAdapter struct {
 	validatorLib     *validator.Validate
 }
 
+// NewValidatorAdapter NewValidatorAdapter
+func NewValidatorAdapter() MzValidator {
+	v := ValidatorAdapter{
+		ValidationErrors: validator.ValidationErrors{},
+	}
+	return v.New()
+}
+
 // CustomError CustomError
 type CustomError struct {
 	Tag string

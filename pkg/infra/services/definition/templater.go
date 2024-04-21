@@ -11,8 +11,8 @@ var TemplaterDefinition = di.Def{
 	Name:  "templater",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		return &templater.TemplateHTML{
-			RootPath: ctn.Get("config").(config.IConfig).GetRootPath() + "/",
-		}, nil
+		return templater.NewTemplateHTML(
+			ctn.Get("config").(config.IConfig).GetRootPath() + "/",
+		), nil
 	},
 }

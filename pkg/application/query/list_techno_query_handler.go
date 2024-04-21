@@ -9,6 +9,13 @@ type ListTechnoQueryHandler struct {
 	TechnoRepository repository.TechnoRepository
 }
 
+// NewListTechnoQueryHandler NewListTechnoQueryHandler
+func NewListTechnoQueryHandler(technoRepository repository.TechnoRepository) ListTechnoQueryHandler {
+	return ListTechnoQueryHandler{
+		TechnoRepository: technoRepository,
+	}
+}
+
 // Handle handles ListTechnoQuery and return map[string]interface{}
 func (l *ListTechnoQueryHandler) Handle(query ListTechnoQuery) map[string]interface{} {
 	if query.Type == "stack" {

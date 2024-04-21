@@ -15,6 +15,17 @@ type MailerSMTP struct {
 	Port     string
 }
 
+// NewMailerSMTP NewMailerSMTP
+func NewMailerSMTP(rootPath, user, password, host, port string) *MailerSMTP {
+	return &MailerSMTP{
+		RootPath: rootPath,
+		User:     user,
+		Password: password,
+		Host:     host,
+		Port:     port,
+	}
+}
+
 // Request Request
 type Request struct {
 	from    string

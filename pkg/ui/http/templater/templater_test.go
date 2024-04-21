@@ -29,7 +29,7 @@ func TestRender(t *testing.T) {
 	})
 	t.Run("Unit: test Render failed when parse tpl", func(t *testing.T) {
 		var tpl = templater.TemplateHTML{
-			RootPath: "../../../../var/test",
+			RootPath: "../../../../.var/test",
 		}
 		err := os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0000)
 		if err != nil {
