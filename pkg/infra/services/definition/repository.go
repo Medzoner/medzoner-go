@@ -13,11 +13,11 @@ var ContactRepositoryDefinition = di.Def{
 	Name:  "contact-repository",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		r := repository.MysqlContactRepository{
-			DbInstance: ctn.Get("database-entity").(database.IDbInstance),
-			Logger:     ctn.Get("logger").(logger.ILogger),
-		}
-		return &r, nil
+		r := repository.NewMysqlContactRepository(
+			ctn.Get("database-entity").(database.IDbInstance),
+			ctn.Get("logger").(logger.ILogger),
+		)
+		return r, nil
 	},
 }
 
@@ -26,10 +26,10 @@ var TechnoRepositoryDefinition = di.Def{
 	Name:  "techno-repository",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		r := repository.TechnoJSONRepository{
-			Logger:   ctn.Get("logger").(logger.ILogger),
-			RootPath: ctn.Get("config").(config.IConfig).GetRootPath(),
-		}
-		return &r, nil
+		r := repository.NewTechnoJSONRepository(
+			ctn.Get("logger").(logger.ILogger),
+			ctn.Get("config").(config.IConfig).GetRootPath(),
+		)
+		return r, nil
 	},
 }

@@ -14,12 +14,26 @@ type ZapLoggerAdapter struct {
 	UseSugar bool
 }
 
+// NewLoggerAdapter NewLoggerAdapter
+func NewLoggerAdapter(rootPath string, useSugar bool) ILogger {
+	zl := ZapLoggerAdapter{
+		RootPath: rootPath,
+		UseSugar: useSugar,
+	}
+	logger, err := zl.New()
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	return logger
+}
+
 // New New
 func (z ZapLoggerAdapter) New() (ILogger, error) {
 	rawJSON := []byte(`{
 		"level": "debug",
-		"outputPaths": ["stdout", "` + z.RootPath + `var/log/info.log"],
-		"errorOutputPaths": ["stderr", "` + z.RootPath + `var/log/error.log"],
+		"outputPaths": ["stdout", "` + z.RootPath + `.var/log/info.log"],
+		"errorOutputPaths": ["stderr", "` + z.RootPath + `.var/log/error.log"],
 		"encoding": "json",
 		"encoderConfig": {
 			"timeKey": "ts",

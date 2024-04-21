@@ -18,6 +18,12 @@ type MuxRouterAdapter struct {
 	MuxRouter *mux.Router
 }
 
+func NewMuxRouterAdapter() IRouter {
+	return &MuxRouterAdapter{
+		MuxRouter: mux.NewRouter(),
+	}
+}
+
 // Handle Handle
 func (a MuxRouterAdapter) Handle(path string) {
 	http.Handle(path, a)

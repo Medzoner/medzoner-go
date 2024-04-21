@@ -14,7 +14,7 @@ import (
 	"net/url"
 )
 
-//APIFeature APIFeature
+// APIFeature APIFeature
 type APIFeature struct {
 	Response *http.Response
 	Request  *http.Request
@@ -22,25 +22,25 @@ type APIFeature struct {
 	App      *pkg.App
 }
 
-//BodyRequest BodyRequest
+// BodyRequest BodyRequest
 type BodyRequest struct {
 	Body io.Reader
 }
 
-//Read Read
+// Read Read
 func (b BodyRequest) Read(p []byte) (n int, err error) {
 	buffer := &bytes.Buffer{}
 	return buffer.Read(p)
 }
 
-//New New
+// New New
 func New(url string, App *pkg.App) *APIFeature {
 	feature := &APIFeature{Response: &http.Response{}, BaseURL: &url, App: App}
 	feature.Request, _ = http.NewRequest("GET", fmt.Sprintf("%s%s", url, "/"), BodyRequest{}.Body)
 	return feature
 }
 
-//InitializeTestSuite InitializeTestSuite
+// InitializeTestSuite InitializeTestSuite
 func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 	ctx.BeforeSuite(func() {
 		a.resetBdd()
@@ -50,7 +50,7 @@ func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 	})
 }
 
-//InitializeScenario InitializeScenario
+// InitializeScenario InitializeScenario
 func (a *APIFeature) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.BeforeScenario(func(*godog.Scenario) {
 		a.resetResponse()
@@ -304,9 +304,10 @@ func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *godog.DocStri
 
 func (a *APIFeature) resetBdd() {
 	dbName := a.App.Container.Get("database-entity").(*database.DbSQLInstance).DatabaseName
-	a.App.Container.Get("database").(*database.DbSQLInstance).CreateDatabase(dbName)
-	a.App.Container.Get("database").(*database.DbSQLInstance).DropDatabase(dbName)
-	a.App.Container.Get("database").(*database.DbSQLInstance).CreateDatabase(dbName)
+	db := a.App.Container.Get("database").(*database.DbSQLInstance)
+	db.CreateDatabase(dbName)
+	db.DropDatabase(dbName)
+	db.CreateDatabase(dbName)
 	a.App.Container.Get("db-manager").(*database.DbMigration).MigrateUp()
 	return
 }

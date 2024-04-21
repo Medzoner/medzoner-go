@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	//hack
@@ -18,14 +19,15 @@ type DbMigration struct {
 	MigrationDir *string
 }
 
-// New New
-func (d *DbMigration) New() *DbMigration {
+// NewDbMigration NewDbMigration
+func NewDbMigration(dbInstance IDbInstance, rootPath string) *DbMigration {
 	db := DbMigration{
-		DbInstance:   d.DbInstance,
-		RootPath:     d.RootPath,
-		MigrationDir: d.getMigrationDir(),
+		DbInstance: dbInstance,
+		RootPath:   rootPath,
 	}
+	db.MigrationDir = db.getMigrationDir()
 	return &db
+
 }
 
 // MigrateUp MigrateUp
@@ -43,7 +45,7 @@ func (d *DbMigration) MigrateDown() {
 }
 
 func (d *DbMigration) checkMigrateErrors(err error) {
-	if err != nil && err != migrate.ErrNoChange {
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		log.Fatalf("An error occurred while syncing the database.. %v", err)
 	}
 }

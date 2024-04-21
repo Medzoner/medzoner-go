@@ -12,6 +12,14 @@ type ContactCreatedEventHandler struct {
 	Logger logger.ILogger
 }
 
+// NewContactCreatedEventHandler is a function that returns a new ContactCreatedEventHandler
+func NewContactCreatedEventHandler(mailer mailer.Mailer, logger logger.ILogger) ContactCreatedEventHandler {
+	return ContactCreatedEventHandler{
+		Mailer: mailer,
+		Logger: logger,
+	}
+}
+
 // Handle handles event ContactCreatedEvent and send mail to admin
 // @param event interface that contains model Contact and event name ContactCreatedEvent (string)
 // @return void

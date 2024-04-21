@@ -6,6 +6,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
+	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"log"
@@ -22,6 +23,30 @@ type IndexHandler struct {
 	Session                     session.Sessioner
 	Validation                  validation.MzValidator
 	Recaptcha                   captcha.Captcher
+	Tracer                      tracer.Tracer
+}
+
+// NewIndexHandler NewIndexHandler
+func NewIndexHandler(
+	template templater.Templater,
+	listTechnoQueryHandler query.ListTechnoQueryHandler,
+	recaptchaSiteKey string,
+	createContactCommandHandler command.CreateContactCommandHandler,
+	session session.Sessioner,
+	validation validation.MzValidator,
+	recaptcha captcha.Captcher,
+	tracer tracer.Tracer,
+) *IndexHandler {
+	return &IndexHandler{
+		Template:                    template,
+		ListTechnoQueryHandler:      listTechnoQueryHandler,
+		RecaptchaSiteKey:            recaptchaSiteKey,
+		CreateContactCommandHandler: createContactCommandHandler,
+		Session:                     session,
+		Validation:                  validation,
+		Recaptcha:                   recaptcha,
+		Tracer:                      tracer,
+	}
 }
 
 // IndexView IndexView
@@ -50,6 +75,7 @@ func (h *IndexHandler) processRequest(request *http.Request) (result bool) {
 
 // IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
+	h.Tracer.WriteLog(request.Context(), "IndexHandle")
 	newSession, err := h.Session.Init(request)
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)

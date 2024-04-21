@@ -3,6 +3,7 @@ package handler_test
 import (
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
+	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"gotest.tools/assert"
 	"net/http/httptest"
@@ -18,6 +19,7 @@ func TestTechnoHandler(t *testing.T) {
 					RootPath: "./../../../../",
 				},
 			},
+			Tracer: tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -36,6 +38,7 @@ func TestTechnoHandler(t *testing.T) {
 					RootPath: "./../../../../",
 				},
 			},
+			Tracer: tracer.NewHttpTracer(),
 		}
 
 		responseWriter := httptest.NewRecorder()

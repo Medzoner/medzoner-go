@@ -15,6 +15,12 @@ type APIMiddleware struct {
 	Logger logger.ILogger
 }
 
+// NewAPIMiddleware NewAPIMiddleware
+func NewAPIMiddleware(logger logger.ILogger) IMiddleware {
+	return &APIMiddleware{Logger: logger}
+
+}
+
 // Middleware Middleware
 func (m APIMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

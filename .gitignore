@@ -16,7 +16,7 @@
 /app/spool/
 /log
 /web/dev
-/var/*
+/.var/*
 /admin.conf
 /admin.conf.base64
 /bin/*
@@ -28,10 +28,10 @@
 /web/rev-manifest-css.json
 /web/rev-manifest-js.json
 /medzoner/
-!/var/log/
-/var/log/*.log
-!/var/test/
+/.var/log/*.log
+!/.var/test/
 /coverage.out
 /coverage.html
 /.config/
-__debug_bin
+__debug_bin*
+trace.out

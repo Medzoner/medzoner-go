@@ -24,6 +24,7 @@ var Definitions = []di.Def{
 	definition.SessionDefinition,
 	definition.ValidationDefinition,
 	definition.ServerDefinition,
+	definition.TracerDefinition,
 	definition.ContactRepositoryDefinition,
 	definition.TechnoRepositoryDefinition,
 	definition.NotFoundHandlerDefinition,

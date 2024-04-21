@@ -17,7 +17,7 @@ func TestSmtp(t *testing.T) {
 		_, _ = mailer.Send(entity.Contact{})
 	})
 	t.Run("Unit: test Smtp failed with parse error", func(t *testing.T) {
-		mailer := mailersmtp.MailerSMTP{RootPath: "./../../../var/test"}
+		mailer := mailersmtp.MailerSMTP{RootPath: "./../../../.var/test"}
 		_ = os.Chmod(mailer.RootPath+"/tmpl/contact/contactEmail.html", 0000)
 		_, _ = mailer.Send(entity.Contact{})
 		_ = os.Chmod(mailer.RootPath+"/tmpl/contact/contactEmail.html", 0700)

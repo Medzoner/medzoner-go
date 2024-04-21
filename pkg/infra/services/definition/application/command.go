@@ -14,11 +14,11 @@ var CreateContactCommandHandlerDefinition = di.Def{
 	Name:  "create-contact-command-handler",
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
-		return command.CreateContactCommandHandler{
-			ContactFactory:             &entity.Contact{},
-			ContactRepository:          ctn.Get("contact-repository").(repository.ContactRepository),
-			ContactCreatedEventHandler: ctn.Get("contact-event-created-handler").(event.ContactCreatedEventHandler),
-			Logger:                     ctn.Get("logger").(logger.ILogger),
-		}, nil
+		return command.NewCreateContactCommandHandler(
+			&entity.Contact{},
+			ctn.Get("contact-repository").(repository.ContactRepository),
+			ctn.Get("contact-event-created-handler").(event.ContactCreatedEventHandler),
+			ctn.Get("logger").(logger.ILogger),
+		), nil
 	},
 }

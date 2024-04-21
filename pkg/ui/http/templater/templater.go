@@ -18,6 +18,13 @@ type TemplateHTML struct {
 	RootPath string
 }
 
+// NewTemplateHTML NewTemplateHTML
+func NewTemplateHTML(rootPath string) *TemplateHTML {
+	return &TemplateHTML{
+		RootPath: rootPath,
+	}
+}
+
 // Render Render
 func (t *TemplateHTML) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
 	response.WriteHeader(status)

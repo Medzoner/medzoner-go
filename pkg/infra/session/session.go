@@ -21,6 +21,14 @@ type SessionerAdapter struct {
 	Store           *sessions.CookieStore
 }
 
+// NewSessionerAdapter NewSessionerAdapter
+func NewSessionerAdapter(sessionKey string, store *sessions.CookieStore) *SessionerAdapter {
+	return &SessionerAdapter{
+		SessionKey: sessionKey,
+		Store:      store,
+	}
+}
+
 // Init Init
 func (s SessionerAdapter) Init(request *http.Request) (Sessioner, error) {
 	newSesion, err := s.Store.Get(request, s.SessionKey)

@@ -13,6 +13,14 @@ type MysqlContactRepository struct {
 	Logger     logger.ILogger
 }
 
+// NewMysqlContactRepository NewMysqlContactRepository
+func NewMysqlContactRepository(dbInstance database.IDbInstance, logger logger.ILogger) *MysqlContactRepository {
+	return &MysqlContactRepository{
+		DbInstance: dbInstance,
+		Logger:     logger,
+	}
+}
+
 // Save Save
 func (m *MysqlContactRepository) Save(contact model.IContact) {
 	fmt.Sprintln(m.DbInstance.GetDatabaseName())
