@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
@@ -22,8 +23,7 @@ func NewMysqlContactRepository(dbInstance database.IDbInstance, logger logger.IL
 }
 
 // Save Save
-func (m *MysqlContactRepository) Save(contact model.IContact) {
-	fmt.Sprintln(m.DbInstance.GetDatabaseName())
+func (m *MysqlContactRepository) Save(ctx context.Context, contact model.IContact) {
 	conn := m.DbInstance.GetConnection().MustBegin()
 	contact.SetEmailString()
 	query := `INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (:name, :message, :emailstring, :date_add, :uuid)`

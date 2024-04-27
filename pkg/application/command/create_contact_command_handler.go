@@ -1,14 +1,16 @@
 package command
 
 import (
+	"context"
 	"fmt"
+	"time"
+
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 	"github.com/Medzoner/medzoner-go/pkg/domain/factory"
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/docker/distribution/uuid"
-	"time"
 )
 
 // CreateContactCommandHandler is a struct that implements CommandHandler interface and handle CreateContactCommand
@@ -37,7 +39,7 @@ func NewCreateContactCommandHandler(
 // Handle handles command CreateContactCommand and create contact in database and send mail to admin with event ContactCreatedEvent
 // @param command CreateContactCommand struct that contains contact data
 // @return void
-func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
+func (c *CreateContactCommandHandler) Handle(ctx context.Context, command CreateContactCommand) {
 	contact := c.ContactFactory.New()
 	contact.
 		SetName(command.Name).
@@ -46,12 +48,12 @@ func (c *CreateContactCommandHandler) Handle(command CreateContactCommand) {
 		SetDateAdd(time.Now()).
 		SetUUID(uuid.UUID{}.String())
 
-	c.ContactRepository.Save(contact)
+	c.ContactRepository.Save(ctx, contact)
 	err := c.Logger.Log("Contact was created.")
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	contactCreatedEvent := event.ContactCreatedEvent{Contact: contact}
-	c.ContactCreatedEventHandler.Handle(contactCreatedEvent)
+	c.ContactCreatedEventHandler.Handle(ctx, contactCreatedEvent)
 }

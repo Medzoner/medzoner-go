@@ -15,7 +15,6 @@ deploy:
     manifests:
       - k8s/deployment.yaml
       - k8s/service.yaml
-      - k8s/ingress.yaml
 
 profiles:
   - name: dev
@@ -28,7 +27,21 @@ profiles:
           docker:
             buildArgs:
               ENV: development
+            cacheFrom:
+              - localhost:5000/medzoner-go
           sync:
             manual:
               - src: 'pkg/**/*.go'
                 dest: /var/www/.
+
+portForward:
+  - resourceType: service
+    resourceName: medzoner-go
+    namespace: default
+    port: 4000
+    localPort: 4000
+  - resourceType: service
+    resourceName: medzoner-go
+    namespace: default
+    port: 8002
+    localPort: 8025
