@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
@@ -415,7 +416,7 @@ func (t *TemplaterTest) Render(name string, view interface{}, response http.Resp
 
 type ContactCreatedEventHandlerTest struct{}
 
-func (h *ContactCreatedEventHandlerTest) Handle(event event.Event) {
+func (h *ContactCreatedEventHandlerTest) Handle(ctx context.Context, event event.Event) {
 	fmt.Println(event)
 }
 
@@ -423,7 +424,7 @@ type ContactRepositoryTest struct {
 	ContactSaved model.IContact
 }
 
-func (r *ContactRepositoryTest) Save(contact model.IContact) {
+func (r *ContactRepositoryTest) Save(ctx context.Context, contact model.IContact) {
 	r.ContactSaved = contact
 	fmt.Println(contact)
 }

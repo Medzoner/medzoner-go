@@ -27,7 +27,7 @@ func NewTemplateHTML(rootPath string) *TemplateHTML {
 
 // Render Render
 func (t *TemplateHTML) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
-	response.WriteHeader(status)
+	//response.WriteHeader(status)
 
 	htmlTemplate, err := t.parseTemplates(name)
 	if err != nil {

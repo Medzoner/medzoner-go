@@ -20,3 +20,6 @@ sudo install skaffold /usr/local/bin/
 #docker run gcr.io/k8s-skaffold/skaffold:latest skaffold -h
 
 #skaffold init --force
+
+# forward service app for debug
+kubectl port-forward service/medzoner-go 4000:4000

@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
     migrate:
@@ -49,7 +49,7 @@ services:
         networks:
             - "default"
         volumes:
-            - "./.var/mysql:/.var/lib/mysql"
+            - "./.var/mysql:/var/lib/mysql"
 
     mariadb_test:
         image: "mariadb:10.5.9"

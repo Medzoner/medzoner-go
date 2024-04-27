@@ -1,3 +1,6 @@
+githooks:
+	git config core.hooksPath .githooks
+
 test_behavior:
 	docker-compose up -d --force-recreate
 	go test godog_test.go
@@ -30,3 +33,9 @@ db_down:
 
 migrate:
 	go run ./cmd/migrate/migrate.go
+
+skaffold-run:
+	skaffold dev --port-forward
+
+trace:
+	go tool trace trace.out

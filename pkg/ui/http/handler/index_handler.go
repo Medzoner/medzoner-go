@@ -1,7 +1,12 @@
 package handler
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
@@ -9,9 +14,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-	"log"
-	"net/http"
-	"time"
 )
 
 // IndexHandler IndexHandler
@@ -75,7 +77,11 @@ func (h *IndexHandler) processRequest(request *http.Request) (result bool) {
 
 // IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
-	h.Tracer.WriteLog(request.Context(), "IndexHandle")
+	contextIndex, cancel := context.WithTimeout(request.Context(), 1*time.Second)
+	defer cancel()
+	fmt.Printf("IndexHandle\n")
+
+	h.Tracer.WriteLog(contextIndex, "IndexHandle start")
 	newSession, err := h.Session.Init(request)
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
@@ -108,7 +114,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			v := h.Validation
 			err := v.Struct(createContactCommand)
 			if err == nil {
-				h.CreateContactCommandHandler.Handle(createContactCommand)
+				h.CreateContactCommandHandler.Handle(contextIndex, createContactCommand)
 				h.Session.SetValue("message", "Your Message has been sent")
 				err = h.Session.Save(request, response)
 				if err != nil {
@@ -140,4 +146,5 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 
 	view.FormMessage = ""
 	_ = request
+	h.Tracer.WriteLog(contextIndex, "IndexHandle end")
 }

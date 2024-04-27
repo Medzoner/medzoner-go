@@ -1,6 +1,8 @@
 package event
 
+import "context"
+
 // IEventHandler is an interface that contains method Handle
 type IEventHandler interface {
-	Handle(event Event)
+	Handle(ctx context.Context, event Event)
 }

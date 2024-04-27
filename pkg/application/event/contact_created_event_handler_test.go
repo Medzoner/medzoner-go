@@ -1,6 +1,7 @@
 package event_test
 
 import (
+	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
@@ -36,7 +37,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 			Logger: loggerTest,
 		}
 
-		handler.Handle(contactCreatedEvent)
+		handler.Handle(context.Background(), contactCreatedEvent)
 		assert.Equal(t, loggerTest.LogMessages[0], "Mail was send.")
 		assert.Equal(t, mailer.isSend, true)
 		assert.Equal(t, contactCreatedEvent.GetName(), "CreateContactCommand")
@@ -51,7 +52,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 			Logger: loggerTest,
 		}
 
-		handler.Handle(BadEvent{})
+		handler.Handle(context.Background(), BadEvent{})
 		assert.Equal(t, loggerTest.LogMessages[0], "Error during send mail.")
 		assert.Equal(t, mailer.isSend, false)
 	})
