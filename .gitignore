@@ -35,3 +35,4 @@
 /.config/
 __debug_bin*
 trace.out
+/skaffold
