@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - run: curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose && chmod +x docker-compose && sudo mv docker-compose /usr/local/bin
+      - run: curl -L https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-`uname -s`-`uname -m` > docker-compose && chmod +x docker-compose && sudo mv docker-compose /usr/local/bin
       - run: go get github.com/modocache/gover
       - run: go get github.com/mattn/goveralls
       - run: docker-compose -f ./docker-compose-travis.yml -p medzoner up -d --force-recreate
