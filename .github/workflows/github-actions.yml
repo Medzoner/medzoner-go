@@ -25,3 +25,14 @@ jobs:
       - run: curl -L https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-`uname -s`-`uname -m` > docker-compose && chmod +x docker-compose && sudo mv docker-compose /usr/local/bin
       - run: go get github.com/modocache/gover
       - run: go get github.com/mattn/goveralls
+      - run: docker-compose -f ./docker-compose-travis.yml -p medzoner up -d --force-recreate
+      - run: .travis/wait_mysql.sh
+      - run: mysql -h 127.0.0.1 -u root -e "create database test" -pchangeme
+      - run: cp .env.travis .env
+      - run: make test_all
+      - run: go vet ./...
+      - run: .travis/gofmt.sh
+      - run: make build
+      - run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
+      - run: .travis/push.sh
+      - run: .travis/coverall.sh
