@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"time"
 
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
@@ -23,13 +24,12 @@ type CreateContactCommandHandler struct {
 
 // NewCreateContactCommandHandler is a function that returns a new CreateContactCommandHandler
 func NewCreateContactCommandHandler(
-	contactFactory factory.IContactFactory,
 	contactRepository repository.ContactRepository,
 	contactCreatedEventHandler event.IEventHandler,
 	logger logger.ILogger,
 ) CreateContactCommandHandler {
 	return CreateContactCommandHandler{
-		ContactFactory:             contactFactory,
+		ContactFactory:             entity.NewContact(),
 		ContactRepository:          contactRepository,
 		ContactCreatedEventHandler: contactCreatedEventHandler,
 		Logger:                     logger,

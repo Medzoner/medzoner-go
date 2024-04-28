@@ -14,7 +14,7 @@ type Tracer interface {
 
 type HttpTracer struct{}
 
-func NewHttpTracer() HttpTracer {
+func NewHttpTracer() *HttpTracer {
 	f, err := os.Create("trace.out")
 	if err != nil {
 		log.Fatalf("failed to create trace output file: %v", err)
@@ -29,7 +29,7 @@ func NewHttpTracer() HttpTracer {
 		log.Fatalf("failed to start trace: %v", err)
 	}
 	defer trace.Stop()
-	return HttpTracer{}
+	return &HttpTracer{}
 }
 
 func prepWork() {

@@ -4,6 +4,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/sarulabs/di"
 )
@@ -28,7 +29,7 @@ var TechnoRepositoryDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		r := repository.NewTechnoJSONRepository(
 			ctn.Get("logger").(logger.ILogger),
-			ctn.Get("config").(config.IConfig).GetRootPath(),
+			path.RootPath(ctn.Get("config").(config.IConfig).GetRootPath()),
 		)
 		return r, nil
 	},

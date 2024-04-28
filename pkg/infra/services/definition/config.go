@@ -2,6 +2,7 @@ package definition
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"github.com/sarulabs/di"
 )
 
@@ -24,9 +25,9 @@ func (cd *ConfigDependency) GetDefinition() di.Def {
 }
 
 // InitConfig InitConfig
-func (cd *ConfigDependency) InitConfig(rootPath string) config.Config {
+func (cd *ConfigDependency) InitConfig(rootPath path.RootPath) config.Config {
 	c := config.Config{
-		RootPath:  rootPath,
+		RootPath:  string(rootPath),
 		DebugMode: false,
 		Options:   nil,
 		APIPort:   8002,

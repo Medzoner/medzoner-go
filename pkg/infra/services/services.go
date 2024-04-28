@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"github.com/Medzoner/medzoner-go/pkg/infra/services/definition"
 	"github.com/Medzoner/medzoner-go/pkg/infra/services/definition/application"
 	"github.com/sarulabs/di"
@@ -36,7 +37,7 @@ var Definitions = []di.Def{
 }
 
 // GetDefinitions GetDefinitions
-func (s Service) GetDefinitions(rootPath string) []di.Def {
+func (s Service) GetDefinitions(rootPath path.RootPath) []di.Def {
 	var services []di.Def
 
 	config := definition.ConfigDependency{}

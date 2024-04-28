@@ -39,3 +39,6 @@ skaffold-run:
 
 trace:
 	go tool trace trace.out
+
+wire:
+	wire gen ./pkg/infra/dependency/.

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"io/ioutil"
 	"os"
 )
@@ -15,10 +16,10 @@ type TechnoJSONRepository struct {
 }
 
 // NewTechnoJSONRepository NewTechnoJSONRepository
-func NewTechnoJSONRepository(logger logger.ILogger, rootPath string) *TechnoJSONRepository {
+func NewTechnoJSONRepository(logger logger.ILogger, rootPath path.RootPath) *TechnoJSONRepository {
 	return &TechnoJSONRepository{
 		Logger:   logger,
-		RootPath: rootPath,
+		RootPath: string(rootPath),
 	}
 }
 

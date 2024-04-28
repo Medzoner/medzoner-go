@@ -2,6 +2,8 @@ package mailersmtp
 
 import (
 	"bytes"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"html/template"
 	"net/smtp"
 )
@@ -16,13 +18,13 @@ type MailerSMTP struct {
 }
 
 // NewMailerSMTP NewMailerSMTP
-func NewMailerSMTP(rootPath, user, password, host, port string) *MailerSMTP {
+func NewMailerSMTP(config config.IConfig, rootPath path.RootPath) *MailerSMTP {
 	return &MailerSMTP{
-		RootPath: rootPath,
-		User:     user,
-		Password: password,
-		Host:     host,
-		Port:     port,
+		RootPath: string(rootPath),
+		User:     config.GetMailerUser(),
+		Password: config.GetMailerPassword(),
+		Host:     "smtp.gmail.com",
+		Port:     "587",
 	}
 }
 

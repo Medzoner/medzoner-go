@@ -39,12 +39,19 @@ type Config struct {
 	RecaptchaSecretKey string
 }
 
+// NewConfig NewConfig
+func NewConfig() *Config {
+	conf := &Config{}
+	conf.Init()
+	return conf
+}
+
 // Init Init
 func (c *Config) Init() {
-	err := godotenv.Load(c.RootPath + "/.env")
+	err := godotenv.Load(string(c.RootPath) + "/.env")
 	c.Environment = getEnv("ENV", "dev")
 	if c.Environment == "test" {
-		err = godotenv.Load(c.RootPath + "/.env.test")
+		err = godotenv.Load(string(c.RootPath) + "/.env.test")
 	}
 	c.MailerUser = getEnv("MAILER_USER", "medzoner@xxx.fake")
 	c.MailerPassword = getEnv("MAILER_PASSWORD", "xxxxxxxxxxxx")

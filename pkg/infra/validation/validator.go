@@ -6,7 +6,7 @@ import (
 
 // MzValidator MzValidator
 type MzValidator interface {
-	New() MzValidator
+	//New() MzValidator
 	GetErrors() []CustomError
 	Struct(str interface{}) error
 }
@@ -18,7 +18,7 @@ type ValidatorAdapter struct {
 }
 
 // NewValidatorAdapter NewValidatorAdapter
-func NewValidatorAdapter() MzValidator {
+func NewValidatorAdapter() *ValidatorAdapter {
 	v := ValidatorAdapter{
 		ValidationErrors: validator.ValidationErrors{},
 	}
@@ -31,9 +31,9 @@ type CustomError struct {
 }
 
 // New New
-func (v ValidatorAdapter) New() MzValidator {
+func (v ValidatorAdapter) New() *ValidatorAdapter {
 	v.validatorLib = validator.New()
-	return v
+	return &v
 }
 
 // GetErrors GetErrors

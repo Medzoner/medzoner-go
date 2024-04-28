@@ -18,7 +18,7 @@ type MuxRouterAdapter struct {
 	MuxRouter *mux.Router
 }
 
-func NewMuxRouterAdapter() IRouter {
+func NewMuxRouterAdapter() *MuxRouterAdapter {
 	return &MuxRouterAdapter{
 		MuxRouter: mux.NewRouter(),
 	}

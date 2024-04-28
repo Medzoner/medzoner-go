@@ -1,9 +1,10 @@
-package pkg
+package app
 
 import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"github.com/Medzoner/medzoner-go/pkg/infra/services"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
 	"github.com/sarulabs/di"
@@ -12,20 +13,33 @@ import (
 // App App
 type App struct {
 	DebugMode bool
-	RootPath  string
+	RootPath  path.RootPath
 	Container di.Container
+	appWeb    web.IWeb
+	database  database.IDbInstance
+	conf      config.IConfig
+	dbManager database.DbMigration
 }
 
-// Handle Handle
+// NewApp is the factory method to create a new App
+func NewApp(rootPath path.RootPath, appWeb web.IWeb, database database.IDbInstance, conf config.IConfig, dbManager database.DbMigration) *App {
+	return &App{
+		RootPath:  rootPath,
+		appWeb:    appWeb,
+		database:  database,
+		conf:      conf,
+		dbManager: dbManager,
+	}
+}
+
+// Handle is the main method to handle the app
 func (a *App) Handle(action string) {
 	if action == "web" {
-		a.Container.Get("app-web").(web.IWeb).Start()
+		a.appWeb.Start()
 	}
 	if action == "migrate" {
-		a.Container.Get("database").(database.IDbInstance).CreateDatabase(
-			a.Container.Get("config").(config.IConfig).GetDatabaseName(),
-		)
-		a.Container.Get("db-manager").(*database.DbMigration).MigrateUp()
+		a.database.CreateDatabase(a.conf.GetDatabaseName())
+		a.dbManager.MigrateUp()
 	}
 	defer a.deferCT()
 	return

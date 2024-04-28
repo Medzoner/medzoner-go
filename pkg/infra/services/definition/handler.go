@@ -33,7 +33,7 @@ var IndexHandlerDefinition = di.Def{
 		return handler.NewIndexHandler(
 			ctn.Get("templater").(templater.Templater),
 			ctn.Get("list-techno-query-handler").(query.ListTechnoQueryHandler),
-			ctn.Get("config").(config.IConfig).GetRecaptchaSiteKey(),
+			ctn.Get("config").(config.IConfig),
 			ctn.Get("create-contact-command-handler").(command.CreateContactCommandHandler),
 			ctn.Get("session").(session.Sessioner),
 			ctn.Get("validation").(validation.ValidatorAdapter),

@@ -1,47 +1,37 @@
-package pkg_test
+package app_test
 
 import (
 	"context"
-	"github.com/Medzoner/medzoner-go/pkg"
-	"github.com/sarulabs/di"
+	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 	"testing"
 	"time"
 )
 
 func TestHandle(t *testing.T) {
 	t.Run("Unit: test App success migrate up", func(t *testing.T) {
-		app := pkg.App{
-			DebugMode: true,
-			RootPath:  "../",
-		}
-		builder, _ := di.NewBuilder()
-		app.LoadContainer(builder)
+		appli := wiring.InitApp()
+		//builder, _ := di.NewBuilder()
+		//appli.LoadContainer(builder)
 		// @Todo Mock db
-		//app.Handle("migrate-up")
+		appli.Handle("migrate-up")
 	})
 	t.Run("Unit: test App failed", func(t *testing.T) {
-		app := pkg.App{
-			DebugMode: true,
-			RootPath:  "../fake",
-		}
-		builder, _ := di.NewBuilder()
-		app.LoadContainer(builder)
+		appli := wiring.InitApp()
+		//builder, _ := di.NewBuilder()
+		//appli.LoadContainer(builder)
 		defer func() {
 			if r := recover(); r == nil {
 				t.Errorf("The code did not panic")
 			}
 		}()
-		app.Handle("web")
+		appli.Handle("web")
 	})
 	t.Run("Unit: test App success web server", func(t *testing.T) {
-		app := pkg.App{
-			DebugMode: true,
-			RootPath:  "../",
-		}
-		builder, _ := di.NewBuilder()
-		app.LoadContainer(builder)
+		appli := wiring.InitApp()
+		//builder, _ := di.NewBuilder()
+		//appli.LoadContainer(builder)
 		go func() {
-			app.Handle("web")
+			appli.Handle("web")
 		}()
 		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer func() {
@@ -49,14 +39,11 @@ func TestHandle(t *testing.T) {
 		}()
 	})
 	t.Run("Unit: test App success unknown", func(t *testing.T) {
-		app := pkg.App{
-			DebugMode: true,
-			RootPath:  "../",
-		}
-		builder, _ := di.NewBuilder()
-		app.LoadContainer(builder)
+		appli := wiring.InitApp()
+		//builder, _ := di.NewBuilder()
+		//appli.LoadContainer(builder)
 		go func() {
-			app.Handle("unknown")
+			appli.Handle("unknown")
 		}()
 		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer func() {
@@ -64,17 +51,14 @@ func TestHandle(t *testing.T) {
 		}()
 	})
 	t.Run("Unit: test App success migrate", func(t *testing.T) {
-		app := pkg.App{
-			DebugMode: true,
-			RootPath:  "../",
-		}
-		builder, _ := di.NewBuilder()
-		app.LoadContainer(builder)
+		appli := wiring.InitApp()
+		//builder, _ := di.NewBuilder()
+		//appli.LoadContainer(builder)
 		//defer func() {
 		//	if r := recover(); r == nil {
 		//		t.Errorf("The code did not panic")
 		//	}
 		//}()
-		app.Handle("migrate")
+		appli.Handle("migrate")
 	})
 }

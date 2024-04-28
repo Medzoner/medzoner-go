@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
@@ -40,9 +41,8 @@ func NewWeb(
 	notFoundHandler *handler.NotFoundHandler,
 	indexHandler *handler.IndexHandler,
 	technoHandler *handler.TechnoHandler,
-	apiPort int,
-	recaptchaSecretKey string,
-) IWeb {
+	conf config.IConfig,
+) *Web {
 	return &Web{
 		Logger:             logger,
 		Router:             router,
@@ -50,8 +50,8 @@ func NewWeb(
 		NotFoundHandler:    notFoundHandler,
 		IndexHandler:       indexHandler,
 		TechnoHandler:      technoHandler,
-		APIPort:            apiPort,
-		RecaptchaSecretKey: recaptchaSecretKey,
+		APIPort:            conf.GetAPIPort(),
+		RecaptchaSecretKey: conf.GetRecaptchaSecretKey(),
 	}
 }
 

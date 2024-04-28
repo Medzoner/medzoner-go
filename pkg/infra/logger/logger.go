@@ -10,7 +10,6 @@ import (
 type ILogger interface {
 	Log(msg string) error
 	Error(msg string) error
-	New() (ILogger, error)
 }
 
 // Logger Logger

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg"
+	"github.com/Medzoner/medzoner-go/pkg/app"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/cucumber/godog"
 	"io"
@@ -19,7 +19,7 @@ type APIFeature struct {
 	Response *http.Response
 	Request  *http.Request
 	BaseURL  *string
-	App      *pkg.App
+	App      *app.App
 }
 
 // BodyRequest BodyRequest
@@ -34,7 +34,7 @@ func (b BodyRequest) Read(p []byte) (n int, err error) {
 }
 
 // New New
-func New(url string, App *pkg.App) *APIFeature {
+func New(url string, App *app.App) *APIFeature {
 	feature := &APIFeature{Response: &http.Response{}, BaseURL: &url, App: App}
 	feature.Request, _ = http.NewRequest("GET", fmt.Sprintf("%s%s", url, "/"), BodyRequest{}.Body)
 	return feature

@@ -1,6 +1,7 @@
 package templater
 
 import (
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"html/template"
 	"net/http"
 	"os"
@@ -19,9 +20,9 @@ type TemplateHTML struct {
 }
 
 // NewTemplateHTML NewTemplateHTML
-func NewTemplateHTML(rootPath string) *TemplateHTML {
+func NewTemplateHTML(rootPath path.RootPath) *TemplateHTML {
 	return &TemplateHTML{
-		RootPath: rootPath,
+		RootPath: string(rootPath),
 	}
 }
 

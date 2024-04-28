@@ -3,9 +3,16 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+type UseSugar bool
+
+func NewUseSugar() UseSugar {
+	return false
+}
 
 // ZapLoggerAdapter ZapLoggerAdapter
 type ZapLoggerAdapter struct {
@@ -15,10 +22,10 @@ type ZapLoggerAdapter struct {
 }
 
 // NewLoggerAdapter NewLoggerAdapter
-func NewLoggerAdapter(rootPath string, useSugar bool) ILogger {
+func NewLoggerAdapter(rootPath path.RootPath, useSugar UseSugar) *ZapLoggerAdapter {
 	zl := ZapLoggerAdapter{
-		RootPath: rootPath,
-		UseSugar: useSugar,
+		RootPath: string(rootPath),
+		UseSugar: bool(useSugar),
 	}
 	logger, err := zl.New()
 	if err != nil {
@@ -29,7 +36,7 @@ func NewLoggerAdapter(rootPath string, useSugar bool) ILogger {
 }
 
 // New New
-func (z ZapLoggerAdapter) New() (ILogger, error) {
+func (z ZapLoggerAdapter) New() (*ZapLoggerAdapter, error) {
 	rawJSON := []byte(`{
 		"level": "debug",
 		"outputPaths": ["stdout", "` + z.RootPath + `.var/log/info.log"],
@@ -59,7 +66,7 @@ func (z ZapLoggerAdapter) New() (ILogger, error) {
 
 	defer z.deferLogger(zapLogger)
 	z.Zap = zapLogger
-	return z, nil
+	return &z, nil
 }
 
 func (z ZapLoggerAdapter) deferLogger(zapLogger *zap.Logger) {

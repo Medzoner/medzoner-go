@@ -5,8 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/features/bootstrap"
-	"github.com/Medzoner/medzoner-go/pkg"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
+	"github.com/Medzoner/medzoner-go/pkg/app"
+	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/sarulabs/di"
@@ -30,13 +31,13 @@ func TestMain(m *testing.M) {
 	flag.Parse()
 
 	rootPath, _ := os.Getwd()
-	app := &pkg.App{
-		RootPath: rootPath,
+	application := &app.App{
+		RootPath: path.RootPath(rootPath),
 	}
 	builder, _ := di.NewBuilder()
-	app.LoadContainer(builder)
+	application.LoadContainer(builder)
 
-	appWeb := app.Container.Get("app-web").(*web.Web)
+	appWeb := dependency.InitWeb(application)
 	go func() {
 		log.Println("server starting")
 		appWeb.Start()
@@ -52,7 +53,7 @@ func TestMain(m *testing.M) {
 		//Randomize: time.Now().UTC().UnixNano(),
 	}
 
-	featureCtx := bootstrap.New(baseURL, app)
+	featureCtx := bootstrap.New(baseURL, application)
 	status := godog.TestSuite{
 		Name: "medzoner",
 		TestSuiteInitializer: func(suiteContext *godog.TestSuiteContext) {

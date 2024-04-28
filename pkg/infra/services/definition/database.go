@@ -3,6 +3,7 @@ package definition
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"github.com/sarulabs/di"
 )
 
@@ -12,12 +13,8 @@ var DatabaseEntityDefinition = di.Def{
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
 		d := database.NewDbSQLInstance(
-			nil,
-			ctn.Get("config").(config.IConfig).GetMysqlDsn(),
-			ctn.Get("config").(config.IConfig).GetDatabaseName(),
-			ctn.Get("config").(config.IConfig).GetDatabaseDriver(),
+			ctn.Get("config").(config.IConfig),
 		)
-		d.Connect()
 		return d, nil
 	},
 }
@@ -28,12 +25,8 @@ var DatabaseDefinition = di.Def{
 	Scope: di.App,
 	Build: func(ctn di.Container) (interface{}, error) {
 		d := database.NewDbSQLInstance(
-			nil,
-			ctn.Get("config").(config.IConfig).GetMysqlDsn(),
-			ctn.Get("config").(config.IConfig).GetDatabaseName(),
-			ctn.Get("config").(config.IConfig).GetDatabaseDriver(),
+			ctn.Get("config").(config.IConfig),
 		)
-		d.Connect()
 		return d, nil
 	},
 }
@@ -45,7 +38,7 @@ var DatabaseManagerDefinition = di.Def{
 	Build: func(ctn di.Container) (interface{}, error) {
 		d := database.NewDbMigration(
 			ctn.Get("database-entity").(database.IDbInstance),
-			ctn.Get("config").(config.IConfig).GetRootPath()+"/",
+			path.RootPath(ctn.Get("config").(config.IConfig).GetRootPath()+"/"),
 		)
 		return d, nil
 	},
