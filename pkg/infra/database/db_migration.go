@@ -62,6 +62,8 @@ func (d *DbMigration) getNewWithDatabaseInstance() *migrate.Migrate {
 }
 
 func (d *DbMigration) getMigrationDir() *string {
-	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
-	return migrationDir
+	flag.Parse()
+	//var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
+	migrationDir := d.RootPath + "/migrations"
+	return &migrationDir
 }

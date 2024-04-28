@@ -64,6 +64,7 @@ func (c *Config) Init() {
 	_ = getEnvAsInt("WAIT_MYSQL", 2)
 	c.RecaptchaSiteKey = getEnv("RECAPTCHA_SITE_KEY", "xxxxxxxxxxxx")
 	c.RecaptchaSecretKey = getEnv("RECAPTCHA_SECRET_KEY", "xxxxxxxxxxxx")
+	c.APIPort, _ = strconv.Atoi(getEnv("API_PORT", "8002"))
 
 	if err == nil {
 		fmt.Println(".env file found")

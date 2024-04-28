@@ -28,15 +28,31 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
+	"github.com/Medzoner/medzoner-go/test"
+	"github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
+func InitDbInstance() *database.DbSQLInstance {
+	configConfig := config.NewConfig()
+	dbSQLInstance := database.NewDbSQLInstance(configConfig)
+	return dbSQLInstance
+}
+
+func InitDbMigration() database.DbMigration {
+	configConfig := config.NewConfig()
+	dbSQLInstance := database.NewDbSQLInstance(configConfig)
+	rootPath := path.NewRootPath()
+	dbMigration := database.NewDbMigration(dbSQLInstance, rootPath)
+	return dbMigration
+}
+
 func InitApp() *app.App {
 	rootPath := path.NewRootPath()
 	useSugar := logger.NewUseSugar()
-	zapLoggerAdapter := logger.NewLoggerAdapter(rootPath, useSugar)
+	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
 	muxRouterAdapter := router.NewMuxRouterAdapter()
 	configConfig := config.NewConfig()
 	serverServer := server.NewServer(configConfig, muxRouterAdapter)
@@ -57,7 +73,36 @@ func InitApp() *app.App {
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer)
 	technoHandler := handler.NewTechnoHandler(templateHTML, listTechnoQueryHandler, httpTracer)
 	webWeb := web.NewWeb(zapLoggerAdapter, muxRouterAdapter, serverServer, notFoundHandler, indexHandler, technoHandler, configConfig)
-	dbMigration := database.NewDbMigration(dbSQLInstance, rootPath)
+	dbMigration := InitDbMigration()
+	appApp := app.NewApp(rootPath, webWeb, dbSQLInstance, configConfig, dbMigration)
+	return appApp
+}
+
+func InitAppTest(mocks2 mocks.Mocks) *app.App {
+	rootPath := path.NewRootPath()
+	useSugar := logger.NewUseSugar()
+	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
+	muxRouterAdapter := router.NewMuxRouterAdapter()
+	configConfig := config.NewConfig()
+	serverServer := server.NewServer(configConfig, muxRouterAdapter)
+	templateHTML := templater.NewTemplateHTML(rootPath)
+	httpTracer := tracer.NewHttpTracer()
+	notFoundHandler := handler.NewNotFoundHandler(templateHTML, httpTracer)
+	technoJSONRepository := repository.NewTechnoJSONRepository(zapLoggerAdapter, rootPath)
+	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository)
+	mockContactRepository := mocks2.ContactRepository
+	mailerSMTP := mailersmtp.NewMailerSMTP(configConfig, rootPath)
+	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP, zapLoggerAdapter)
+	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler, zapLoggerAdapter)
+	sessionKey := session.NewSessionKey()
+	sessionerAdapter := session.NewSessionerAdapter(sessionKey)
+	validatorAdapter := validation.NewValidatorAdapter()
+	recaptchaAdapter := captcha.NewRecaptchaAdapter()
+	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer)
+	technoHandler := handler.NewTechnoHandler(templateHTML, listTechnoQueryHandler, httpTracer)
+	webWeb := web.NewWeb(zapLoggerAdapter, muxRouterAdapter, serverServer, notFoundHandler, indexHandler, technoHandler, configConfig)
+	dbSQLInstance := database.NewDbSQLInstance(configConfig)
+	dbMigration := InitDbMigration()
 	appApp := app.NewApp(rootPath, webWeb, dbSQLInstance, configConfig, dbMigration)
 	return appApp
 }
@@ -65,8 +110,15 @@ func InitApp() *app.App {
 // wire.go:
 
 var (
-	InfraWiring = wire.NewSet(config.NewConfig, path.NewRootPath, logger.NewUseSugar, logger.NewLoggerAdapter, router.NewMuxRouterAdapter, server.NewServer, templater.NewTemplateHTML, session.NewSessionKey, session.NewSessionerAdapter, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, tracer.NewHttpTracer, database.NewDbSQLInstance, database.NewDbMigration, mailersmtp.NewMailerSMTP, repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(config.IConfig), new(*config.Config)), wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)), wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)), wire.Bind(new(server.IServer), new(*server.Server)), wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)), wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)), wire.Bind(new(database.IDbInstance), new(*database.DbSQLInstance)), wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)), wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)))
-	AppWiring   = wire.NewSet(event.NewContactCreatedEventHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)), command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler)
-	UiWiring    = wire.NewSet(handler.NewIndexHandler, handler.NewTechnoHandler, handler.NewNotFoundHandler)
-	CoreWiring  = wire.NewSet(web.NewWeb, wire.Bind(new(web.IWeb), new(*web.Web)))
+	InfraWiring          = wire.NewSet(config.NewConfig, path.NewRootPath, logger.NewUseSugar, logger.NewLoggerAdapter, router.NewMuxRouterAdapter, server.NewServer, templater.NewTemplateHTML, session.NewSessionKey, session.NewSessionerAdapter, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, tracer.NewHttpTracer, mailersmtp.NewMailerSMTP, wire.Bind(new(config.IConfig), new(*config.Config)), wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)), wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)), wire.Bind(new(server.IServer), new(*server.Server)), wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)), wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)), wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)))
+	DbWiring             = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.IDbInstance), new(*database.DbSQLInstance)))
+	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)))
+	RepositoryMockWiring = wire.NewSet(repository.NewTechnoJSONRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.FieldsOf(
+		new(mocks.Mocks),
+		"ContactRepository",
+	), wire.Bind(new(repository2.ContactRepository), new(*contactMock.MockContactRepository)),
+	)
+	AppWiring  = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
+	UiWiring   = wire.NewSet(handler.NewIndexHandler, handler.NewTechnoHandler, handler.NewNotFoundHandler)
+	CoreWiring = wire.NewSet(web.NewWeb, wire.Bind(new(web.IWeb), new(*web.Web)))
 )

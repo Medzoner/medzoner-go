@@ -3,9 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
-	"net/http"
 )
 
 // IServer Server Server

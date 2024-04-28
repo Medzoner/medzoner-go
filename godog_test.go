@@ -5,12 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/features/bootstrap"
-	"github.com/Medzoner/medzoner-go/pkg/app"
 	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
-	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
-	"github.com/sarulabs/di"
 	"gotest.tools/assert"
 	"log"
 	"os"
@@ -30,17 +27,11 @@ func init() {
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	rootPath, _ := os.Getwd()
-	application := &app.App{
-		RootPath: path.RootPath(rootPath),
-	}
-	builder, _ := di.NewBuilder()
-	application.LoadContainer(builder)
+	application := dependency.InitApp()
 
-	appWeb := dependency.InitWeb(application)
 	go func() {
 		log.Println("server starting")
-		appWeb.Start()
+		application.Handle("web")
 	}()
 	fmt.Println("server started")
 
@@ -73,7 +64,7 @@ func TestMain(m *testing.M) {
 	defer func() {
 		cancel()
 	}()
-	if err := appWeb.Server.Shutdown(ctx); err != nil {
+	if err := application.StopServer(ctx); err != nil {
 		log.Fatal(err)
 	}
 	log.Println("server stopped")

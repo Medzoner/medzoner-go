@@ -1,24 +1,22 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/Medzoner/medzoner-go/pkg/infra/path"
-	"github.com/Medzoner/medzoner-go/pkg/infra/services"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
-	"github.com/sarulabs/di"
 )
 
 // App App
 type App struct {
 	DebugMode bool
 	RootPath  path.RootPath
-	Container di.Container
 	appWeb    web.IWeb
-	database  database.IDbInstance
+	Database  database.IDbInstance
 	conf      config.IConfig
-	dbManager database.DbMigration
+	DbManager database.DbMigration
 }
 
 // NewApp is the factory method to create a new App
@@ -26,9 +24,9 @@ func NewApp(rootPath path.RootPath, appWeb web.IWeb, database database.IDbInstan
 	return &App{
 		RootPath:  rootPath,
 		appWeb:    appWeb,
-		database:  database,
+		Database:  database,
 		conf:      conf,
-		dbManager: dbManager,
+		DbManager: dbManager,
 	}
 }
 
@@ -38,26 +36,18 @@ func (a *App) Handle(action string) {
 		a.appWeb.Start()
 	}
 	if action == "migrate" {
-		a.database.CreateDatabase(a.conf.GetDatabaseName())
-		a.dbManager.MigrateUp()
+		a.Database.CreateDatabase(a.conf.GetDatabaseName())
+		a.DbManager.MigrateUp()
 	}
 	defer a.deferCT()
 	return
 }
 
-// LoadContainer LoadContainer
-func (a *App) LoadContainer(containerBuilder *di.Builder) {
-	err := containerBuilder.Add(services.Service{}.GetDefinitions(a.RootPath)...)
-	if err != nil {
-		panic(err)
-	}
-	ct := containerBuilder.Build()
-	a.Container = ct
+// StopServer StopServer
+func (a *App) StopServer(ctx context.Context) error {
+	return a.appWeb.StopServer(ctx)
 }
 
 func (a *App) deferCT() {
-	err := a.Container.Delete()
-	if err == nil {
-		fmt.Println("ct deleted")
-	}
+	fmt.Println("ct deleted")
 }

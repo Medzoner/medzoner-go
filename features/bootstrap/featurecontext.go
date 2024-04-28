@@ -5,13 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/app"
-	"github.com/Medzoner/medzoner-go/pkg/infra/database"
-	"github.com/cucumber/godog"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	"github.com/Medzoner/medzoner-go/pkg/app"
+	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
+
+	"github.com/cucumber/godog"
 )
 
 // APIFeature APIFeature
@@ -46,7 +48,8 @@ func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 		a.resetBdd()
 	})
 	ctx.AfterSuite(func() {
-		a.App.Container.Get("db-manager").(*database.DbMigration).MigrateDown()
+		mg := wiring.InitDbMigration()
+		mg.MigrateDown()
 	})
 }
 
@@ -303,11 +306,12 @@ func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *godog.DocStri
 }
 
 func (a *APIFeature) resetBdd() {
-	dbName := a.App.Container.Get("database-entity").(*database.DbSQLInstance).DatabaseName
-	db := a.App.Container.Get("database").(*database.DbSQLInstance)
+	db := wiring.InitDbInstance()
+	dbName := db.GetDatabaseName()
 	db.CreateDatabase(dbName)
 	db.DropDatabase(dbName)
 	db.CreateDatabase(dbName)
-	a.App.Container.Get("db-manager").(*database.DbMigration).MigrateUp()
+	mg := wiring.InitDbMigration()
+	mg.MigrateUp()
 	return
 }

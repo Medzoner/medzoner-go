@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
@@ -19,6 +20,7 @@ import (
 // IWeb IWeb
 type IWeb interface {
 	Start()
+	StopServer(ctx context.Context) error
 }
 
 // Web Web
@@ -80,4 +82,9 @@ func (a *Web) Start() {
 	if err != nil {
 		_ = a.Logger.Error(fmt.Sprintln(err))
 	}
+}
+
+// StopServer StopServer
+func (a *Web) StopServer(ctx context.Context) error {
+	return a.Server.Shutdown(ctx)
 }

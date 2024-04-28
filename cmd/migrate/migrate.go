@@ -1,18 +1,10 @@
 package main
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/app"
-	"github.com/Medzoner/medzoner-go/pkg/infra/path"
-	"github.com/sarulabs/di"
-	"os"
+	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 )
 
 func main() {
-	rootPath, _ := os.Getwd()
-	app := app.App{
-		RootPath: path.RootPath(rootPath),
-	}
-	builder, _ := di.NewBuilder()
-	app.LoadContainer(builder)
+	app := wiring.InitApp()
 	app.Handle("migrate")
 }
