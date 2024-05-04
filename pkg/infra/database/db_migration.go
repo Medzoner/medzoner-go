@@ -4,8 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/infra/path"
-
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	//hack
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
@@ -22,10 +21,10 @@ type DbMigration struct {
 }
 
 // NewDbMigration NewDbMigration
-func NewDbMigration(dbInstance IDbInstance, rootPath path.RootPath) DbMigration {
+func NewDbMigration(dbInstance IDbInstance, conf config.IConfig) DbMigration {
 	db := DbMigration{
 		DbInstance: dbInstance,
-		RootPath:   string(rootPath),
+		RootPath:   string(conf.GetRootPath()),
 	}
 	db.MigrationDir = db.getMigrationDir()
 	return db

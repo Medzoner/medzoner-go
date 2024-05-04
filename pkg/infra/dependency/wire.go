@@ -21,7 +21,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/mailersmtp"
-	"github.com/Medzoner/medzoner-go/pkg/infra/path"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
@@ -35,7 +34,6 @@ import (
 var (
 	InfraWiring = wire.NewSet(
 		config.NewConfig,
-		path.NewRootPath,
 		logger.NewUseSugar,
 		logger.NewLoggerAdapter,
 		router.NewMuxRouterAdapter,

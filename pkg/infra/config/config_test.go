@@ -26,12 +26,12 @@ func TestConfig(t *testing.T) {
 
 func TestEnv(t *testing.T) {
 	t.Run("test env found", func(t *testing.T) {
-		_, err := ioutil.ReadFile(conf.RootPath + ".env")
+		_, err := ioutil.ReadFile(string(conf.RootPath + ".env"))
 		if err != nil {
 			fmt.Println(err)
 			panic("err")
 		}
-		err = ioutil.WriteFile(conf.RootPath+".env", []byte([]byte{}), 0644)
+		err = ioutil.WriteFile(string(conf.RootPath+".env"), []byte([]byte{}), 0644)
 		if err != nil {
 			fmt.Println(err)
 			panic("err")

@@ -1,8 +1,14 @@
 package router
 
 import (
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/gorilla/mux"
+	"github.com/tdewolff/minify/v2"
+	"github.com/tdewolff/minify/v2/css"
+	"github.com/tdewolff/minify/v2/js"
 	"net/http"
+	"regexp"
 )
 
 type IRouter interface {
@@ -15,13 +21,25 @@ type IRouter interface {
 }
 
 type MuxRouterAdapter struct {
-	MuxRouter *mux.Router
+	MuxRouter       *mux.Router
+	NotFoundHandler *handler.NotFoundHandler
+	IndexHandler    *handler.IndexHandler
+	TechnoHandler   *handler.TechnoHandler
 }
 
-func NewMuxRouterAdapter() *MuxRouterAdapter {
-	return &MuxRouterAdapter{
-		MuxRouter: mux.NewRouter(),
+func NewMuxRouterAdapter(
+	notFoundHandler *handler.NotFoundHandler,
+	indexHandler *handler.IndexHandler,
+	technoHandler *handler.TechnoHandler,
+) *MuxRouterAdapter {
+	rt := &MuxRouterAdapter{
+		MuxRouter:       mux.NewRouter(),
+		NotFoundHandler: notFoundHandler,
+		IndexHandler:    indexHandler,
+		TechnoHandler:   technoHandler,
 	}
+	InitRoutes(rt, notFoundHandler, indexHandler)
+	return rt
 }
 
 // Handle Handle
@@ -52,4 +70,20 @@ func (a MuxRouterAdapter) SetNotFoundHandler(handler func(http.ResponseWriter, *
 // ServeHTTP ServeHTTP
 func (a MuxRouterAdapter) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	a.MuxRouter.ServeHTTP(writer, request)
+}
+
+func InitRoutes(a IRouter, notFoundHandler *handler.NotFoundHandler, indexHandler *handler.IndexHandler) {
+	a.SetNotFoundHandler(notFoundHandler.Handle)
+	a.HandleFunc("/", indexHandler.IndexHandle).Methods("GET", "POST")
+	a.Use(middleware.NewAPIMiddleware().Middleware)
+	fs := http.FileServer(http.Dir("."))
+
+	m := minify.New()
+	m.AddFunc("text/css", css.Minify)
+	m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
+	a.PathPrefix("/public/css").Handler(m.Middleware(fs))
+	a.PathPrefix("/public/js").Handler(m.Middleware(fs))
+
+	a.PathPrefix("/public").Handler(fs)
+	a.Handle("/")
 }
