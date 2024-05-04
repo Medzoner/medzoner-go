@@ -14,8 +14,8 @@ type ContactCreatedEventHandler struct {
 }
 
 // NewContactCreatedEventHandler is a function that returns a new ContactCreatedEventHandler
-func NewContactCreatedEventHandler(mailer mailer.Mailer, logger logger.ILogger) ContactCreatedEventHandler {
-	return ContactCreatedEventHandler{
+func NewContactCreatedEventHandler(mailer mailer.Mailer, logger logger.ILogger) *ContactCreatedEventHandler {
+	return &ContactCreatedEventHandler{
 		Mailer: mailer,
 		Logger: logger,
 	}

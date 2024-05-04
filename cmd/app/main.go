@@ -1,17 +1,13 @@
 package main
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg"
-	"github.com/sarulabs/di"
-	"os"
+	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 )
 
 func main() {
-	rootPath, _ := os.Getwd()
-	app := pkg.App{
-		RootPath: rootPath,
+	server := wiring.InitServer()
+	err := server.ListenAndServe()
+	if err != nil {
+		panic(err)
 	}
-	builder, _ := di.NewBuilder()
-	app.LoadContainer(builder)
-	app.Handle("web")
 }

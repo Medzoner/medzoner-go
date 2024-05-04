@@ -17,6 +17,11 @@ type Contact struct {
 	EmailString string
 }
 
+// New factory for creating a new Contact entity
+func NewContact() *Contact {
+	return &Contact{}
+}
+
 // New New
 func (*Contact) New() model.IContact {
 	return &Contact{}

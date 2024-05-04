@@ -5,6 +5,12 @@ import (
 	"net/http"
 )
 
+type SessionKey string
+
+func NewSessionKey() SessionKey {
+	return "medzoner-sessid"
+}
+
 // Sessioner Sessioner
 type Sessioner interface {
 	GetValue(name string) interface{}
@@ -22,10 +28,10 @@ type SessionerAdapter struct {
 }
 
 // NewSessionerAdapter NewSessionerAdapter
-func NewSessionerAdapter(sessionKey string, store *sessions.CookieStore) *SessionerAdapter {
+func NewSessionerAdapter(sessionKey SessionKey) *SessionerAdapter {
 	return &SessionerAdapter{
-		SessionKey: sessionKey,
-		Store:      store,
+		SessionKey: string(sessionKey),
+		Store:      sessions.NewCookieStore([]byte(string(sessionKey))),
 	}
 }
 

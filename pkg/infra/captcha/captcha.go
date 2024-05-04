@@ -4,6 +4,8 @@ import (
 	"github.com/dpapathanasiou/go-recaptcha"
 )
 
+type RecaptchaSiteKey string
+
 // Captcher Captcher
 type Captcher interface {
 	Confirm(remoteip, response string) (result bool, err error)
@@ -14,8 +16,8 @@ type RecaptchaAdapter struct {
 }
 
 // NewRecaptchaAdapter NewRecaptchaAdapter
-func NewRecaptchaAdapter() RecaptchaAdapter {
-	return RecaptchaAdapter{}
+func NewRecaptchaAdapter() *RecaptchaAdapter {
+	return &RecaptchaAdapter{}
 }
 
 // Confirm Confirm

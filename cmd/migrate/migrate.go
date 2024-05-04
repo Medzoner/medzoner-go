@@ -1,17 +1,11 @@
 package main
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg"
-	"github.com/sarulabs/di"
-	"os"
+	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 )
 
 func main() {
-	rootPath, _ := os.Getwd()
-	app := pkg.App{
-		RootPath: rootPath,
-	}
-	builder, _ := di.NewBuilder()
-	app.LoadContainer(builder)
-	app.Handle("migrate")
+	mg := wiring.InitDbMigration()
+	mg.DbInstance.CreateDatabase(mg.DbInstance.GetDatabaseName())
+	mg.MigrateUp()
 }

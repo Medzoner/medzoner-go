@@ -9,7 +9,6 @@ import (
 func TestZapLoggerAdapterSuccess(t *testing.T) {
 	t.Run("Unit: test ZapLoggerAdapter log success", func(t *testing.T) {
 		loggerTest, _ := logger.ZapLoggerAdapter{
-			RootPath: "../../../",
 			UseSugar: false,
 		}.New()
 		err := loggerTest.Log("log zap")
@@ -19,14 +18,12 @@ func TestZapLoggerAdapterSuccess(t *testing.T) {
 	})
 	t.Run("Unit: test ZapLoggerAdapter error log success", func(t *testing.T) {
 		loggerTest, _ := logger.ZapLoggerAdapter{
-			RootPath: "../../../",
 			UseSugar: false,
 		}.New()
 		_ = loggerTest.Error("error zap")
 	})
 	t.Run("Unit: test ZapLoggerAdapter (sugared) log success", func(t *testing.T) {
 		loggerTest, _ := logger.ZapLoggerAdapter{
-			RootPath: "../../../",
 			UseSugar: true,
 		}.New()
 		err := loggerTest.Log("log (sugared) zap")
@@ -36,7 +33,6 @@ func TestZapLoggerAdapterSuccess(t *testing.T) {
 	})
 	t.Run("Unit: test ZapLoggerAdapter (sugared) error log success", func(t *testing.T) {
 		loggerTest, err := logger.ZapLoggerAdapter{
-			RootPath: "../../../",
 			UseSugar: true,
 		}.New()
 		if err != nil {

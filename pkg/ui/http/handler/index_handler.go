@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"log"
 	"net/http"
 	"time"
@@ -32,7 +33,7 @@ type IndexHandler struct {
 func NewIndexHandler(
 	template templater.Templater,
 	listTechnoQueryHandler query.ListTechnoQueryHandler,
-	recaptchaSiteKey string,
+	conf config.IConfig,
 	createContactCommandHandler command.CreateContactCommandHandler,
 	session session.Sessioner,
 	validation validation.MzValidator,
@@ -42,7 +43,7 @@ func NewIndexHandler(
 	return &IndexHandler{
 		Template:                    template,
 		ListTechnoQueryHandler:      listTechnoQueryHandler,
-		RecaptchaSiteKey:            recaptchaSiteKey,
+		RecaptchaSiteKey:            conf.GetRecaptchaSiteKey(),
 		CreateContactCommandHandler: createContactCommandHandler,
 		Session:                     session,
 		Validation:                  validation,

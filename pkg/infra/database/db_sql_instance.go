@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/jmoiron/sqlx"
@@ -16,13 +17,15 @@ type DbSQLInstance struct {
 }
 
 // NewDbSQLInstance NewDbSQLInstance
-func NewDbSQLInstance(conn *sqlx.DB, dsn string, databaseName string, driverName string) IDbInstance {
-	return &DbSQLInstance{
-		Dsn:          dsn,
-		DatabaseName: databaseName,
-		DriverName:   driverName,
-		Connection:   conn,
+func NewDbSQLInstance(conf config.IConfig) *DbSQLInstance {
+	d := &DbSQLInstance{
+		Dsn:          conf.GetMysqlDsn(),
+		DatabaseName: conf.GetDatabaseName(),
+		DriverName:   conf.GetDatabaseDriver(),
+		Connection:   nil,
 	}
+	d.Connect()
+	return d
 }
 
 const dsnOptions = "?multiStatements=true&parseTime=true"

@@ -2,9 +2,7 @@ githooks:
 	git config core.hooksPath .githooks
 
 test_behavior:
-	docker-compose up -d --force-recreate
 	go test godog_test.go
-	docker-compose stop
 
 test_unit:
 	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
@@ -39,3 +37,6 @@ skaffold-run:
 
 trace:
 	go tool trace trace.out
+
+wire:
+	wire gen ./pkg/infra/dependency/.

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/path"
+
 	//hack
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
@@ -20,13 +22,13 @@ type DbMigration struct {
 }
 
 // NewDbMigration NewDbMigration
-func NewDbMigration(dbInstance IDbInstance, rootPath string) *DbMigration {
+func NewDbMigration(dbInstance IDbInstance, rootPath path.RootPath) DbMigration {
 	db := DbMigration{
 		DbInstance: dbInstance,
-		RootPath:   rootPath,
+		RootPath:   string(rootPath),
 	}
 	db.MigrationDir = db.getMigrationDir()
-	return &db
+	return db
 
 }
 
@@ -60,6 +62,8 @@ func (d *DbMigration) getNewWithDatabaseInstance() *migrate.Migrate {
 }
 
 func (d *DbMigration) getMigrationDir() *string {
-	var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
-	return migrationDir
+	flag.Parse()
+	//var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
+	migrationDir := d.RootPath + "/migrations"
+	return &migrationDir
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/domain/model"
+	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
@@ -15,6 +16,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
+	mocks "github.com/Medzoner/medzoner-go/test"
 	"gotest.tools/assert"
 	"net/http"
 	"net/http/httptest"
@@ -561,4 +563,12 @@ func (s RecaptchaAdapterTest) Confirm(remoteip, response string) (result bool, e
 		return true, nil
 	}
 	return false, errors.New("error Confirm Recaptcha")
+}
+
+func TestHandle(t *testing.T) {
+	t.Parallel()
+	mockedRepository := mocks.New(t)
+	t.Run("Unit: test App success migrate up", func(t *testing.T) {
+		_ = wiring.InitServerTest(mockedRepository)
+	})
 }
