@@ -21,7 +21,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - run: export PATH=$PATH:$(go env GOPATH)/bin
       - run: cp .env.travis .env
       - run: make test_all
       - run: go vet ./...
