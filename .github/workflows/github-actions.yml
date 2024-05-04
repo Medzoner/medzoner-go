@@ -21,8 +21,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - run: go get -u github.com/modocache/gover
-      - run: go get -u github.com/mattn/goveralls
+      - run: export PATH=$PATH:$(go env GOPATH)/bin
       - run: cp .env.travis .env
       - run: make test_all
       - run: go vet ./...
@@ -30,6 +29,8 @@ jobs:
       - run: make build
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
+      - run: go get -u github.com/modocache/gover
+      - run: go get -u github.com/mattn/goveralls
       - run: .github/coverall.sh
     env:
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
