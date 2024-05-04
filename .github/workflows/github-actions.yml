@@ -28,11 +28,11 @@ jobs:
       - run: make build
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
-      - run: go get -u github.com/modocache/gover
-      - run: go get -u github.com/mattn/goveralls
       - run: ls -lah ${HOME}/work/
       - run: ls -lah ${HOME}/work/medzoner-go/go/bin
-      - run: ${GOPATH}/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
+#      - run: go get -u github.com/modocache/gover
+#      - run: go get -u github.com/mattn/goveralls
+#      - run: ${GOPATH}/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
     env:
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
       DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
