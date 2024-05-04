@@ -31,6 +31,7 @@ jobs:
       - run: .github/push.sh
       - run: go get -u github.com/modocache/gover
       - run: go get -u github.com/mattn/goveralls
+      - run: ls -lah ${HOME}
       - run: ${HOME}/goroot/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
     env:
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
