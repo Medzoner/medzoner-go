@@ -1,5 +1,5 @@
 #!/bin/sh
-./.travis/gofmt.sh
+./.github/gofmt.sh
 go vet ./...
 go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
 go tool cover -func=coverage.out
