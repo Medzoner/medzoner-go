@@ -10,13 +10,10 @@ on:
 
 jobs:
   create-release:
-#    needs: check-build
     runs-on: ubuntu-22.04
-#    outputs:
-#      RELEASE_UPLOAD_URL: ${{ steps.create_tauri_release.outputs.upload_url }}
     strategy:
       matrix:
-        go-version: [ '1.21.x' ]
+        go-version: [ '1.22.x' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -24,19 +21,19 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - run: curl -L https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-`uname -s`-`uname -m` > docker-compose && chmod +x docker-compose && sudo mv docker-compose /usr/local/bin
       - run: go get github.com/modocache/gover
       - run: go get github.com/mattn/goveralls
       - run: cp .env.travis .env
       - run: make test_all
       - run: go vet ./...
-      - run: .travis/gofmt.sh
+      - run: .github/gofmt.sh
       - run: make build
-      - run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
-      - run: .travis/push.sh
-      - run: .travis/coverall.sh
+      #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
+      - run: .github/push.sh
+      - run: .github/coverall.sh
     env:
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
       DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       GIT_BRANCH: ${{ github.ref_name }}
       GIT_COMMIT: ${{ github.sha }}
+      COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
