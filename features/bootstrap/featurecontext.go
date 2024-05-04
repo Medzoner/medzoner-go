@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/Medzoner/medzoner-go/pkg/app"
 	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 
 	"github.com/cucumber/godog"
@@ -21,7 +20,6 @@ type APIFeature struct {
 	Response *http.Response
 	Request  *http.Request
 	BaseURL  *string
-	App      *app.App
 }
 
 // BodyRequest BodyRequest
@@ -36,21 +34,21 @@ func (b BodyRequest) Read(p []byte) (n int, err error) {
 }
 
 // New New
-func New(url string, App *app.App) *APIFeature {
-	feature := &APIFeature{Response: &http.Response{}, BaseURL: &url, App: App}
+func New(url string) *APIFeature {
+	feature := &APIFeature{Response: &http.Response{}, BaseURL: &url}
 	feature.Request, _ = http.NewRequest("GET", fmt.Sprintf("%s%s", url, "/"), BodyRequest{}.Body)
 	return feature
 }
 
 // InitializeTestSuite InitializeTestSuite
 func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
-	ctx.BeforeSuite(func() {
-		a.resetBdd()
-	})
-	ctx.AfterSuite(func() {
-		mg := wiring.InitDbMigration()
-		mg.MigrateDown()
-	})
+	//ctx.BeforeSuite(func() {
+	//	//a.resetBdd()
+	//})
+	//ctx.AfterSuite(func() {
+	//	//mg := wiring.InitDbMigration()
+	//	//mg.MigrateDown()
+	//})
 }
 
 // InitializeScenario InitializeScenario

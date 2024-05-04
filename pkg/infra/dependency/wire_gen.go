@@ -7,7 +7,6 @@
 package dependency
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/app"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
@@ -27,7 +26,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
 	"github.com/Medzoner/medzoner-go/test"
 	"github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
 	"github.com/google/wire"
@@ -49,13 +47,12 @@ func InitDbMigration() database.DbMigration {
 	return dbMigration
 }
 
-func InitApp() *app.App {
-	rootPath := path.NewRootPath()
+func InitServer() *server.Server {
+	configConfig := config.NewConfig()
+	muxRouterAdapter := router.NewMuxRouterAdapter()
 	useSugar := logger.NewUseSugar()
 	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
-	muxRouterAdapter := router.NewMuxRouterAdapter()
-	configConfig := config.NewConfig()
-	serverServer := server.NewServer(configConfig, muxRouterAdapter)
+	rootPath := path.NewRootPath()
 	templateHTML := templater.NewTemplateHTML(rootPath)
 	httpTracer := tracer.NewHttpTracer()
 	notFoundHandler := handler.NewNotFoundHandler(templateHTML, httpTracer)
@@ -72,19 +69,16 @@ func InitApp() *app.App {
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer)
 	technoHandler := handler.NewTechnoHandler(templateHTML, listTechnoQueryHandler, httpTracer)
-	webWeb := web.NewWeb(zapLoggerAdapter, muxRouterAdapter, serverServer, notFoundHandler, indexHandler, technoHandler, configConfig)
-	dbMigration := InitDbMigration()
-	appApp := app.NewApp(rootPath, webWeb, dbSQLInstance, configConfig, dbMigration)
-	return appApp
+	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter, notFoundHandler, indexHandler, technoHandler)
+	return serverServer
 }
 
-func InitAppTest(mocks2 mocks.Mocks) *app.App {
-	rootPath := path.NewRootPath()
+func InitServerTest(mocks2 mocks.Mocks) *server.Server {
+	configConfig := config.NewConfig()
+	muxRouterAdapter := router.NewMuxRouterAdapter()
 	useSugar := logger.NewUseSugar()
 	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
-	muxRouterAdapter := router.NewMuxRouterAdapter()
-	configConfig := config.NewConfig()
-	serverServer := server.NewServer(configConfig, muxRouterAdapter)
+	rootPath := path.NewRootPath()
 	templateHTML := templater.NewTemplateHTML(rootPath)
 	httpTracer := tracer.NewHttpTracer()
 	notFoundHandler := handler.NewNotFoundHandler(templateHTML, httpTracer)
@@ -100,11 +94,8 @@ func InitAppTest(mocks2 mocks.Mocks) *app.App {
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer)
 	technoHandler := handler.NewTechnoHandler(templateHTML, listTechnoQueryHandler, httpTracer)
-	webWeb := web.NewWeb(zapLoggerAdapter, muxRouterAdapter, serverServer, notFoundHandler, indexHandler, technoHandler, configConfig)
-	dbSQLInstance := database.NewDbSQLInstance(configConfig)
-	dbMigration := InitDbMigration()
-	appApp := app.NewApp(rootPath, webWeb, dbSQLInstance, configConfig, dbMigration)
-	return appApp
+	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter, notFoundHandler, indexHandler, technoHandler)
+	return serverServer
 }
 
 // wire.go:
@@ -118,7 +109,6 @@ var (
 		"ContactRepository",
 	), wire.Bind(new(repository2.ContactRepository), new(*contactMock.MockContactRepository)),
 	)
-	AppWiring  = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
-	UiWiring   = wire.NewSet(handler.NewIndexHandler, handler.NewTechnoHandler, handler.NewNotFoundHandler)
-	CoreWiring = wire.NewSet(web.NewWeb, wire.Bind(new(web.IWeb), new(*web.Web)))
+	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
+	UiWiring  = wire.NewSet(handler.NewIndexHandler, handler.NewTechnoHandler, handler.NewNotFoundHandler)
 )

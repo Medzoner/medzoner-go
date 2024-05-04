@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
-	app := wiring.InitApp()
-	app.Handle("migrate")
+	mg := wiring.InitDbMigration()
+	mg.DbInstance.CreateDatabase(mg.DbInstance.GetDatabaseName())
+	mg.MigrateUp()
 }

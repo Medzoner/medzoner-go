@@ -4,10 +4,8 @@
 package dependency
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/app"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/web"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	contactMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
 
@@ -94,10 +92,6 @@ var (
 		handler.NewTechnoHandler,
 		handler.NewNotFoundHandler,
 	)
-	CoreWiring = wire.NewSet(
-		web.NewWeb,
-		wire.Bind(new(web.IWeb), new(*web.Web)),
-	)
 )
 
 func InitDbInstance() *database.DbSQLInstance {
@@ -108,10 +102,10 @@ func InitDbMigration() database.DbMigration {
 	panic(wire.Build(database.NewDbMigration, DbWiring, InfraWiring))
 }
 
-func InitApp() *app.App {
-	panic(wire.Build(app.NewApp, InitDbMigration, InfraWiring, DbWiring, RepositoryWiring, CoreWiring, AppWiring, UiWiring))
+func InitServer() *server.Server {
+	panic(wire.Build(InfraWiring, DbWiring, RepositoryWiring, AppWiring, UiWiring))
 }
 
-func InitAppTest(mocks mocks.Mocks) *app.App {
-	panic(wire.Build(app.NewApp, InitDbMigration, InfraWiring, DbWiring, RepositoryMockWiring, CoreWiring, AppWiring, UiWiring))
+func InitServerTest(mocks mocks.Mocks) *server.Server {
+	panic(wire.Build(InfraWiring, RepositoryMockWiring, AppWiring, UiWiring))
 }

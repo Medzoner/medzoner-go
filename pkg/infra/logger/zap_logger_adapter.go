@@ -62,6 +62,7 @@ func (z ZapLoggerAdapter) New() (*ZapLoggerAdapter, error) {
 	}
 
 	defer z.deferLogger(zapLogger)
+
 	z.Zap = zapLogger
 	return &z, nil
 }

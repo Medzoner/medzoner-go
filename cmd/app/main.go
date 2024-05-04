@@ -5,9 +5,9 @@ import (
 )
 
 func main() {
-	//rootPath, _ := os.Getwd()
-	app := wiring.InitApp()
-	//builder, _ := di.NewBuilder()
-	//appli.LoadContainer(builder)
-	app.Handle("web")
+	server := wiring.InitServer()
+	err := server.ListenAndServe()
+	if err != nil {
+		panic(err)
+	}
 }

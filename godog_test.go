@@ -11,6 +11,7 @@ import (
 	"gotest.tools/assert"
 	"log"
 	"os"
+	"sync"
 	"testing"
 	"time"
 )
@@ -27,12 +28,19 @@ func init() {
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	application := dependency.InitApp()
+	srv := dependency.InitServer()
 
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
 		log.Println("server starting")
-		application.Handle("web")
+		wg.Done()
+		err := srv.ListenAndServe()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}()
+	wg.Wait()
 	fmt.Println("server started")
 
 	baseURL := "http://127.0.0.1:8002"
@@ -44,7 +52,7 @@ func TestMain(m *testing.M) {
 		//Randomize: time.Now().UTC().UnixNano(),
 	}
 
-	featureCtx := bootstrap.New(baseURL, application)
+	featureCtx := bootstrap.New(baseURL)
 	status := godog.TestSuite{
 		Name: "medzoner",
 		TestSuiteInitializer: func(suiteContext *godog.TestSuiteContext) {
@@ -64,10 +72,14 @@ func TestMain(m *testing.M) {
 	defer func() {
 		cancel()
 	}()
-	if err := application.StopServer(ctx); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("server stopped")
+
+	go func() {
+		log.Println("server stopping")
+		if err := srv.Shutdown(ctx); err != nil {
+			log.Println(err)
+		}
+	}()
+	log.Println("server stopped with status: ", status)
 	os.Exit(status)
 }
 
