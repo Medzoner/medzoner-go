@@ -29,8 +29,8 @@ jobs:
       - run: make build
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
-      - run: go get -u github.com/modocache/gover
-      - run: go get -u github.com/mattn/goveralls
+      - run: go get github.com/modocache/gover
+      - run: go get github.com/mattn/goveralls
       - run: ls -lah ${HOME}/go/bin
       - run: ${HOME}/go/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
     env:
