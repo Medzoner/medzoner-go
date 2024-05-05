@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"time"
 
@@ -49,10 +48,7 @@ func (c *CreateContactCommandHandler) Handle(ctx context.Context, command Create
 		SetUUID(uuid.UUID{}.String())
 
 	c.ContactRepository.Save(ctx, contact)
-	err := c.Logger.Log("Contact was created.")
-	if err != nil {
-		fmt.Println(err)
-	}
+	c.Logger.Log("Contact was created.")
 
 	contactCreatedEvent := event.ContactCreatedEvent{Contact: contact}
 	c.ContactCreatedEventHandler.Handle(ctx, contactCreatedEvent)

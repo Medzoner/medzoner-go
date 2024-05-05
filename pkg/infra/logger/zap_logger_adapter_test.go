@@ -11,25 +11,19 @@ func TestZapLoggerAdapterSuccess(t *testing.T) {
 		loggerTest, _ := logger.ZapLoggerAdapter{
 			UseSugar: false,
 		}.New()
-		err := loggerTest.Log("log zap")
-		if err != nil {
-			fmt.Println(err)
-		}
+		loggerTest.Log("log zap")
 	})
 	t.Run("Unit: test ZapLoggerAdapter error log success", func(t *testing.T) {
 		loggerTest, _ := logger.ZapLoggerAdapter{
 			UseSugar: false,
 		}.New()
-		_ = loggerTest.Error("error zap")
+		loggerTest.Error("error zap")
 	})
 	t.Run("Unit: test ZapLoggerAdapter (sugared) log success", func(t *testing.T) {
 		loggerTest, _ := logger.ZapLoggerAdapter{
 			UseSugar: true,
 		}.New()
-		err := loggerTest.Log("log (sugared) zap")
-		if err != nil {
-			fmt.Println(err)
-		}
+		loggerTest.Log("log (sugared) zap")
 	})
 	t.Run("Unit: test ZapLoggerAdapter (sugared) error log success", func(t *testing.T) {
 		loggerTest, err := logger.ZapLoggerAdapter{
@@ -38,6 +32,6 @@ func TestZapLoggerAdapterSuccess(t *testing.T) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		_ = loggerTest.Error("error (sugared) zap")
+		loggerTest.Error("error (sugared) zap")
 	})
 }

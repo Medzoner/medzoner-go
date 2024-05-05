@@ -46,10 +46,7 @@ func NewServer(
 func (s Server) ListenAndServe() error {
 	recaptcha.Init(s.RecaptchaSecretKey)
 
-	err := s.Logger.Log(fmt.Sprintf("Server up on port '%d'", s.APIPort))
-	if err != nil {
-		_ = s.Logger.Error(fmt.Sprintln(err))
-	}
+	s.Logger.Log(fmt.Sprintf("Server up on port '%d'", s.APIPort))
 	return s.HTTPServer.ListenAndServe()
 }
 
