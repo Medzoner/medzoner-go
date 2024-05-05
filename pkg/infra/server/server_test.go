@@ -3,6 +3,7 @@ package server_test
 import (
 	"context"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	"github.com/gorilla/mux"
 	"log"
@@ -13,15 +14,7 @@ import (
 
 func TestServer(t *testing.T) {
 	t.Run("Unit: test Server success", func(t *testing.T) {
-		srv := server.Server{
-			Logger:  &LoggerTest{},
-			Router:  RouterMock{},
-			APIPort: 8123,
-			HTTPServer: &http.Server{
-				Addr:    ":8124",
-				Handler: &mux.Router{},
-			},
-		}
+		srv := server.NewServer(&config.Config{APIPort: 8123}, RouterMock{}, &LoggerTest{})
 		go func() {
 			_ = srv.ListenAndServe()
 		}()

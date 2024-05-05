@@ -2,27 +2,22 @@ package session_test
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
-	"github.com/gorilla/sessions"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestSession(t *testing.T) {
 	t.Run("Unit: test Session success", func(t *testing.T) {
-		sessioner := &session.SessionerAdapter{
-			SessionKey: "test-session",
-			Store:      sessions.NewCookieStore([]byte("test-session")),
-			Values:     map[interface{}]interface{}{},
-		}
+		sess := session.NewSessionerAdapter(session.NewSessionKey())
 		request := httptest.NewRequest("GET", "/", nil)
-		sessionerInstance, _ := sessioner.Init(request)
-		_ = sessionerInstance.Save(request, httptest.NewRecorder())
-		_ = sessionerInstance.GetValue("key")
-		sessionerInstance.SetValue("key", "true")
-		_ = sessionerInstance.GetValue("key")
+		sessInstance, _ := sess.Init(request)
+		_ = sessInstance.Save(request, httptest.NewRecorder())
+		_ = sessInstance.GetValue("key")
+		sessInstance.SetValue("key", "true")
+		_ = sessInstance.GetValue("key")
 	})
 	t.Run("Unit: test Session failed", func(t *testing.T) {
-		sessioner := &session.SessionerAdapter{
+		sess := &session.SessionerAdapter{
 			SessionKey: "failed-test-session",
 			Store:      nil,
 			Values:     map[interface{}]interface{}{},
@@ -33,6 +28,6 @@ func TestSession(t *testing.T) {
 				t.Errorf("The code did not panic")
 			}
 		}()
-		_, _ = sessioner.Init(request)
+		_, _ = sess.Init(request)
 	})
 }

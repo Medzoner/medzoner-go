@@ -47,10 +47,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 			isSend: false,
 		}
 		loggerTest := &LoggerTest{}
-		handler := event.ContactCreatedEventHandler{
-			Mailer: mailer,
-			Logger: loggerTest,
-		}
+		handler := event.NewContactCreatedEventHandler(mailer, loggerTest)
 
 		handler.Handle(context.Background(), BadEvent{})
 		assert.Equal(t, loggerTest.LogMessages[0], "Error during send mail.")

@@ -13,7 +13,7 @@ import (
 
 func TestValidateValidator(t *testing.T) {
 	t.Run("Unit: test Validate success", func(t *testing.T) {
-		validatorAdapter := validation.ValidatorAdapter{}.New()
+		validatorAdapter := validation.NewValidatorAdapter().New()
 
 		createContactCommand := command.CreateContactCommand{
 			DateAdd: time.Now(),
@@ -28,7 +28,7 @@ func TestValidateValidator(t *testing.T) {
 		assert.Equal(t, true, true)
 	})
 	t.Run("Unit: test Validate failed", func(t *testing.T) {
-		validatorAdapter := validation.ValidatorAdapter{}.New()
+		validatorAdapter := validation.NewValidatorAdapter().New()
 
 		createContactCommand := command.CreateContactCommand{}
 		err := validatorAdapter.Struct(createContactCommand)

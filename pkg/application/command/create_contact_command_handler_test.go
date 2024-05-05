@@ -25,12 +25,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 
 		contact := &ContactTest{}
 		loggerTest := &LoggerTest{}
-		handler := command.CreateContactCommandHandler{
-			ContactFactory:             contact,
-			ContactRepository:          &ContactRepositoryTest{},
-			ContactCreatedEventHandler: CreateContactEventHandlerTest{},
-			Logger:                     loggerTest,
-		}
+		handler := command.NewCreateContactCommandHandler(&ContactRepositoryTest{}, CreateContactEventHandlerTest{}, loggerTest)
 
 		handler.Handle(context.Background(), createContactCommand)
 		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
