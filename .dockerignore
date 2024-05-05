@@ -6,5 +6,4 @@
 ./.githooks
 ./features
 ./k8s
-./migrations
 ./node_modules
