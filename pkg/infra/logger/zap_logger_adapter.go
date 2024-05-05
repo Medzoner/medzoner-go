@@ -24,16 +24,12 @@ func NewLoggerAdapter(useSugar UseSugar) *ZapLoggerAdapter {
 	zl := ZapLoggerAdapter{
 		UseSugar: bool(useSugar),
 	}
-	logger, err := zl.New()
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
+	logger := zl.New()
 	return logger
 }
 
 // New New
-func (z ZapLoggerAdapter) New() (*ZapLoggerAdapter, error) {
+func (z ZapLoggerAdapter) New() *ZapLoggerAdapter {
 	rawJSON := []byte(`{
 		"level": "debug",
 		"outputPaths": ["stdout"],
@@ -50,7 +46,7 @@ func (z ZapLoggerAdapter) New() (*ZapLoggerAdapter, error) {
 
 	cfg := zap.Config{}
 	if err := json.Unmarshal(rawJSON, &cfg); err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
@@ -58,13 +54,13 @@ func (z ZapLoggerAdapter) New() (*ZapLoggerAdapter, error) {
 	}
 	zapLogger, err := cfg.Build()
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	defer z.deferLogger(zapLogger)
 
 	z.Zap = zapLogger
-	return &z, nil
+	return &z
 }
 
 func (z ZapLoggerAdapter) deferLogger(zapLogger *zap.Logger) {

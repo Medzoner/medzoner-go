@@ -12,9 +12,7 @@ func TestListTechnoQueryHandler(t *testing.T) {
 			Type: "stack",
 		}
 
-		handler := query.ListTechnoQueryHandler{
-			TechnoRepository: &TechnoRepositoryTest{},
-		}
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 		handler.Handle(listTechnoQuery)
 	})
 
@@ -22,9 +20,7 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "experience",
 		}
-		handler := query.ListTechnoQueryHandler{
-			TechnoRepository: &TechnoRepositoryTest{},
-		}
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 		handler.Handle(listTechnoQuery)
 	})
 
@@ -32,9 +28,7 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "formation",
 		}
-		handler := query.ListTechnoQueryHandler{
-			TechnoRepository: &TechnoRepositoryTest{},
-		}
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 		handler.Handle(listTechnoQuery)
 	})
 
@@ -42,9 +36,7 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "lang",
 		}
-		handler := query.ListTechnoQueryHandler{
-			TechnoRepository: &TechnoRepositoryTest{},
-		}
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 		handler.Handle(listTechnoQuery)
 	})
 
@@ -53,9 +45,7 @@ func TestListTechnoQueryHandler(t *testing.T) {
 			Type: "other",
 		}
 
-		handler := query.ListTechnoQueryHandler{
-			TechnoRepository: &TechnoRepositoryTest{},
-		}
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 		handler.Handle(listTechnoQuery)
 	})
 
@@ -64,9 +54,7 @@ func TestListTechnoQueryHandler(t *testing.T) {
 			Type: "fake",
 		}
 
-		handler := query.ListTechnoQueryHandler{
-			TechnoRepository: &TechnoRepositoryTest{},
-		}
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 		handler.Handle(listTechnoQuery)
 	})
 
