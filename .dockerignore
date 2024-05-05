@@ -1,4 +1,10 @@
 ./.var/mysql
-./.var/portainer-data
 ./.idea
 ./.git
+./.github
+./.gitignore
+./.githooks
+./features
+./k8s
+./migrations
+./node_modules

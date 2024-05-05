@@ -24,4 +24,4 @@ spec:
             - -c
             - |
               go build -gcflags "all=-N -l" -o ./bin/app ./cmd/app/main.go
-              /dlv exec --headless=true --listen=:4000 --only-same-user=false --api-version=2 --only-same-user=false --log --log-output=rpc ./bin/app
+              /dlv exec --listen=:4000 --headless=true --api-version=2 --check-go-version=false --only-same-user=false  --log ./bin/app
