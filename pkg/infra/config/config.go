@@ -6,12 +6,14 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	env "github.com/caarlos0/env/v10"
 )
 
 // IConfig IConfig
 type IConfig interface {
 	Init()
-	GetRootPath() string
+	GetRootPath() RootPath
 	GetEnvironment() string
 	GetMysqlDsn() string
 	GetAPIPort() int
@@ -23,47 +25,45 @@ type IConfig interface {
 	GetRecaptchaSecretKey() string
 }
 
+type RootPath string
+
 // Config Config
 type Config struct {
-	Environment        string
-	RootPath           string
-	DebugMode          bool
-	Options            []string
-	DatabaseDsn        string
-	DatabaseName       string
-	APIPort            int
-	DatabaseDriver     string
-	MailerUser         string
-	MailerPassword     string
-	RecaptchaSiteKey   string
-	RecaptchaSecretKey string
+	Environment        string `env:"ENV" envDefault:"dev"`
+	RootPath           RootPath
+	DebugMode          bool     `env:"DEBUG" envDefault:"false"`
+	Options            []string `env:"OPTIONS" envDefault:"[]"`
+	APIPort            int      `env:"API_PORT" envDefault:"8002"`
+	DatabaseDsn        string   `env:"DATABASE_DSN" envDefault:"root:changeme@tcp(0.0.0.0:3366)"`
+	DatabaseName       string   `env:"DATABASE_NAME" envDefault:"dev_medzoner"`
+	DatabaseDriver     string   `env:"DATABASE_DRIVER" envDefault:"mysql"`
+	MailerUser         string   `env:"MAILER_USER" envDefault:"medzoner@xxx.fake"`
+	MailerPassword     string   `env:"MAILER_PASSWORD" envDefault:"xxxxxxxxxxxx"`
+	RecaptchaSiteKey   string   `env:"RECAPTCHA_SITE_KEY" envDefault:"xxxxxxxxxxxx"`
+	RecaptchaSecretKey string   `env:"RECAPTCHA_SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
 }
 
 // NewConfig NewConfig
 func NewConfig() *Config {
-	conf := &Config{}
+	conf := parseEnv()
 	conf.Init()
 	return conf
 }
 
 // Init Init
 func (c *Config) Init() {
-	err := godotenv.Load(string(c.RootPath) + "/.env")
-	c.Environment = getEnv("ENV", "dev")
+	pwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	c.RootPath = RootPath(pwd + "/")
+	err = godotenv.Load(string(c.RootPath) + "/.env")
 	if c.Environment == "test" {
 		err = godotenv.Load(string(c.RootPath) + "/.env.test")
 	}
-	c.MailerUser = getEnv("MAILER_USER", "medzoner@xxx.fake")
-	c.MailerPassword = getEnv("MAILER_PASSWORD", "xxxxxxxxxxxx")
-	c.DatabaseDsn = getEnv("DATABASE_DSN", "root:changeme@tcp(0.0.0.0:3366)")
-	c.DatabaseDriver = getEnv("DATABASE_DRIVER", "mysql")
-	c.DatabaseName = getEnv("DATABASE_NAME", "dev_medzoner")
-	c.DebugMode = getEnvAsBool("DEBUG", false)
 	c.Options = getEnvAsSlice("OPTIONS", []string{}, ",")
 	_ = getEnvAsBool("DEBUG_TEST", false)
 	_ = getEnvAsInt("WAIT_MYSQL", 2)
-	c.RecaptchaSiteKey = getEnv("RECAPTCHA_SITE_KEY", "xxxxxxxxxxxx")
-	c.RecaptchaSecretKey = getEnv("RECAPTCHA_SECRET_KEY", "xxxxxxxxxxxx")
 	c.APIPort, _ = strconv.Atoi(getEnv("API_PORT", "8002"))
 
 	if err == nil {
@@ -94,7 +94,7 @@ func (c *Config) GetAPIPort() int {
 }
 
 // GetRootPath GetRootPath
-func (c *Config) GetRootPath() string {
+func (c *Config) GetRootPath() RootPath {
 	return c.RootPath
 }
 
@@ -153,4 +153,14 @@ func (c *Config) GetRecaptchaSiteKey() string {
 // GetRecaptchaSecretKey GetRecaptchaSecretKey
 func (c *Config) GetRecaptchaSecretKey() string {
 	return c.RecaptchaSecretKey
+}
+
+// parseEnv parseEnv
+func parseEnv() *Config {
+	cfg := &Config{}
+	err := env.Parse(cfg)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return cfg
 }

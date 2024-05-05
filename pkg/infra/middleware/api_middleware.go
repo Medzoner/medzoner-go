@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"net/http"
 )
 
@@ -11,13 +10,11 @@ type IMiddleware interface {
 }
 
 // APIMiddleware APIMiddleware
-type APIMiddleware struct {
-	Logger logger.ILogger
-}
+type APIMiddleware struct{}
 
 // NewAPIMiddleware NewAPIMiddleware
-func NewAPIMiddleware(logger logger.ILogger) IMiddleware {
-	return &APIMiddleware{Logger: logger}
+func NewAPIMiddleware() IMiddleware {
+	return &APIMiddleware{}
 
 }
 

@@ -14,12 +14,9 @@ import (
 func TestServer(t *testing.T) {
 	t.Run("Unit: test Server success", func(t *testing.T) {
 		srv := server.Server{
-			Logger:          &LoggerTest{},
-			Router:          RouterMock{},
-			IndexHandler:    nil,
-			TechnoHandler:   nil,
-			NotFoundHandler: nil,
-			APIPort:         8123,
+			Logger:  &LoggerTest{},
+			Router:  RouterMock{},
+			APIPort: 8123,
 			HTTPServer: &http.Server{
 				Addr:    ":8124",
 				Handler: &mux.Router{},

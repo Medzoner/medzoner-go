@@ -1,8 +1,9 @@
 module github.com/Medzoner/medzoner-go
 
-go 1.22
+go 1.22.2
 
 require (
+	github.com/caarlos0/env/v10 v10.0.0
 	github.com/cucumber/godog v0.14.1
 	github.com/docker/distribution v2.8.3+incompatible
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
@@ -25,6 +26,7 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/cucumber/gherkin/go/v26 v26.2.0 // indirect
 	github.com/cucumber/messages/go/v21 v21.0.1 // indirect
+	github.com/distribution/reference v0.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
