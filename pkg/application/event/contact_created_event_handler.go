@@ -2,7 +2,6 @@ package event
 
 import (
 	"context"
-	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/service/mailer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 )
@@ -28,11 +27,8 @@ func (c ContactCreatedEventHandler) Handle(ctx context.Context, event Event) {
 	switch event.(type) {
 	case ContactCreatedEvent:
 		_, _ = c.Mailer.Send(event.GetModel())
-		err := c.Logger.Log("Mail was send.")
-		if err != nil {
-			fmt.Println(err)
-		}
+		c.Logger.Log("Mail was send.")
 	default:
-		_ = c.Logger.Error("Error during send mail.")
+		c.Logger.Error("Error during send mail.")
 	}
 }

@@ -29,13 +29,13 @@ func (m *MysqlContactRepository) Save(ctx context.Context, contact model.IContac
 	query := `INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (:name, :message, :emailstring, :date_add, :uuid)`
 	res, err := m.DbInstance.GetConnection().NamedExec(query, contact)
 	if err != nil {
-		_ = m.Logger.Error(fmt.Sprintln(err))
+		m.Logger.Error(fmt.Sprintln(err))
 		panic(err)
 	}
 	if res != nil {
 		err = conn.Commit()
 		if err != nil {
-			_ = m.Logger.Error(fmt.Sprintln(err))
+			m.Logger.Error(fmt.Sprintln(err))
 			panic(err)
 		}
 	}

@@ -121,6 +121,6 @@ func (m *TechnoJSONRepository) FetchOther() map[string]interface{} {
 func (m *TechnoJSONRepository) deferJSONFile(jsonFile *os.File) {
 	err := jsonFile.Close()
 	if err != nil {
-		_ = m.Logger.Error("jsonFile error.")
+		m.Logger.Error("jsonFile error.")
 	}
 }

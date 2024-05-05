@@ -62,15 +62,13 @@ type LoggerTest struct {
 	LogMessages []string
 }
 
-func (l *LoggerTest) Log(msg string) error {
+func (l *LoggerTest) Log(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
-	return nil
 }
-func (l *LoggerTest) Error(msg string) error {
+func (l *LoggerTest) Error(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
-	return nil
 }
 func (l LoggerTest) New() (logger.ILogger, error) {
 	return &LoggerTest{}, nil
