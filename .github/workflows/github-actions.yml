@@ -28,8 +28,8 @@ jobs:
       - run: make build
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
-      - run: go get -u github.com/modocache/gover
-      - run: go get -u github.com/mattn/goveralls
+      - run: go install github.com/modocache/gover@latest
+      - run: go install github.com/mattn/goveralls@latest
       - run: ls -lah ${HOME}/work/
       - run: ls -lah ${HOME}/work/medzoner-go/go/bin
 #      - run: ${GOPATH}/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
