@@ -1,8 +1,8 @@
 # nonk8s
-apiVersion: skaffold/v2beta23
+apiVersion: skaffold/v4beta10
 kind: Config
 metadata:
-  name: k-s-skaffold
+  name: k8s-skaffold
 #build:
 #  artifacts:
 #  - image: localhost:5000/medzoner-go
@@ -11,38 +11,13 @@ metadata:
 #    useDockerCLI: false
 #    useBuildkit: false
 
-deploy:
-  kubectl:
-    manifests:
-      - k8s/deployment.yaml
-      - k8s/service.yaml
+manifests:
+  rawYaml:
+    - k8s/deployment.yaml
+    - k8s/service.yaml
 
-profiles:
-  - name: dev
-    activation:
-      - command: dev
-    build:
-      artifacts:
-        - image: localhost:5000/medzoner-go
-          context: ''
-          hooks:
-            after:
-              - command:
-                  - sh
-                  - -cx
-                  - |
-                    docker tag localhost:5000/medzoner-go localhost:5000/medzoner-go:latest
-                    docker push localhost:5000/medzoner-go:latest
-          docker:
-            buildArgs:
-              ENV: development
-            target: run
-            cacheFrom:
-              - localhost:5000/medzoner-go:latest
-#          sync:
-#            manual:
-#              - src: 'pkg/**/*.go'
-#                dest: /var/www/.
+deploy:
+  kubectl: {}
 
 portForward:
   - resourceType: service
@@ -55,3 +30,30 @@ portForward:
     namespace: default
     port: 8002
     localPort: 8025
+
+profiles:
+  - name: dev
+    activation:
+      - command: dev
+    build:
+      artifacts:
+        - image: localhost:5000/medzoner-go
+          context: ''
+#          hooks:
+#            after:
+#              - command:
+#                  - sh
+#                  - -cx
+#                  - |
+#                    docker tag localhost:5000/medzoner-go localhost:5000/medzoner-go:latest
+#                    docker push localhost:5000/medzoner-go:latest
+          docker:
+            buildArgs:
+              ENV: development
+            target: run
+            cacheFrom:
+              - localhost:5000/medzoner-go:latest
+#          sync:
+#            manual:
+#              - src: 'pkg/**/*.go'
+#                dest: /var/www/.

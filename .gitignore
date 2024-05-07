@@ -30,8 +30,8 @@
 /medzoner/
 /.var/log/*.log
 !/.var/test/
-/coverage.out
-/coverage.html
+coverage.out
+coverage.html
 /.config/
 __debug_bin*
 trace.out

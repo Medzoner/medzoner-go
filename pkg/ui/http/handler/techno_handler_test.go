@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
@@ -12,15 +13,16 @@ import (
 
 func TestTechnoHandler(t *testing.T) {
 	t.Run("Unit: test TechnoHandler success", func(t *testing.T) {
-		technoHandler := handler.TechnoHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
-				TechnoRepository: &repository.TechnoJSONRepository{
+		technoHandler := handler.NewTechnoHandler(
+			&TemplaterTest{},
+			query.NewListTechnoQueryHandler(repository.NewTechnoJSONRepository(
+				&LoggerTest{},
+				&config.Config{
 					RootPath: "./../../../../",
 				},
-			},
-			Tracer: tracer.NewHttpTracer(),
-		}
+			)),
+			tracer.NewHttpTracer(),
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/techno", nil)
@@ -31,15 +33,16 @@ func TestTechnoHandler(t *testing.T) {
 
 	t.Run("Unit: test TechnoHandler with templater render failed", func(t *testing.T) {
 
-		technoHandler := handler.TechnoHandler{
-			Template: &TemplaterTestFailed{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
-				TechnoRepository: &repository.TechnoJSONRepository{
+		technoHandler := handler.NewTechnoHandler(
+			&TemplaterTestFailed{},
+			query.NewListTechnoQueryHandler(repository.NewTechnoJSONRepository(
+				&LoggerTest{},
+				&config.Config{
 					RootPath: "./../../../../",
 				},
-			},
-			Tracer: tracer.NewHttpTracer(),
-		}
+			)),
+			tracer.NewHttpTracer(),
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("Get", "/techno", nil)
