@@ -29,7 +29,6 @@ func NewMailerSMTP(config config.IConfig) *MailerSMTP {
 
 // Request Request
 type Request struct {
-	from    string
 	to      []string
 	subject string
 	body    string

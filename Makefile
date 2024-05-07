@@ -34,3 +34,12 @@ trace:
 
 wire:
 	wire gen ./pkg/infra/dependency/.
+
+lint:
+	golangci-lint --issues-exit-code 1 run  ./...
+
+staticcheck:
+	staticcheck ./...
+
+gosec:
+	gosec ./...

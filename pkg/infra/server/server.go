@@ -8,6 +8,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/dpapathanasiou/go-recaptcha"
 	"net/http"
+	"time"
 )
 
 // IServer Server Server
@@ -37,6 +38,8 @@ func NewServer(
 		HTTPServer: &http.Server{
 			Addr:    fmt.Sprintf(":%d", conf.GetAPIPort()),
 			Handler: route,
+
+			ReadHeaderTimeout: time.Second,
 		},
 		APIPort:            conf.GetAPIPort(),
 		RecaptchaSecretKey: conf.GetRecaptchaSecretKey(),

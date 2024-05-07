@@ -3,7 +3,6 @@ package config_test
 import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -26,12 +25,12 @@ func TestConfig(t *testing.T) {
 
 func TestEnv(t *testing.T) {
 	t.Run("test env found", func(t *testing.T) {
-		_, err := ioutil.ReadFile(string(conf.RootPath + ".env"))
+		_, err := os.ReadFile(string(conf.RootPath + ".env"))
 		if err != nil {
 			fmt.Println(err)
 			panic("err")
 		}
-		err = ioutil.WriteFile(string(conf.RootPath+".env"), []byte([]byte{}), 0644)
+		err = os.WriteFile(string(conf.RootPath+".env"), []byte([]byte{}), 0644)
 		if err != nil {
 			fmt.Println(err)
 			panic("err")
