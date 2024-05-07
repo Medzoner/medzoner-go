@@ -2,15 +2,15 @@ package bootstrap
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 
-	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
+	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 
 	"github.com/cucumber/godog"
 )
@@ -19,7 +19,7 @@ import (
 type APIFeature struct {
 	Response *http.Response
 	Request  *http.Request
-	BaseURL  *string
+	Server   server.Server
 }
 
 // BodyRequest BodyRequest
@@ -34,9 +34,15 @@ func (b BodyRequest) Read(p []byte) (n int, err error) {
 }
 
 // New New
-func New(url string) *APIFeature {
-	feature := &APIFeature{Response: &http.Response{}, BaseURL: &url}
-	feature.Request, _ = http.NewRequest("GET", fmt.Sprintf("%s%s", url, "/"), BodyRequest{}.Body)
+func New(srv server.Server) *APIFeature {
+	feature := &APIFeature{Response: &http.Response{}}
+
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/", recorder.Body)
+	feature.Request = request
+	feature.Server = srv
+
+	srv.Router.ServeHTTP(recorder, request)
 	return feature
 }
 
@@ -53,8 +59,9 @@ func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 
 // InitializeScenario InitializeScenario
 func (a *APIFeature) InitializeScenario(ctx *godog.ScenarioContext) {
-	ctx.BeforeScenario(func(*godog.Scenario) {
+	ctx.Before(func(ctx context.Context, s *godog.Scenario) (context.Context, error) {
 		a.resetResponse()
+		return ctx, nil
 	})
 	ctx.Step(`^I add "([^"]*)" header equal to "([^"]*)"$`, a.iAddHeaderEqualTo)
 	ctx.Step(`^I send a GET request to "([^"]*)"$`, a.iSendAGETRequestTo)
@@ -92,28 +99,35 @@ func (a *APIFeature) iAddHeaderEqualTo(arg1 string, arg2 string) (err error) {
 
 func (a *APIFeature) iSendARequestTo(method, endpoint string) (err error) {
 	a.Request.Method = method
-	a.Request.URL, err = url.Parse(fmt.Sprintf("%s%s", *a.BaseURL, endpoint))
-	if err != nil {
-		return
-	}
+	a.Request.URL, err = url.Parse(endpoint)
+	//if err != nil {
+	//	return
+	//}
+	//
+	//client := &http.Client{}
+	//resp, err := client.Do(a.Request)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//// _ = resp.Body.Close()
+	//a.Response = resp
+	//
+	//// handle panic
+	//defer func() {
+	//	switch t := recover().(type) {
+	//	case string:
+	//		err = fmt.Errorf(t)
+	//	case error:
+	//		err = t
+	//	}
+	//}()
 
-	client := &http.Client{}
-	resp, err := client.Do(a.Request)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// _ = resp.Body.Close()
-	a.Response = resp
+	recorder := httptest.NewRecorder()
 
-	// handle panic
-	defer func() {
-		switch t := recover().(type) {
-		case string:
-			err = fmt.Errorf(t)
-		case error:
-			err = t
-		}
-	}()
+	request := a.Request
+	a.Server.Router.ServeHTTP(recorder, request)
+	a.Response = recorder.Result()
+
 	return
 }
 
@@ -138,7 +152,7 @@ func (a *APIFeature) theResponseStatusCodeShouldBe(code int) (err error) {
 //	if expected, err = json.Marshal(data); err != nil {
 //		return
 //	}
-//	actual, _ = ioutil.ReadAll(a.Response.Body)
+//	actual, _ = io.ReadAll(a.Response.Body)
 //	if !bytes.Equal(actual, expected) {
 //		err = fmt.Errorf("expected json, does not match actual: %s", string(actual))
 //	}
@@ -148,7 +162,7 @@ func (a *APIFeature) theResponseStatusCodeShouldBe(code int) (err error) {
 func (a *APIFeature) theJSONNodeShouldBeEqualTo(arg1, arg2 string) (err error) {
 	data := make(map[string]interface{})
 
-	bodyBytes, err := ioutil.ReadAll(a.Response.Body)
+	bodyBytes, err := io.ReadAll(a.Response.Body)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -164,7 +178,7 @@ func (a *APIFeature) theJSONNodeShouldBeEqualTo(arg1, arg2 string) (err error) {
 }
 
 func (a *APIFeature) theResponseShouldBeInJSON() (err error) {
-	res, _ := ioutil.ReadAll(a.Response.Body)
+	res, _ := io.ReadAll(a.Response.Body)
 	var js json.RawMessage
 	if json.Unmarshal(res, &js) != nil {
 		return fmt.Errorf("expected response in json")
@@ -204,7 +218,7 @@ func (a *APIFeature) paginationScenario() error {
 }
 
 func (a *APIFeature) printLastJSONResponse() (err error) {
-	bodyBytes, err := ioutil.ReadAll(a.Response.Body)
+	bodyBytes, err := io.ReadAll(a.Response.Body)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -241,12 +255,12 @@ func (a *APIFeature) theJSONNodeShouldContainTheKeyIsInvalidAsItWillOverrideTheE
 }
 
 func (a *APIFeature) theResponseShouldBeEmpty() (err error) {
-	bodyBytes, err := ioutil.ReadAll(a.Response.Body)
+	bodyBytes, err := io.ReadAll(a.Response.Body)
 	if err != nil {
 		fmt.Println(err)
 	}
 	bodyString := string(bodyBytes)
-	if "" != bodyString {
+	if bodyString != "" {
 		return fmt.Errorf("expected response body to be null, but actual is not empty")
 	}
 	return nil
@@ -273,43 +287,20 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocStr
 		a.Request.PostForm = v
 	}
 	a.Request.Method = "POST"
-	err := errors.New("err http send")
-	a.Request.URL, err = url.Parse(fmt.Sprintf("%s%s", *a.BaseURL, arg1))
+	url, err := url.Parse(arg1)
 	if err != nil {
 		return err
 	}
+	a.Request.URL = url
 
-	client := &http.Client{}
-	resp, err := client.PostForm(a.Request.URL.String(), v)
-	if err != nil {
-		fmt.Println(err)
-	}
-	_ = resp.Body.Close()
-	a.Response = resp
+	recorder := httptest.NewRecorder()
+	request := a.Request
 
-	// handle panic
-	defer func() {
-		switch t := recover().(type) {
-		case string:
-			err = fmt.Errorf(t)
-		case error:
-			err = t
-		}
-	}()
+	a.Server.Router.ServeHTTP(recorder, request)
+	a.Response = recorder.Result()
 	return nil
 }
 
 func (a *APIFeature) iSendAPUTRequestToWithBody(arg1 string, arg2 *godog.DocString) error {
 	return a.iSendAPOSTRequestToWithBody(arg1, arg2)
-}
-
-func (a *APIFeature) resetBdd() {
-	db := wiring.InitDbInstance()
-	dbName := db.GetDatabaseName()
-	db.CreateDatabase(dbName)
-	db.DropDatabase(dbName)
-	db.CreateDatabase(dbName)
-	mg := wiring.InitDbMigration()
-	mg.MigrateUp()
-	return
 }

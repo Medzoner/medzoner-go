@@ -85,5 +85,4 @@ func InitRoutes(a IRouter, notFoundHandler *handler.NotFoundHandler, indexHandle
 	a.PathPrefix("/public/js").Handler(m.Middleware(fs))
 
 	a.PathPrefix("/public").Handler(fs)
-	a.Handle("/")
 }

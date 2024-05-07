@@ -1,19 +1,14 @@
 package main
 
 import (
-	"context"
-	"flag"
-	"fmt"
 	"github.com/Medzoner/medzoner-go/features/bootstrap"
 	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
+	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
-	"gotest.tools/assert"
-	"log"
+	"github.com/golang/mock/gomock"
 	"os"
-	"sync"
 	"testing"
-	"time"
 )
 
 var opt = godog.Options{
@@ -25,25 +20,10 @@ func init() {
 	godog.BindCommandLineFlags("godog.", &opt)
 }
 
-func TestMain(m *testing.M) {
-	flag.Parse()
-
-	srv := dependency.InitServer()
-
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		log.Println("server starting")
-		wg.Done()
-		err := srv.ListenAndServe()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}()
-	wg.Wait()
-	fmt.Println("server started")
-
-	baseURL := "http://127.0.0.1:8002"
+func TestFeatures(t *testing.T) {
+	mockedRepository := mocks.New(t)
+	srv := dependency.InitServerTest(mockedRepository)
+	mockedRepository.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
 
 	opts := godog.Options{
 		Output: colors.Colored(os.Stdout),
@@ -52,8 +32,8 @@ func TestMain(m *testing.M) {
 		//Randomize: time.Now().UTC().UnixNano(),
 	}
 
-	featureCtx := bootstrap.New(baseURL)
-	status := godog.TestSuite{
+	featureCtx := bootstrap.New(*srv)
+	suite := godog.TestSuite{
 		Name: "medzoner",
 		TestSuiteInitializer: func(suiteContext *godog.TestSuiteContext) {
 			featureCtx.InitializeTestSuite(suiteContext)
@@ -62,27 +42,9 @@ func TestMain(m *testing.M) {
 			featureCtx.InitializeScenario(scenarioContext)
 		},
 		Options: &opts,
-	}.Run()
-
-	if st := m.Run(); st > status {
-		status = st
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer func() {
-		cancel()
-	}()
-
-	go func() {
-		log.Println("server stopping")
-		if err := srv.Shutdown(ctx); err != nil {
-			log.Println(err)
-		}
-	}()
-	log.Println("server stopped with status: ", status)
-	os.Exit(status)
-}
-
-func TestRun(t *testing.T) {
-	assert.Equal(t, 1, 1)
+	if suite.Run() != 0 {
+		t.Fatal("non-zero status returned, failed to run feature tests")
+	}
 }

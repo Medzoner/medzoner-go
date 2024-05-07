@@ -3,10 +3,11 @@ package repository
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
-	"io/ioutil"
-	"os"
 )
 
 // TechnoJSONRepository TechnoJSONRepository
@@ -31,7 +32,7 @@ func (m *TechnoJSONRepository) FetchStack() map[string]interface{} {
 	}
 	defer m.deferJSONFile(jsonFile)
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	c := make(map[string]interface{})
 	err = json.Unmarshal(byteValue, &c)
@@ -50,7 +51,7 @@ func (m *TechnoJSONRepository) FetchExperience() map[string]interface{} {
 	}
 	defer m.deferJSONFile(jsonFile)
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	c := make(map[string]interface{})
 	err = json.Unmarshal(byteValue, &c)
@@ -69,7 +70,7 @@ func (m *TechnoJSONRepository) FetchFormation() map[string]interface{} {
 	}
 	defer m.deferJSONFile(jsonFile)
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	c := make(map[string]interface{})
 	err = json.Unmarshal(byteValue, &c)
@@ -88,7 +89,7 @@ func (m *TechnoJSONRepository) FetchLang() map[string]interface{} {
 	}
 	defer m.deferJSONFile(jsonFile)
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	c := make(map[string]interface{})
 	err = json.Unmarshal(byteValue, &c)
@@ -107,7 +108,7 @@ func (m *TechnoJSONRepository) FetchOther() map[string]interface{} {
 	}
 	defer m.deferJSONFile(jsonFile)
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	c := make(map[string]interface{})
 	err = json.Unmarshal(byteValue, &c)

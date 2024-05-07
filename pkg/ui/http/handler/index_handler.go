@@ -64,16 +64,19 @@ type IndexView struct {
 	FormMessage      string
 }
 
-func (h *IndexHandler) processRequest(request *http.Request) (result bool) {
+func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 	recaptchaResponse, responseFound := request.Form["g-captcha-response"]
 	if responseFound {
 		result, err := h.Recaptcha.Confirm("127.0.0.1", recaptchaResponse[0])
 		if err != nil {
 			log.Println("captcha server error", err)
+			return err
 		}
-		return result
+		if !result {
+			return fmt.Errorf("captcha was incorrect; try again")
+		}
 	}
-	return false
+	return nil
 }
 
 // IndexHandle IndexHandle
@@ -105,28 +108,8 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	}
 	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("submit") == "" {
-		if h.processRequest(request) {
-			createContactCommand := command.CreateContactCommand{
-				DateAdd: time.Now(),
-				Name:    request.FormValue("name"),
-				Email:   request.FormValue("email"),
-				Message: request.FormValue("message"),
-			}
-			v := h.Validation
-			err := v.Struct(createContactCommand)
-			if err == nil {
-				h.CreateContactCommandHandler.Handle(contextIndex, createContactCommand)
-				h.Session.SetValue("message", "Your Message has been sent")
-				err = h.Session.Save(request, response)
-				if err != nil {
-					http.Error(response, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				http.Redirect(response, request, "/#contact", http.StatusSeeOther)
-				return
-			}
-			statusCode = http.StatusBadRequest
-		} else {
+		err = h.processRequest(request)
+		if err != nil {
 			statusCode = http.StatusBadRequest
 			fmt.Println("Recaptcha was incorrect; try again.")
 			h.Session.SetValue("message", "Recaptcha was incorrect; try again.")
@@ -134,11 +117,36 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 			return
 		}
+
+		createContactCommand := command.CreateContactCommand{
+			DateAdd: time.Now(),
+			Name:    request.FormValue("name"),
+			Email:   request.FormValue("email"),
+			Message: request.FormValue("message"),
+		}
+		v := h.Validation
+		err := v.Struct(createContactCommand)
+		if err == nil {
+			h.CreateContactCommandHandler.Handle(contextIndex, createContactCommand)
+			h.Session.SetValue("message", "Your Message has been sent")
+			err = h.Session.Save(request, response)
+			if err != nil {
+				http.Error(response, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
+			return
+		}
+		statusCode = http.StatusBadRequest
 	}
 	if view.FormMessage != "" {
 		response.WriteHeader(statusCode)
 		h.Session.SetValue("message", "")
 		err = h.Session.Save(request, response)
+		if err != nil {
+			http.Error(response, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 	_, err = h.Template.Render("index", view, response, statusCode)
 	if err != nil {
