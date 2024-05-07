@@ -24,19 +24,16 @@ type MuxRouterAdapter struct {
 	MuxRouter       *mux.Router
 	NotFoundHandler *handler.NotFoundHandler
 	IndexHandler    *handler.IndexHandler
-	TechnoHandler   *handler.TechnoHandler
 }
 
 func NewMuxRouterAdapter(
 	notFoundHandler *handler.NotFoundHandler,
 	indexHandler *handler.IndexHandler,
-	technoHandler *handler.TechnoHandler,
 ) *MuxRouterAdapter {
 	rt := &MuxRouterAdapter{
 		MuxRouter:       mux.NewRouter(),
 		NotFoundHandler: notFoundHandler,
 		IndexHandler:    indexHandler,
-		TechnoHandler:   technoHandler,
 	}
 	InitRoutes(rt, notFoundHandler, indexHandler)
 	return rt

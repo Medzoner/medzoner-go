@@ -9,9 +9,3 @@ type CreateContactCommand struct {
 	Message string    `json:"message" validate:"required"`
 	DateAdd time.Time `json:"dateAdd"`
 }
-
-// GetName returns command name
-// @return string
-func (c *CreateContactCommandHandler) GetName() string {
-	return "CreateContactCommand"
-}

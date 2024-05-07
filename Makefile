@@ -1,13 +1,6 @@
 githooks:
 	git config core.hooksPath .githooks
 
-test_behavior:
-	go test godog_test.go
-
-test_unit:
-	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
-	go tool cover -func=coverage.out
-
 test_all:
 	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
@@ -16,9 +9,6 @@ test_all:
 build:
 	CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/main.go
 	CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/migrate/migrate.go
-
-watch:
-	~/go/bin/air -d -c .air.toml
 
 start:
 	go run ./cmd/app/main.go
