@@ -22,7 +22,11 @@ func init() {
 
 func TestFeatures(t *testing.T) {
 	mockedRepository := mocks.New(t)
-	srv := dependency.InitServerTest(mockedRepository)
+	srv, err := dependency.InitServerTest(mockedRepository)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	mockedRepository.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
 
 	opts := godog.Options{

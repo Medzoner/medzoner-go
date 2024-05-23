@@ -21,7 +21,13 @@ func TestTechnoHandler(t *testing.T) {
 					RootPath: "./../../../../",
 				},
 			)),
-			tracer.NewHttpTracer(),
+			func() *tracer.HttpTracer {
+				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
+				if err != nil {
+					panic(err)
+				}
+				return tr
+			}(),
 		)
 
 		responseWriter := httptest.NewRecorder()
@@ -41,7 +47,13 @@ func TestTechnoHandler(t *testing.T) {
 					RootPath: "./../../../../",
 				},
 			)),
-			tracer.NewHttpTracer(),
+			func() *tracer.HttpTracer {
+				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
+				if err != nil {
+					panic(err)
+				}
+				return tr
+			}(),
 		)
 
 		responseWriter := httptest.NewRecorder()

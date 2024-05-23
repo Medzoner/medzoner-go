@@ -100,10 +100,10 @@ func InitDbMigration() database.DbMigration {
 	panic(wire.Build(database.NewDbMigration, DbWiring, InfraWiring))
 }
 
-func InitServer() *server.Server {
+func InitServer() (*server.Server, error) {
 	panic(wire.Build(InfraWiring, DbWiring, RepositoryWiring, AppWiring, UiWiring))
 }
 
-func InitServerTest(mocks mocks.Mocks) *server.Server {
+func InitServerTest(mocks mocks.Mocks) (*server.Server, error) {
 	panic(wire.Build(InfraWiring, RepositoryMockWiring, AppWiring, UiWiring))
 }

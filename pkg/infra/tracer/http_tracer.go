@@ -3,6 +3,7 @@ package tracer
 import (
 	"context"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"log"
 	"os"
 	"runtime/trace"
@@ -14,10 +15,10 @@ type Tracer interface {
 
 type HttpTracer struct{}
 
-func NewHttpTracer() *HttpTracer {
-	f, err := os.Create("trace.out")
+func NewHttpTracer(config config.IConfig) (*HttpTracer, error) {
+	f, err := os.Create(config.GetTraceFile())
 	if err != nil {
-		log.Fatalf("failed to create trace output file: %v", err)
+		return nil, fmt.Errorf("failed to create trace output file: %v", err)
 	}
 	defer func() {
 		if err := f.Close(); err != nil {
@@ -29,7 +30,7 @@ func NewHttpTracer() *HttpTracer {
 		log.Fatalf("failed to start trace: %v", err)
 	}
 	defer trace.Stop()
-	return &HttpTracer{}
+	return &HttpTracer{}, nil
 }
 
 func prepWork() {

@@ -5,8 +5,11 @@ import (
 )
 
 func main() {
-	server := wiring.InitServer()
-	err := server.ListenAndServe()
+	server, err := wiring.InitServer()
+	if err != nil {
+		panic(err)
+	}
+	err = server.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}
