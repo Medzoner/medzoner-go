@@ -45,10 +45,13 @@ func InitDbMigration() database.DbMigration {
 	return dbMigration
 }
 
-func InitServer() *server.Server {
+func InitServer() (*server.Server, error) {
 	configConfig := config.NewConfig()
 	templateHTML := templater.NewTemplateHTML(configConfig)
-	httpTracer := tracer.NewHttpTracer()
+	httpTracer, err := tracer.NewHttpTracer(configConfig)
+	if err != nil {
+		return nil, err
+	}
 	notFoundHandler := handler.NewNotFoundHandler(templateHTML, httpTracer)
 	useSugar := logger.NewUseSugar()
 	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
@@ -66,13 +69,16 @@ func InitServer() *server.Server {
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer)
 	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter)
-	return serverServer
+	return serverServer, nil
 }
 
-func InitServerTest(mocks2 mocks.Mocks) *server.Server {
+func InitServerTest(mocks2 mocks.Mocks) (*server.Server, error) {
 	configConfig := config.NewConfig()
 	templateHTML := templater.NewTemplateHTML(configConfig)
-	httpTracer := tracer.NewHttpTracer()
+	httpTracer, err := tracer.NewHttpTracer(configConfig)
+	if err != nil {
+		return nil, err
+	}
 	notFoundHandler := handler.NewNotFoundHandler(templateHTML, httpTracer)
 	useSugar := logger.NewUseSugar()
 	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
@@ -89,7 +95,7 @@ func InitServerTest(mocks2 mocks.Mocks) *server.Server {
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer)
 	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter)
-	return serverServer
+	return serverServer, nil
 }
 
 // wire.go:

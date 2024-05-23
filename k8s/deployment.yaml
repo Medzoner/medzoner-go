@@ -23,5 +23,6 @@ spec:
             - /bin/sh
             - -c
             - |
-              go build -gcflags "all=-N -l" -o ./bin/app ./cmd/app/main.go
-              /dlv exec --listen=:4000 --headless=true --api-version=2 --check-go-version=false --only-same-user=false  --log ./bin/app
+              CGO_ENABLED=0 go build -gcflags "all=-N -l" -ldflags "-s -w" -o ./bin/app ./cmd/app/main.go
+              /dlv exec --listen=:4000 --headless=true --api-version=2 --check-go-version=false --accept-multiclient  --log ./bin/app
+#              /dlv exec --listen=:4000 --continue --headless=true --api-version=2 --check-go-version=false --accept-multiclient  --log ./bin/app
