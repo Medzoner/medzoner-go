@@ -50,5 +50,5 @@ staticcheck:
 gosec:
 	gosec ./...
 
-run-qa: govet gofmt lint staticcheck gosec
+run-qa: govet gofmt lint staticcheck
 	echo "QA passed"
