@@ -29,8 +29,6 @@ jobs:
       - run: cp .env.github .env
       - run: make test_all
     env:
-      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       GOPATH: /home/runner/work/medzoner-go/go
 
   ci-build:
@@ -42,8 +40,6 @@ jobs:
       - run: cp .env.github .env
       - run: make build
     env:
-      GIT_BRANCH: ${{ github.ref_name }}
-      GIT_COMMIT: ${{ github.sha }}
       GOPATH: /home/runner/work/medzoner-go/go
 
   create-release:
@@ -58,6 +54,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
+      - run: cp .env.github .env
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
       - run: go install github.com/modocache/gover@latest
