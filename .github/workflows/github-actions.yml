@@ -28,10 +28,16 @@ jobs:
         uses: actions/setup-go@v5
       - run: cp .env.github .env
       - run: make test_all
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: code-coverage-report
+          path: coverage.out
+#          retention-days: 1
     env:
       GOPATH: /home/runner/work/medzoner-go/go
 
-  create-release:
+  cd-release:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -40,22 +46,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
       - run: cp .env.github .env
       - run: make build
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
-      - run: go install github.com/modocache/gover@latest
-      - run: go install github.com/mattn/goveralls@latest
-      - run: ls -lah ${HOME}/work/
-      - run: ls -lah ${HOME}/work/medzoner-go/go/bin
-      - run: goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
     env:
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
       DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       GIT_BRANCH: ${{ github.ref_name }}
       GIT_COMMIT: ${{ github.sha }}
+      GOPATH: /home/runner/work/medzoner-go/go
+
+  cd-coverage-report:
+    runs-on: ubuntu-22.04
+    needs: [ cd-release ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+      - name: Download a single artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: code-coverage-report
+      - run: go install github.com/modocache/gover@latest
+      - run: go install github.com/mattn/goveralls@latest
+      - run: goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
+    env:
       COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
       GOPATH: /home/runner/work/medzoner-go/go
