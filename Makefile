@@ -37,8 +37,18 @@ lint:
 	#golangci-lint --version
 	golangci-lint --issues-exit-code 1 run  ./...
 
+govet:
+	go vet ./...
+
+gofmt:
+	.github/gofmt.sh
+	#gofmt -s -w .
+
 staticcheck:
 	staticcheck ./...
 
 gosec:
 	gosec ./...
+
+run-qa: govet gofmt lint staticcheck gosec
+	echo "QA passed"

@@ -16,9 +16,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
       - run: cp .env.github .env
-      - run: make test_all
-      - run: go vet ./...
-      - run: .github/gofmt.sh
+      - run: make run-qa
 
   ci-test:
     runs-on: ubuntu-22.04
