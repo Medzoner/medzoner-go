@@ -18,6 +18,7 @@ jobs:
       - run: cp .env.github .env
       - run: go install honnef.co/go/tools/cmd/staticcheck@master
       - run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
+      - run: curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin vX.Y.Z
       - run: make run-qa
 
   ci-test:
