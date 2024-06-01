@@ -42,7 +42,6 @@ govet:
 
 gofmt:
 	.github/gofmt.sh
-	#gofmt -s -w .
 
 staticcheck:
 	staticcheck ./...
