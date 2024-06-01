@@ -31,23 +31,12 @@ jobs:
     env:
       GOPATH: /home/runner/work/medzoner-go/go
 
-  ci-build:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Go
-        uses: actions/setup-go@v5
-      - run: cp .env.github .env
-      - run: make build
-    env:
-      GOPATH: /home/runner/work/medzoner-go/go
-
   create-release:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
         go-version: [ '1.22.x' ]
-    needs: [ ci-lint, ci-test, ci-build ]
+    needs: [ ci-lint, ci-test ]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go ${{ matrix.go-version }}
@@ -55,6 +44,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - run: cp .env.github .env
+      - run: make build
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
       - run: go install github.com/modocache/gover@latest
