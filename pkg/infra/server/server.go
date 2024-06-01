@@ -11,13 +11,11 @@ import (
 	"time"
 )
 
-// IServer Server Server
 type IServer interface {
 	ListenAndServe() error
 	Shutdown(ctx context.Context) error
 }
 
-// Server Server
 type Server struct {
 	Logger             logger.ILogger
 	Router             router.IRouter

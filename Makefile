@@ -50,5 +50,11 @@ staticcheck:
 gosec:
 	gosec ./...
 
-run-qa: govet gofmt lint staticcheck
+ineffassign:
+	ineffassign ./...
+
+gocyclo:
+	gocyclo -ignore "_test|Godeps|vendor/" .
+
+run-qa: govet gofmt lint staticcheck ineffassign gocyclo
 	echo "QA passed"
