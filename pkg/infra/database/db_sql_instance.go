@@ -8,7 +8,6 @@ import (
 	"log"
 )
 
-// DbSQLInstance DbSQLInstance
 type DbSQLInstance struct {
 	Connection   *sqlx.DB
 	Dsn          string

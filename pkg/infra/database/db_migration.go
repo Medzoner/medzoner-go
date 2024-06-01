@@ -13,7 +13,6 @@ import (
 	"log"
 )
 
-// DbMigration DbMigration
 type DbMigration struct {
 	DbInstance   IDbInstance
 	RootPath     string
