@@ -16,6 +16,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
       - run: cp .env.github .env
+      - run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
       - run: make run-qa
 
   ci-test:
