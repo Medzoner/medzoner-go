@@ -44,6 +44,7 @@ gofmt:
 	.github/gofmt.sh
 
 staticcheck:
+	staticcheck --debug.version
 	staticcheck ./...
 
 gosec:
