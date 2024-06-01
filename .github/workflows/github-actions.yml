@@ -9,6 +9,43 @@ on:
       - '.vscode/**'
 
 jobs:
+  ci-lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+      - run: cp .env.github .env
+      - run: make test_all
+      - run: go vet ./...
+      - run: .github/gofmt.sh
+
+  ci-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+      - run: cp .env.github .env
+      - run: make test_all
+    env:
+      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      GOPATH: /home/runner/work/medzoner-go/go
+
+  ci-build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+      - run: cp .env.github .env
+      - run: make build
+    env:
+      GIT_BRANCH: ${{ github.ref_name }}
+      GIT_COMMIT: ${{ github.sha }}
+      GOPATH: /home/runner/work/medzoner-go/go
+
   create-release:
     runs-on: ubuntu-22.04
     strategy:
@@ -21,11 +58,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - run: cp .env.github .env
-      - run: make test_all
-      - run: go vet ./...
-      - run: .github/gofmt.sh
-      - run: make build
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
       - run: go install github.com/modocache/gover@latest
@@ -34,8 +66,6 @@ jobs:
       - run: ls -lah ${HOME}/work/medzoner-go/go/bin
       - run: goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
     env:
-      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       GIT_BRANCH: ${{ github.ref_name }}
       GIT_COMMIT: ${{ github.sha }}
       COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}

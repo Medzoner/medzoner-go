@@ -23,6 +23,7 @@ type IConfig interface {
 	GetMailerPassword() string
 	GetRecaptchaSiteKey() string
 	GetRecaptchaSecretKey() string
+	GetTraceFile() string
 }
 
 type RootPath string
@@ -41,6 +42,7 @@ type Config struct {
 	MailerPassword     string   `env:"MAILER_PASSWORD" envDefault:"xxxxxxxxxxxx"`
 	RecaptchaSiteKey   string   `env:"RECAPTCHA_SITE_KEY" envDefault:"xxxxxxxxxxxx"`
 	RecaptchaSecretKey string   `env:"RECAPTCHA_SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
+	TracerFile         string   `env:"TRACER_FILE" envDefault:"trace.out"`
 }
 
 // NewConfig NewConfig
@@ -153,6 +155,11 @@ func (c *Config) GetRecaptchaSiteKey() string {
 // GetRecaptchaSecretKey GetRecaptchaSecretKey
 func (c *Config) GetRecaptchaSecretKey() string {
 	return c.RecaptchaSecretKey
+}
+
+// GetTraceFile GetTraceFile
+func (c *Config) GetTraceFile() string {
+	return c.TracerFile
 }
 
 // parseEnv parseEnv

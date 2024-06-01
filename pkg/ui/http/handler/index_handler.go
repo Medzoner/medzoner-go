@@ -110,7 +110,6 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	if request.Method == "POST" && request.FormValue("submit") == "" {
 		err = h.processRequest(request)
 		if err != nil {
-			statusCode = http.StatusBadRequest
 			fmt.Println("Recaptcha was incorrect; try again.")
 			h.Session.SetValue("message", "Recaptcha was incorrect; try again.")
 			_ = h.Session.Save(request, response)

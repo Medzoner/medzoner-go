@@ -1,3 +1,10 @@
+.PHONY: githooks test_all build start migrate skaffold-run test trace wire lint staticcheck gosec
+
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
 githooks:
 	git config core.hooksPath .githooks
 
@@ -26,6 +33,8 @@ wire:
 	wire gen ./pkg/infra/dependency/.
 
 lint:
+	#curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
+	#golangci-lint --version
 	golangci-lint --issues-exit-code 1 run  ./...
 
 staticcheck:
