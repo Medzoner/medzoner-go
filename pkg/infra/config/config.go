@@ -62,19 +62,20 @@ func (c *Config) Init() (*Config, error) {
 	}
 	c.RootPath = RootPath(pwd + "/")
 	err = godotenv.Load(string(c.RootPath) + "/.env")
+	if err == nil {
+		fmt.Println(".env file found")
+	}
 	if c.Environment == "test" {
 		err = godotenv.Load(string(c.RootPath) + "/.env.test")
+		if err == nil {
+			fmt.Println(".env.test file found")
+		}
 	}
 	c.Options = getEnvAsSlice("OPTIONS", []string{}, ",")
 	_ = getEnvAsBool("DEBUG_TEST", false)
 	_ = getEnvAsInt("WAIT_MYSQL", 2)
 	c.APIPort, _ = strconv.Atoi(getEnv("API_PORT", "8002"))
 
-	if err == nil {
-		fmt.Println(".env file found")
-		return nil, err
-	}
-	fmt.Println("No .env file found")
 	return c, nil
 }
 

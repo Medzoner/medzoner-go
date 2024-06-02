@@ -5,7 +5,10 @@ import (
 )
 
 func main() {
-	mg := wiring.InitDbMigration()
+	mg, err := wiring.InitDbMigration()
+	if err != nil {
+		panic(err)
+	}
 	mg.DbInstance.CreateDatabase(mg.DbInstance.GetDatabaseName())
 	mg.MigrateUp()
 }
