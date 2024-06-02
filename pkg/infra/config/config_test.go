@@ -7,23 +7,31 @@ import (
 	"testing"
 )
 
-var conf = config.Config{
-	Environment: "test",
-	RootPath:    "./../../../",
-	DebugMode:   false,
-	Options:     nil,
-}
-
 func TestConfig(t *testing.T) {
-	c := conf
+	var conf = config.Config{
+		Environment: "test",
+		RootPath:    "./../../../",
+		DebugMode:   false,
+		Options:     nil,
+	}
+	c, err := conf.Init()
+	if err != nil {
+		t.Error(err)
+	}
 	t.Run("Unit: test config GetRootPath success", func(t *testing.T) {
-		c.Init()
+
 		fmt.Println(c.GetRootPath())
 		fmt.Println(c.GetEnvironment())
 	})
 }
 
 func TestEnv(t *testing.T) {
+	var conf = config.Config{
+		Environment: "test",
+		RootPath:    "./../../../",
+		DebugMode:   false,
+		Options:     nil,
+	}
 	t.Run("test env found", func(t *testing.T) {
 		_, err := os.ReadFile(string(conf.RootPath + ".env"))
 		if err != nil {
@@ -35,7 +43,10 @@ func TestEnv(t *testing.T) {
 			fmt.Println(err)
 			panic("err")
 		}
-		conf.Init()
+		_, err = conf.Init()
+		if err != nil {
+			t.Error(err)
+		}
 	})
 	t.Run("test no env", func(t *testing.T) {
 		err := os.Setenv("WAIT_MYSQL", "2")
@@ -49,6 +60,9 @@ func TestEnv(t *testing.T) {
 			panic("err")
 		}
 		conf.RootPath = "/tmp"
-		conf.Init()
+		_, err = conf.Init()
+		if err != nil {
+			t.Error(err)
+		}
 	})
 }
