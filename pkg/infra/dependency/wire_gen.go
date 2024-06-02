@@ -32,21 +32,30 @@ import (
 
 // Injectors from wire.go:
 
-func InitDbInstance() *database.DbSQLInstance {
-	configConfig := config.NewConfig()
+func InitDbInstance() (*database.DbSQLInstance, error) {
+	configConfig, err := config.NewConfig()
+	if err != nil {
+		return nil, err
+	}
 	dbSQLInstance := database.NewDbSQLInstance(configConfig)
-	return dbSQLInstance
+	return dbSQLInstance, nil
 }
 
-func InitDbMigration() database.DbMigration {
-	configConfig := config.NewConfig()
+func InitDbMigration() (database.DbMigration, error) {
+	configConfig, err := config.NewConfig()
+	if err != nil {
+		return database.DbMigration{}, err
+	}
 	dbSQLInstance := database.NewDbSQLInstance(configConfig)
 	dbMigration := database.NewDbMigration(dbSQLInstance, configConfig)
-	return dbMigration
+	return dbMigration, nil
 }
 
 func InitServer() (*server.Server, error) {
-	configConfig := config.NewConfig()
+	configConfig, err := config.NewConfig()
+	if err != nil {
+		return nil, err
+	}
 	templateHTML := templater.NewTemplateHTML(configConfig)
 	httpTracer, err := tracer.NewHttpTracer(configConfig)
 	if err != nil {
@@ -73,7 +82,10 @@ func InitServer() (*server.Server, error) {
 }
 
 func InitServerTest(mocks2 mocks.Mocks) (*server.Server, error) {
-	configConfig := config.NewConfig()
+	configConfig, err := config.NewConfig()
+	if err != nil {
+		return nil, err
+	}
 	templateHTML := templater.NewTemplateHTML(configConfig)
 	httpTracer, err := tracer.NewHttpTracer(configConfig)
 	if err != nil {

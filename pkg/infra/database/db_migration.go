@@ -5,10 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	//hack
+	// hack
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
-	//hack
+	// hack
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"log"
 )
@@ -61,7 +61,7 @@ func (d *DbMigration) getNewWithDatabaseInstance() *migrate.Migrate {
 
 func (d *DbMigration) getMigrationDir() *string {
 	flag.Parse()
-	//var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
+	// var migrationDir = flag.String("migration.files", d.RootPath+"/migrations", "Directory where the migration files are located ?")
 	migrationDir := d.RootPath + "/migrations"
 	return &migrationDir
 }

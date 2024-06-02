@@ -6,7 +6,7 @@ import (
 
 // MzValidator MzValidator
 type MzValidator interface {
-	//New() MzValidator
+	// New() MzValidator
 	GetErrors() []CustomError
 	Struct(str interface{}) error
 }

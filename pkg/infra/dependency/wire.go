@@ -92,11 +92,11 @@ var (
 	)
 )
 
-func InitDbInstance() *database.DbSQLInstance {
+func InitDbInstance() (*database.DbSQLInstance, error) {
 	panic(wire.Build(DbWiring, InfraWiring))
 }
 
-func InitDbMigration() database.DbMigration {
+func InitDbMigration() (database.DbMigration, error) {
 	panic(wire.Build(database.NewDbMigration, DbWiring, InfraWiring))
 }
 

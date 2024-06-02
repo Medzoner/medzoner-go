@@ -12,7 +12,7 @@ import (
 
 // IConfig IConfig
 type IConfig interface {
-	Init()
+	Init() (*Config, error)
 	GetRootPath() RootPath
 	GetEnvironment() string
 	GetMysqlDsn() string
@@ -46,17 +46,19 @@ type Config struct {
 }
 
 // NewConfig NewConfig
-func NewConfig() *Config {
-	conf := parseEnv()
-	conf.Init()
-	return conf
+func NewConfig() (*Config, error) {
+	conf, err := parseEnv()
+	if err != nil {
+		return nil, err
+	}
+	return conf.Init()
 }
 
 // Init Init
-func (c *Config) Init() {
+func (c *Config) Init() (*Config, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	c.RootPath = RootPath(pwd + "/")
 	err = godotenv.Load(string(c.RootPath) + "/.env")
@@ -70,9 +72,10 @@ func (c *Config) Init() {
 
 	if err == nil {
 		fmt.Println(".env file found")
-		return
+		return nil, err
 	}
 	fmt.Println("No .env file found")
+	return c, nil
 }
 
 // GetMysqlDsn GetMysqlDsn
@@ -163,11 +166,11 @@ func (c *Config) GetTraceFile() string {
 }
 
 // parseEnv parseEnv
-func parseEnv() *Config {
+func parseEnv() (*Config, error) {
 	cfg := &Config{}
 	err := env.Parse(cfg)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
-	return cfg
+	return cfg, nil
 }
