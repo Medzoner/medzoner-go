@@ -287,11 +287,11 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocStr
 		a.Request.PostForm = v
 	}
 	a.Request.Method = "POST"
-	url, err := url.Parse(arg1)
+	urlParse, err := url.Parse(arg1)
 	if err != nil {
 		return err
 	}
-	a.Request.URL = url
+	a.Request.URL = urlParse
 
 	recorder := httptest.NewRecorder()
 	request := a.Request
