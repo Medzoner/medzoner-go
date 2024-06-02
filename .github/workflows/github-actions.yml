@@ -1,4 +1,5 @@
 name: release-medzoner-go
+
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 
 on:
@@ -80,6 +81,8 @@ jobs:
       - run: go install github.com/modocache/gover@latest
       - run: go install github.com/mattn/goveralls@latest
       - run: goveralls -coverprofile=coverage.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
+      - name: update goreportcard
+        uses: creekorful/goreportcard-action@v1.0
     env:
       COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
       GOPATH: /home/runner/work/medzoner-go/go

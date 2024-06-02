@@ -58,3 +58,6 @@ gocyclo:
 
 run-qa: govet gofmt lint staticcheck ineffassign gocyclo
 	echo "QA passed"
+
+#go install github.com/go-critic/go-critic/cmd/gocritic@latest
+#gocritic check ./...

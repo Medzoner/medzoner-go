@@ -20,11 +20,10 @@ func NewHttpTracer(config config.IConfig) (*HttpTracer, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create trace output file: %v", err)
 	}
-	defer func() {
-		if err := f.Close(); err != nil {
-			log.Fatalf("failed to close trace file: %v", err)
-		}
-	}()
+
+	if err := f.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close trace file: %v", err)
+	}
 
 	if err := trace.Start(f); err != nil {
 		log.Fatalf("failed to start trace: %v", err)
