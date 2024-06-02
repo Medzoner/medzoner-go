@@ -6,7 +6,7 @@ curl -sfL https://get.k3s.io | sh -
 
 #curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --no-deploy traefik" sh
 
-sudo cat /etc/rancher/k3s/k3s.yaml > ~/.kube/local.yaml
+cat /etc/rancher/k3s/k3s.yaml > ~/.kube/local.yaml
 export KUBECONFIG=~/.kube/local.yaml
 
 sleep 30
