@@ -60,7 +60,6 @@ jobs:
       - run: make build
       #- run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
       - run: .github/push.sh
-      - run: argocd app set medzoner-master  --helm-set image.tag=master-${{ github.sha }} --helm-set image.repository=medzoner/lesprodsdu11 --revision master-${{ github.sha }}
     env:
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
       DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
