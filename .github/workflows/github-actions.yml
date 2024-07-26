@@ -84,7 +84,7 @@ jobs:
         run: |
           git -C medzoner-gitops config user.name "medzoner"
           git -C medzoner-gitops config user.email "medzoner@medzoner.com"
-          sed -i "s/  tag:.*/  tag: ${{ github.ref_name }}-${{ github.sha }}/" "medzoner-gitops/charts/medzoner/values.yml"
+          sed -i "s/  tag:.*/  tag: ${{ github.ref_name }}-${{ github.sha }}/" "medzoner-gitops/charts/medzoner/values.yaml"
           git -C medzoner-gitops commit -am "medzoner ${{ github.ref_name }}-${{ github.sha }}"
           git -C medzoner-gitops push origin master
 #      - name: Update values.yaml
