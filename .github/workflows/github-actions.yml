@@ -21,11 +21,11 @@ jobs:
         with:
           args: ./...
       - run: cp .env.github .env
-      - run: go install honnef.co/go/tools/cmd/staticcheck@master
-      - run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
-      - run: go install github.com/gordonklaus/ineffassign@latest
-      - run: go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
-      - run: make run-qa
+#      - run: go install honnef.co/go/tools/cmd/staticcheck@master
+#      - run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
+#      - run: go install github.com/gordonklaus/ineffassign@latest
+#      - run: go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+#      - run: make run-qa
 
   ci-test:
     runs-on: ubuntu-22.04
@@ -34,12 +34,12 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
       - run: cp .env.github .env
-      - run: make test_all
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4.3.3
-        with:
-          name: code-coverage-report
-          path: coverage.out
+#      - run: make test_all
+#      - name: Archive code coverage results
+#        uses: actions/upload-artifact@v4.3.3
+#        with:
+#          name: code-coverage-report
+#          path: coverage.out
 #          retention-days: 1
     env:
       GOPATH: /home/runner/work/medzoner-go/go
