@@ -79,6 +79,7 @@ jobs:
           ref: 'master'
           token: ${{ secrets.CI_JOB_TOKEN }}
           fetch-depth: 0
+          path: medzoner-gitops
       - name: GitOps - Patch and push
         run: |
           git -C medzoner-gitops config user.name "medzoner"
