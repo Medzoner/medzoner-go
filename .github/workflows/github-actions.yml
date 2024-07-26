@@ -77,7 +77,7 @@ jobs:
         with:
           repository: Medzoner/medzoner-gitops
           ref: 'develop'
-          token: ${{ secrets.JOS_YODA_PAT }}
+          token: ${{ secrets.CI_JOB_TOKEN }}
           fetch-depth: 0
       - name: GitOps - Patch and push
         run: |
