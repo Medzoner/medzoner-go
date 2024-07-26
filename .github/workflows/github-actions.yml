@@ -75,7 +75,7 @@ jobs:
       - uses: actions/checkout@v4
         name: GitOps - Checkout
         with:
-          repository: github.com/Medzoner/medzoner-gitops
+          repository: Medzoner/medzoner-gitops
           ref: 'develop'
           token: ${{ secrets.JOS_YODA_PAT }}
           fetch-depth: 0
