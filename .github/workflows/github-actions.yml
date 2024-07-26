@@ -76,7 +76,7 @@ jobs:
         name: GitOps - Checkout
         with:
           repository: Medzoner/medzoner-gitops
-          ref: 'develop'
+          ref: 'master'
           token: ${{ secrets.CI_JOB_TOKEN }}
           fetch-depth: 0
       - name: GitOps - Patch and push
