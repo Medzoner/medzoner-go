@@ -61,3 +61,6 @@ run-qa: govet gofmt lint staticcheck ineffassign gocyclo
 
 #go install github.com/go-critic/go-critic/cmd/gocritic@latest
 #gocritic check ./...
+
+trivy:
+	trivy image
