@@ -82,17 +82,14 @@ func InitServer() (*server.Server, error) {
 	return serverServer, nil
 }
 
-func InitServerTest(mocks2 mocks.Mocks, tracer2 tracerMock.MockTracer) (*server.Server, error) {
+func InitServerTest(mocks2 mocks.Mocks) (*server.Server, error) {
 	configConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, err
 	}
 	templateHTML := templater.NewTemplateHTML(configConfig)
-	httpTracer, err := tracer.NewHttpTracer(configConfig)
-	if err != nil {
-		return nil, err
-	}
-	notFoundHandler := handler.NewNotFoundHandler(templateHTML, httpTracer)
+	mockTracer := mocks2.HttpTracer
+	notFoundHandler := handler.NewNotFoundHandler(templateHTML, mockTracer)
 	useSugar := logger.NewUseSugar()
 	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
 	technoJSONRepository := repository.NewTechnoJSONRepository(zapLoggerAdapter, configConfig)
@@ -105,7 +102,7 @@ func InitServerTest(mocks2 mocks.Mocks, tracer2 tracerMock.MockTracer) (*server.
 	sessionerAdapter := session.NewSessionerAdapter(sessionKey)
 	validatorAdapter := validation.NewValidatorAdapter()
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
-	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer)
+	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, mockTracer)
 	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter)
 	return serverServer, nil
@@ -114,13 +111,18 @@ func InitServerTest(mocks2 mocks.Mocks, tracer2 tracerMock.MockTracer) (*server.
 // wire.go:
 
 var (
-	InfraWiring          = wire.NewSet(config.NewConfig, logger.NewUseSugar, logger.NewLoggerAdapter, router.NewMuxRouterAdapter, server.NewServer, templater.NewTemplateHTML, session.NewSessionKey, session.NewSessionerAdapter, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, tracer.NewHttpTracer, mailersmtp.NewMailerSMTP, wire.Bind(new(config.IConfig), new(*config.Config)), wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)), wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)), wire.Bind(new(server.IServer), new(*server.Server)), wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)), wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)), wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)))
-	DbWiring             = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.IDbInstance), new(*database.DbSQLInstance)))
+	InfraWiring      = wire.NewSet(config.NewConfig, logger.NewUseSugar, logger.NewLoggerAdapter, router.NewMuxRouterAdapter, server.NewServer, templater.NewTemplateHTML, session.NewSessionKey, session.NewSessionerAdapter, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, mailersmtp.NewMailerSMTP, wire.Bind(new(config.IConfig), new(*config.Config)), wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)), wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)), wire.Bind(new(server.IServer), new(*server.Server)), wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)), wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)))
+	DbWiring         = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.IDbInstance), new(*database.DbSQLInstance)))
+	TracerWiring     = wire.NewSet(tracer.NewHttpTracer, wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)))
+	TracerMockWiring = wire.NewSet(wire.FieldsOf(
+		new(mocks.Mocks),
+		"HttpTracer",
+	), wire.Bind(new(tracer.Tracer), new(*tracerMock.MockTracer)),
+	)
 	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)))
 	RepositoryMockWiring = wire.NewSet(repository.NewTechnoJSONRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.FieldsOf(
 		new(mocks.Mocks),
 		"ContactRepository",
-		"HttpTracer",
 	), wire.Bind(new(repository2.ContactRepository), new(*contactMock.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))

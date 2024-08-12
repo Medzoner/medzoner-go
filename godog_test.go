@@ -1,13 +1,15 @@
 package main
 
 import (
+	"context"
 	"github.com/Medzoner/medzoner-go/features/bootstrap"
 	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/golang/mock/gomock"
+	metricNoop "go.opentelemetry.io/otel/metric/noop"
+	"go.opentelemetry.io/otel/trace/noop"
 	"os"
 	"testing"
 )
@@ -24,11 +26,10 @@ func init() {
 func TestFeatures(t *testing.T) {
 	mockedRepository := mocks.New(t)
 
-	httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-	//httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
-	//httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-	//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
-	srv, err := dependency.InitServerTest(mockedRepository, *httpTracerMock)
+	mockedRepository.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mockedRepository.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()
+	mockedRepository.HttpTracer.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().AnyTimes()
+	srv, err := dependency.InitServerTest(mockedRepository)
 	if err != nil {
 		t.Error(err)
 		return
