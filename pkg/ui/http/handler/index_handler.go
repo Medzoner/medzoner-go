@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	otelTrace "go.opentelemetry.io/otel/trace"
@@ -30,7 +31,11 @@ type IndexHandler struct {
 	Validation                  validation.MzValidator
 	Recaptcha                   captcha.Captcher
 	Tracer                      tracer.Tracer
+	Logger                      logger.ILogger
 }
+
+var runCount metric.Int64Counter
+var err error
 
 // NewIndexHandler NewIndexHandler
 func NewIndexHandler(
@@ -42,7 +47,12 @@ func NewIndexHandler(
 	validation validation.MzValidator,
 	recaptcha captcha.Captcher,
 	tracer tracer.Tracer,
+	Logger logger.ILogger,
 ) *IndexHandler {
+	runCount, err = tracer.Int64Counter("run", metric.WithDescription("The number of times the iteration ran"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	return &IndexHandler{
 		Template:                    template,
 		ListTechnoQueryHandler:      listTechnoQueryHandler,
@@ -52,6 +62,7 @@ func NewIndexHandler(
 		Validation:                  validation,
 		Recaptcha:                   recaptcha,
 		Tracer:                      tracer,
+		Logger:                      Logger,
 	}
 }
 
@@ -84,9 +95,19 @@ func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 
 // IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
-	contextIndex, cancel := context.WithTimeout(request.Context(), 1*time.Second)
+	contextIndex, cancel := context.WithTimeout(request.Context(), 60*time.Second)
 	defer cancel()
-	fmt.Printf("IndexHandle\n")
+
+	defer func() {
+		if err := h.Tracer.ShutdownTracer(contextIndex); err != nil {
+			log.Printf("failed to shutdown TracerProvider: %s", err)
+		}
+	}()
+	defer func() {
+		if err := h.Tracer.ShutdownMeter(contextIndex); err != nil {
+			log.Printf("failed to shutdown MeterProvider: %s", err)
+		}
+	}()
 
 	// Attributes represent additional key-value descriptors that can be bound
 	// to a metric observer or recorder.
@@ -96,21 +117,18 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		attribute.String("attrC", "vanilla"),
 	}
 
-	runCount, err := h.Tracer.Int64Counter("run", metric.WithDescription("The number of times the iteration ran"))
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Work begins
 	ctx, span := h.Tracer.Start(
 		contextIndex,
 		"CollectorExporter-Example",
 		otelTrace.WithAttributes(commonAttrs...))
-	defer span.End()
+	defer func() {
+		span.End()
+	}()
 	for i := 0; i < 10; i++ {
 		_, iSpan := h.Tracer.Start(ctx, fmt.Sprintf("Sample-%d", i))
 		runCount.Add(ctx, 1, metric.WithAttributes(commonAttrs...))
-		log.Printf("Doing really hard work (%d / 10)\n", i+1)
+		h.Logger.Log(fmt.Sprintf("Doing really hard work (%d / 10)\n", i+1))
 
 		//<-time.After(time.Second)
 		iSpan.End()

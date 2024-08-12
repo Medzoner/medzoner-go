@@ -19,6 +19,17 @@ spec:
           ports:
             - containerPort: 8002
             - containerPort: 4000
+          env:
+            - name: GRPC_GO_LOG_VERBOSITY_LEVEL
+              value: "99"
+            - name: GRPC_GO_LOG_SEVERITY_LEVEL
+              value: "info"
+            - name: GRPC_TRACE
+              value: "all"
+            - name: GRPC_VERBOSITY
+              value: "DEBUG"
+            - name: GODEBUG
+              value: "http2debug=1"
           command:
             - /bin/sh
             - -c

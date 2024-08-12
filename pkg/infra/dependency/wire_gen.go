@@ -76,7 +76,7 @@ func InitServer() (*server.Server, error) {
 	sessionerAdapter := session.NewSessionerAdapter(sessionKey)
 	validatorAdapter := validation.NewValidatorAdapter()
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
-	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer)
+	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer, zapLoggerAdapter)
 	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter)
 	return serverServer, nil
@@ -102,7 +102,7 @@ func InitServerTest(mocks2 mocks.Mocks) (*server.Server, error) {
 	sessionerAdapter := session.NewSessionerAdapter(sessionKey)
 	validatorAdapter := validation.NewValidatorAdapter()
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
-	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, mockTracer)
+	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, mockTracer, zapLoggerAdapter)
 	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter)
 	return serverServer, nil

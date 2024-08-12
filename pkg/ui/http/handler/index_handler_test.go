@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/golang/mock/gomock"
 	"net/http"
 	"net/http/httptest"
@@ -30,30 +31,35 @@ func TestIndexHandler(t *testing.T) {
 	mockedRepository := mocks.New(t)
 	t.Run("Unit: test IndexHandler success", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
-		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
+		//repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
 
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterTest{},
-			Validation: validation.ValidatorAdapter{}.New(),
-			Tracer:     httpTracerMock,
-		}
+			SessionAdapterTest{},
+			validation.ValidatorAdapter{}.New(),
+			RecaptchaAdapterTest{},
+			httpTracerMock,
+			&LoggerTest{},
+		)
 		request := httptest.NewRequest("GET", "/", nil)
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)
 	})
@@ -79,6 +85,7 @@ func TestIndexHandler(t *testing.T) {
 				},
 			},
 			Session: SessionAdapterTest{},
+			Logger:  &LoggerTest{},
 		}
 		request := httptest.NewRequest("GET", "/", nil)
 
@@ -94,6 +101,7 @@ func TestIndexHandler(t *testing.T) {
 			Session: &SessionAdapterTestFailed{
 				onInit: true,
 			},
+			Logger: &LoggerTest{},
 		}
 		request := httptest.NewRequest("GET", "/", nil)
 
@@ -112,24 +120,29 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterTest{},
-			Validation: validation.ValidatorAdapter{}.New(),
-			Tracer:     httpTracerMock,
-		}
+			SessionAdapterTest{},
+			validation.ValidatorAdapter{}.New(),
+			RecaptchaAdapterTest{},
+			httpTracerMock,
+			&LoggerTest{},
+		)
 
 		request := httptest.NewRequest("GET", "/", nil)
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)
@@ -139,30 +152,35 @@ func TestIndexHandler(t *testing.T) {
 
 	t.Run("Unit: test IndexHandler with form submit success", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
+		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
 
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterTest{},
-			Validation: validation.ValidatorAdapter{}.New(),
-			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer:     httpTracerMock,
-		}
+			SessionAdapterTest{},
+			validation.ValidatorAdapter{}.New(),
+			RecaptchaAdapterTest{},
+			httpTracerMock,
+			&LoggerTest{},
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", nil)
@@ -188,25 +206,29 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterTest{},
-			Validation: ValidatorFailOnStructTest{}.New(),
-			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer:     httpTracerMock,
-		}
+			SessionAdapterTest{},
+			ValidatorFailOnStructTest{}.New(),
+			RecaptchaAdapterTest{},
+			httpTracerMock,
+			&LoggerTest{},
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", nil)
@@ -228,25 +250,29 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterFailOnSaveSessionTest{},
-			Validation: validation.ValidatorAdapter{}.New(),
-			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer:     httpTracerMock,
-		}
+			SessionAdapterFailOnSaveSessionTest{},
+			validation.ValidatorAdapter{}.New(),
+			RecaptchaAdapterTest{},
+			httpTracerMock,
+			&LoggerTest{},
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", nil)
@@ -267,25 +293,29 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterTest{},
-			Validation: ValidatorFailOnStructTest{}.New(),
-			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer:     httpTracerMock,
-		}
+			SessionAdapterTest{},
+			ValidatorFailOnStructTest{}.New(),
+			RecaptchaAdapterTest{},
+			httpTracerMock,
+			&LoggerTest{},
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", nil)
@@ -333,25 +363,29 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterFailOnInitSessionTest{},
-			Validation: validation.ValidatorAdapter{}.New(),
-			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer:     httpTracerMock,
-		}
+			SessionAdapterFailOnInitSessionTest{},
+			validation.ValidatorAdapter{}.New(),
+			RecaptchaAdapterTest{},
+			httpTracerMock,
+			&LoggerTest{},
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("Get", "/", nil)
@@ -370,27 +404,31 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterTest{},
-			Validation: validation.ValidatorAdapter{}.New(),
-			Recaptcha: RecaptchaAdapterTest{
+			SessionAdapterTest{},
+			validation.ValidatorAdapter{}.New(),
+			RecaptchaAdapterTest{
 				isFail: true,
 			},
-			Tracer: httpTracerMock,
-		}
+			httpTracerMock,
+			&LoggerTest{},
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", nil)
@@ -412,25 +450,29 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
-		indexHandler := handler.IndexHandler{
-			Template: &TemplaterTest{},
-			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
+		indexHandler := handler.NewIndexHandler(
+			&TemplaterTest{},
+			query.ListTechnoQueryHandler{
 				TechnoRepository: &repository.TechnoJSONRepository{
 					RootPath: "./../../../../",
 				},
 			},
-			CreateContactCommandHandler: command.CreateContactCommandHandler{
+			&config.Config{},
+			command.CreateContactCommandHandler{
 				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
 			},
-			Session:    SessionAdapterTest{},
-			Validation: validation.ValidatorAdapter{}.New(),
-			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer:     httpTracerMock,
-		}
+			SessionAdapterTest{},
+			validation.ValidatorAdapter{}.New(),
+			RecaptchaAdapterTest{},
+			httpTracerMock,
+			&LoggerTest{},
+		)
 
 		responseWriter := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", nil)
