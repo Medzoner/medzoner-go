@@ -37,8 +37,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -120,8 +118,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -158,8 +154,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -206,8 +200,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -250,8 +242,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -293,8 +283,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -363,8 +351,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -404,8 +390,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -450,8 +434,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
 		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).Times(1)
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
