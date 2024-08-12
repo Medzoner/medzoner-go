@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"runtime/trace"
 
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -33,6 +34,7 @@ func initConn(host string) (*grpc.ClientConn, error) {
 	conn, err := grpc.NewClient(host,
 		// Note the use of insecure transport here. TLS is recommended in production.
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gRPC connection to collector: %w", err)
@@ -83,7 +85,7 @@ func initMeterProvider(ctx context.Context, res *resource.Resource, conn *grpc.C
 }
 
 func initOtel(host string) (otelTrace.Tracer, metric.Meter) {
-	log.Printf("Waiting for connection...")
+	log.Printf("Otel: Waiting for connection...")
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
