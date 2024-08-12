@@ -44,7 +44,6 @@ var (
 		session.NewSessionerAdapter,
 		validation.NewValidatorAdapter,
 		captcha.NewRecaptchaAdapter,
-		tracer.NewHttpTracer,
 		mailersmtp.NewMailerSMTP,
 
 		wire.Bind(new(config.IConfig), new(*config.Config)),
@@ -55,13 +54,24 @@ var (
 		wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)),
 		wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)),
 		wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)),
-		wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)),
 		wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)),
 	)
 	DbWiring = wire.NewSet(
 		database.NewDbSQLInstance,
 
 		wire.Bind(new(database.IDbInstance), new(*database.DbSQLInstance)),
+	)
+	TracerWiring = wire.NewSet(
+		tracer.NewHttpTracer,
+
+		wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)),
+	)
+	TracerMockWiring = wire.NewSet(
+		wire.FieldsOf(
+			new(mocks.Mocks),
+			"HttpTracer",
+		),
+		wire.Bind(new(tracer.Tracer), new(*tracerMock.MockTracer)),
 	)
 	RepositoryWiring = wire.NewSet(
 		repository.NewTechnoJSONRepository,
@@ -76,7 +86,6 @@ var (
 		wire.FieldsOf(
 			new(mocks.Mocks),
 			"ContactRepository",
-			"HttpTracer",
 		),
 		wire.Bind(new(domainRepository.ContactRepository), new(*contactMock.MockContactRepository)),
 	)
@@ -103,9 +112,9 @@ func InitDbMigration() (database.DbMigration, error) {
 }
 
 func InitServer() (*server.Server, error) {
-	panic(wire.Build(InfraWiring, DbWiring, RepositoryWiring, AppWiring, UiWiring))
+	panic(wire.Build(InfraWiring, TracerWiring, DbWiring, RepositoryWiring, AppWiring, UiWiring))
 }
 
-func InitServerTest(mocks mocks.Mocks, tracer tracerMock.MockTracer) (*server.Server, error) {
-	panic(wire.Build(InfraWiring, RepositoryMockWiring, AppWiring, UiWiring))
+func InitServerTest(mocks mocks.Mocks) (*server.Server, error) {
+	panic(wire.Build(InfraWiring, TracerMockWiring, RepositoryMockWiring, AppWiring, UiWiring))
 }
