@@ -61,6 +61,12 @@ func (s Server) ListenAndServe() error {
 			log.Printf("failed to shutdown MeterProvider: %s", err)
 		}
 	}()
+
+	defer func() {
+		if err := s.Tracer.ShutdownLogger(ctx); err != nil {
+			log.Printf("failed to shutdown LoggerProvider: %s", err)
+		}
+	}()
 	recaptcha.Init(s.RecaptchaSecretKey)
 
 	s.Logger.Log(fmt.Sprintf("Server up on port '%d'", s.APIPort))
