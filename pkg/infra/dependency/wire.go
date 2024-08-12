@@ -8,6 +8,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	contactMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 
 	domainRepository "github.com/Medzoner/medzoner-go/pkg/domain/repository"
 
@@ -75,6 +76,7 @@ var (
 		wire.FieldsOf(
 			new(mocks.Mocks),
 			"ContactRepository",
+			"HttpTracer",
 		),
 		wire.Bind(new(domainRepository.ContactRepository), new(*contactMock.MockContactRepository)),
 	)
@@ -104,6 +106,6 @@ func InitServer() (*server.Server, error) {
 	panic(wire.Build(InfraWiring, DbWiring, RepositoryWiring, AppWiring, UiWiring))
 }
 
-func InitServerTest(mocks mocks.Mocks) (*server.Server, error) {
+func InitServerTest(mocks mocks.Mocks, tracer tracerMock.MockTracer) (*server.Server, error) {
 	panic(wire.Build(InfraWiring, RepositoryMockWiring, AppWiring, UiWiring))
 }

@@ -13,15 +13,16 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
-	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	mocks "github.com/Medzoner/medzoner-go/test"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 
+	metricNoop "go.opentelemetry.io/otel/metric/noop"
+	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/assert"
 )
 
@@ -30,6 +31,12 @@ func TestIndexHandler(t *testing.T) {
 	t.Run("Unit: test IndexHandler success", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
 		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
+
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
@@ -45,13 +52,7 @@ func TestIndexHandler(t *testing.T) {
 			},
 			Session:    SessionAdapterTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer:     httpTracerMock,
 		}
 		request := httptest.NewRequest("GET", "/", nil)
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)
@@ -106,6 +107,12 @@ func TestIndexHandler(t *testing.T) {
 
 	t.Run("Unit: test IndexHandler success", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
+
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
@@ -121,13 +128,7 @@ func TestIndexHandler(t *testing.T) {
 			},
 			Session:    SessionAdapterTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer:     httpTracerMock,
 		}
 
 		request := httptest.NewRequest("GET", "/", nil)
@@ -138,6 +139,12 @@ func TestIndexHandler(t *testing.T) {
 
 	t.Run("Unit: test IndexHandler with form submit success", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
+
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
@@ -154,13 +161,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer:     httpTracerMock,
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -183,6 +184,11 @@ func TestIndexHandler(t *testing.T) {
 	t.Run("Unit: test IndexHandler with form submit failed on struct", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
 
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
@@ -199,13 +205,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterTest{},
 			Validation: ValidatorFailOnStructTest{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer:     httpTracerMock,
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -224,6 +224,11 @@ func TestIndexHandler(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
 		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
 
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
@@ -240,13 +245,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterFailOnSaveSessionTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer:     httpTracerMock,
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -264,6 +263,11 @@ func TestIndexHandler(t *testing.T) {
 	t.Run("Unit: test IndexHandler with form submit failed on struct", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
 
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
@@ -280,13 +284,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterTest{},
 			Validation: ValidatorFailOnStructTest{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer:     httpTracerMock,
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -331,6 +329,11 @@ func TestIndexHandler(t *testing.T) {
 	t.Run("Unit: test IndexHandler with session init failed when not submit", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
 
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
@@ -347,13 +350,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterFailOnInitSessionTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer:     httpTracerMock,
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -368,6 +365,11 @@ func TestIndexHandler(t *testing.T) {
 	})
 	t.Run("Unit: test IndexHandler with form submit failed on recaptcha confirm", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
+
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
@@ -387,13 +389,7 @@ func TestIndexHandler(t *testing.T) {
 			Recaptcha: RecaptchaAdapterTest{
 				isFail: true,
 			},
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer: httpTracerMock,
 		}
 
 		responseWriter := httptest.NewRecorder()
@@ -412,6 +408,11 @@ func TestIndexHandler(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
 		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
 
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+
 		indexHandler := handler.IndexHandler{
 			Template: &TemplaterTest{},
 			ListTechnoQueryHandler: query.ListTechnoQueryHandler{
@@ -428,13 +429,7 @@ func TestIndexHandler(t *testing.T) {
 			Session:    SessionAdapterTest{},
 			Validation: validation.ValidatorAdapter{}.New(),
 			Recaptcha:  RecaptchaAdapterTest{},
-			Tracer: func() *tracer.HttpTracer {
-				tr, err := tracer.NewHttpTracer(&config.Config{TracerFile: "trace.out"})
-				if err != nil {
-					panic(err)
-				}
-				return tr
-			}(),
+			Tracer:     httpTracerMock,
 		}
 
 		responseWriter := httptest.NewRecorder()

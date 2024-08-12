@@ -27,6 +27,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/test"
 	"github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
+	"github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 	"github.com/google/wire"
 )
 
@@ -81,7 +82,7 @@ func InitServer() (*server.Server, error) {
 	return serverServer, nil
 }
 
-func InitServerTest(mocks2 mocks.Mocks) (*server.Server, error) {
+func InitServerTest(mocks2 mocks.Mocks, tracer2 tracerMock.MockTracer) (*server.Server, error) {
 	configConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, err
@@ -119,6 +120,7 @@ var (
 	RepositoryMockWiring = wire.NewSet(repository.NewTechnoJSONRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.FieldsOf(
 		new(mocks.Mocks),
 		"ContactRepository",
+		"HttpTracer",
 	), wire.Bind(new(repository2.ContactRepository), new(*contactMock.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))

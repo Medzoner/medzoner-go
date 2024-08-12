@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
+	otelTrace "go.opentelemetry.io/otel/trace"
 	"log"
 	"net/http"
 	"time"
@@ -84,6 +87,36 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	contextIndex, cancel := context.WithTimeout(request.Context(), 1*time.Second)
 	defer cancel()
 	fmt.Printf("IndexHandle\n")
+
+	// Attributes represent additional key-value descriptors that can be bound
+	// to a metric observer or recorder.
+	commonAttrs := []attribute.KeyValue{
+		attribute.String("attrA", "chocolate"),
+		attribute.String("attrB", "raspberry"),
+		attribute.String("attrC", "vanilla"),
+	}
+
+	runCount, err := h.Tracer.Int64Counter("run", metric.WithDescription("The number of times the iteration ran"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Work begins
+	ctx, span := h.Tracer.Start(
+		contextIndex,
+		"CollectorExporter-Example",
+		otelTrace.WithAttributes(commonAttrs...))
+	defer span.End()
+	for i := 0; i < 10; i++ {
+		_, iSpan := h.Tracer.Start(ctx, fmt.Sprintf("Sample-%d", i))
+		runCount.Add(ctx, 1, metric.WithAttributes(commonAttrs...))
+		log.Printf("Doing really hard work (%d / 10)\n", i+1)
+
+		//<-time.After(time.Second)
+		iSpan.End()
+	}
+
+	log.Printf("Done!")
 
 	h.Tracer.WriteLog(contextIndex, "IndexHandle start")
 	newSession, err := h.Session.Init(request)

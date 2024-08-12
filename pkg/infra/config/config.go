@@ -24,6 +24,7 @@ type IConfig interface {
 	GetRecaptchaSiteKey() string
 	GetRecaptchaSecretKey() string
 	GetTraceFile() string
+	GetOtelHost() string
 }
 
 type RootPath string
@@ -164,6 +165,11 @@ func (c *Config) GetRecaptchaSecretKey() string {
 // GetTraceFile GetTraceFile
 func (c *Config) GetTraceFile() string {
 	return c.TracerFile
+}
+
+// GetOtelHost GetOtelHost
+func (c *Config) GetOtelHost() string {
+	return getEnv("OTEL_HOST", "http://otel-collector-opentelemetry-collector.default.svc.cluster.local:4317")
 }
 
 // parseEnv parseEnv

@@ -4,6 +4,7 @@ import (
 	"github.com/Medzoner/medzoner-go/features/bootstrap"
 	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 	mocks "github.com/Medzoner/medzoner-go/test"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/golang/mock/gomock"
@@ -22,7 +23,12 @@ func init() {
 
 func TestFeatures(t *testing.T) {
 	mockedRepository := mocks.New(t)
-	srv, err := dependency.InitServerTest(mockedRepository)
+
+	httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+	//httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(11)
+	//httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
+	//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+	srv, err := dependency.InitServerTest(mockedRepository, *httpTracerMock)
 	if err != nil {
 		t.Error(err)
 		return
