@@ -56,6 +56,34 @@ func (mr *MockTracerMockRecorder) Int64Counter(name interface{}, options ...inte
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Int64Counter", reflect.TypeOf((*MockTracer)(nil).Int64Counter), varargs...)
 }
 
+// ShutdownMeter mocks base method.
+func (m *MockTracer) ShutdownMeter(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ShutdownMeter", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ShutdownMeter indicates an expected call of ShutdownMeter.
+func (mr *MockTracerMockRecorder) ShutdownMeter(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShutdownMeter", reflect.TypeOf((*MockTracer)(nil).ShutdownMeter), ctx)
+}
+
+// ShutdownTracer mocks base method.
+func (m *MockTracer) ShutdownTracer(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ShutdownTracer", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ShutdownTracer indicates an expected call of ShutdownTracer.
+func (mr *MockTracerMockRecorder) ShutdownTracer(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShutdownTracer", reflect.TypeOf((*MockTracer)(nil).ShutdownTracer), ctx)
+}
+
 // Start mocks base method.
 func (m *MockTracer) Start(ctx context.Context, spanName string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	m.ctrl.T.Helper()

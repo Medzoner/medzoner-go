@@ -3,15 +3,12 @@ package tracer
 import (
 	"context"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"os"
 	"os/signal"
 	"runtime/trace"
 
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -22,9 +19,11 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	otelTrace "go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-var serviceName = semconv.ServiceNameKey.String("test-service")
+var serviceName = semconv.ServiceNameKey.String("medzoner-service")
 
 // Initialize a gRPC connection to be used by both the tracer and meter
 // providers.
@@ -34,7 +33,6 @@ func initConn(host string) (*grpc.ClientConn, error) {
 	conn, err := grpc.NewClient(host,
 		// Note the use of insecure transport here. TLS is recommended in production.
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gRPC connection to collector: %w", err)
@@ -84,7 +82,7 @@ func initMeterProvider(ctx context.Context, res *resource.Resource, conn *grpc.C
 	return meterProvider.Shutdown, nil
 }
 
-func initOtel(host string) (otelTrace.Tracer, metric.Meter) {
+func initOtel(host string) (otelTrace.Tracer, metric.Meter, func(context.Context) error, func(context.Context) error) {
 	log.Printf("Otel: Waiting for connection...")
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -109,21 +107,11 @@ func initOtel(host string) (otelTrace.Tracer, metric.Meter) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() {
-		if err := shutdownTracerProvider(ctx); err != nil {
-			log.Printf("failed to shutdown TracerProvider: %s", err)
-		}
-	}()
 
 	shutdownMeterProvider, err := initMeterProvider(ctx, res, conn)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() {
-		if err := shutdownMeterProvider(ctx); err != nil {
-			log.Printf("failed to shutdown MeterProvider: %s", err)
-		}
-	}()
 
 	name := "go.opentelemetry.io/otel/example/otel-collector"
 	tracer := otel.Tracer(name)
@@ -159,7 +147,7 @@ func initOtel(host string) (otelTrace.Tracer, metric.Meter) {
 
 	log.Printf("Done!")
 
-	return tracer, meter
+	return tracer, meter, shutdownTracerProvider, shutdownMeterProvider
 }
 
 //go:generate mockgen -destination=../../../test/mocks/pkg/infra/tracer/http_tracer.go -package=tracerMock -source=./http_tracer.go Tracer
@@ -167,11 +155,24 @@ type Tracer interface {
 	WriteLog(ctx context.Context, message string)
 	Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span)
 	Int64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error)
+
+	ShutdownTracer(ctx context.Context) error
+	ShutdownMeter(ctx context.Context) error
 }
 
 type HttpTracer struct {
-	Tracer otelTrace.Tracer
-	Meter  metric.Meter
+	Tracer                 otelTrace.Tracer
+	Meter                  metric.Meter
+	ShutdownTracerProvider func(context.Context) error
+	ShutdownMeterProvider  func(context.Context) error
+}
+
+func (t HttpTracer) ShutdownTracer(ctx context.Context) error {
+	return t.ShutdownTracerProvider(ctx)
+}
+
+func (t HttpTracer) ShutdownMeter(ctx context.Context) error {
+	return t.ShutdownMeterProvider(ctx)
 }
 
 func (t HttpTracer) Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span) {
@@ -200,10 +201,12 @@ func NewHttpTracer(config config.IConfig) (*HttpTracer, error) {
 	}
 	defer trace.Stop()
 
-	tracer, meter := initOtel(config.GetOtelHost())
+	tracer, meter, shutdownTracerProvider, shutdownMeterProvider := initOtel(config.GetOtelHost())
 	return &HttpTracer{
-		Tracer: tracer,
-		Meter:  meter,
+		Tracer:                 tracer,
+		Meter:                  meter,
+		ShutdownTracerProvider: shutdownTracerProvider,
+		ShutdownMeterProvider:  shutdownMeterProvider,
 	}, nil
 }
 

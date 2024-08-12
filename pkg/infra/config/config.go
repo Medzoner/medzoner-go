@@ -169,7 +169,7 @@ func (c *Config) GetTraceFile() string {
 
 // GetOtelHost GetOtelHost
 func (c *Config) GetOtelHost() string {
-	return getEnv("OTEL_HOST", "otel-collector-opentelemetry-collector.default.svc.cluster.local:4317")
+	return getEnv("OTEL_HOST", "localhost:4317")
 }
 
 // parseEnv parseEnv
