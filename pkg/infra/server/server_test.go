@@ -19,6 +19,7 @@ func TestServer(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
 		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
+		httpTracerMock.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
 		srv := server.NewServer(&config.Config{APIPort: 8123}, RouterMock{}, &LoggerTest{}, httpTracerMock)
 		go func() {
 			_ = srv.ListenAndServe()
