@@ -98,17 +98,6 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	contextIndex, cancel := context.WithTimeout(request.Context(), 60*time.Second)
 	defer cancel()
 
-	defer func() {
-		if err := h.Tracer.ShutdownTracer(contextIndex); err != nil {
-			log.Printf("failed to shutdown TracerProvider: %s", err)
-		}
-	}()
-	defer func() {
-		if err := h.Tracer.ShutdownMeter(contextIndex); err != nil {
-			log.Printf("failed to shutdown MeterProvider: %s", err)
-		}
-	}()
-
 	// Attributes represent additional key-value descriptors that can be bound
 	// to a metric observer or recorder.
 	commonAttrs := []attribute.KeyValue{

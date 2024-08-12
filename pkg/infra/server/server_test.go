@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -14,7 +16,10 @@ import (
 
 func TestServer(t *testing.T) {
 	t.Run("Unit: test Server success", func(t *testing.T) {
-		srv := server.NewServer(&config.Config{APIPort: 8123}, RouterMock{}, &LoggerTest{})
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
+		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
+		srv := server.NewServer(&config.Config{APIPort: 8123}, RouterMock{}, &LoggerTest{}, httpTracerMock)
 		go func() {
 			_ = srv.ListenAndServe()
 		}()
