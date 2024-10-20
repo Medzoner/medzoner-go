@@ -2,12 +2,12 @@ package config
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/caarlos0/env/v10"
+	"github.com/joho/godotenv"
 	"strconv"
 	"strings"
-
-	env "github.com/caarlos0/env/v10"
 )
 
 // IConfig IConfig
@@ -33,20 +33,25 @@ type RootPath string
 type Config struct {
 	Environment        string `env:"ENV" envDefault:"dev"`
 	RootPath           RootPath
-	DebugMode          bool     `env:"DEBUG" envDefault:"false"`
-	Options            []string `env:"OPTIONS" envDefault:"[]"`
-	APIPort            int      `env:"API_PORT" envDefault:"8002"`
-	DatabaseDsn        string   `env:"DATABASE_DSN" envDefault:"root:changeme@tcp(0.0.0.0:3366)"`
-	DatabaseName       string   `env:"DATABASE_NAME" envDefault:"dev_medzoner"`
-	DatabaseDriver     string   `env:"DATABASE_DRIVER" envDefault:"mysql"`
-	MailerUser         string   `env:"MAILER_USER" envDefault:"medzoner@xxx.fake"`
-	MailerPassword     string   `env:"MAILER_PASSWORD" envDefault:"xxxxxxxxxxxx"`
-	RecaptchaSiteKey   string   `env:"RECAPTCHA_SITE_KEY" envDefault:"xxxxxxxxxxxx"`
-	RecaptchaSecretKey string   `env:"RECAPTCHA_SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
-	TracerFile         string   `env:"TRACER_FILE" envDefault:"trace.out"`
+	DebugMode          bool           `env:"DEBUG" envDefault:"false"`
+	Options            []string       `env:"OPTIONS" envDefault:"[]"`
+	APIPort            int            `env:"API_PORT" envDefault:"8002"`
+	Database           DatabaseConfig `env:"DATABASE_"`
+	MailerUser         string         `env:"MAILER_USER" envDefault:"medzoner@xxx.fake"`
+	MailerPassword     string         `env:"MAILER_PASSWORD" envDefault:"xxxxxxxxxxxx"`
+	RecaptchaSiteKey   string         `env:"RECAPTCHA_SITE_KEY" envDefault:"xxxxxxxxxxxx"`
+	RecaptchaSecretKey string         `env:"RECAPTCHA_SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
+	TracerFile         string         `env:"TRACER_FILE" envDefault:"trace.out"`
 }
 
-// NewConfig NewConfig
+// DatabaseConfig DatabaseConfig
+type DatabaseConfig struct {
+	Dsn    string `env:"DSN" envDefault:"root:changeme@tcp(0.0.0.0:3366)"`
+	Name   string `env:"NAME" envDefault:"dev_medzoner"`
+	Driver string `env:"DRIVER" envDefault:"mysql"`
+}
+
+// NewConfig is a constructor for Config
 func NewConfig() (*Config, error) {
 	conf, err := parseEnv()
 	if err != nil {
@@ -82,17 +87,17 @@ func (c *Config) Init() (*Config, error) {
 
 // GetMysqlDsn GetMysqlDsn
 func (c *Config) GetMysqlDsn() string {
-	return c.DatabaseDsn
+	return c.Database.Dsn
 }
 
-// GetDatabaseDriver GetDatabaseDriver
+// GetDatabaseDriver is a getter for DatabaseDriver
 func (c *Config) GetDatabaseDriver() string {
-	return c.DatabaseDriver
+	return c.Database.Driver
 }
 
 // GetDatabaseName GetDatabaseName
 func (c *Config) GetDatabaseName() string {
-	return c.DatabaseName
+	return c.Database.Name
 }
 
 // GetAPIPort GetAPIPort
@@ -100,7 +105,7 @@ func (c *Config) GetAPIPort() int {
 	return c.APIPort
 }
 
-// GetRootPath GetRootPath
+// GetRootPath is a getter for RootPath
 func (c *Config) GetRootPath() RootPath {
 	return c.RootPath
 }
@@ -152,17 +157,17 @@ func getEnvAsSlice(name string, defaultVal []string, sep string) []string {
 	return val
 }
 
-// GetRecaptchaSiteKey GetRecaptchaSiteKey
+// GetRecaptchaSiteKey is a getter for RecaptchaSiteKey
 func (c *Config) GetRecaptchaSiteKey() string {
 	return c.RecaptchaSiteKey
 }
 
-// GetRecaptchaSecretKey GetRecaptchaSecretKey
+// GetRecaptchaSecretKey is a getter for RecaptchaSecretKey
 func (c *Config) GetRecaptchaSecretKey() string {
 	return c.RecaptchaSecretKey
 }
 
-// GetTraceFile GetTraceFile
+// GetTraceFile is a getter for TracerFile
 func (c *Config) GetTraceFile() string {
 	return c.TracerFile
 }

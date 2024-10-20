@@ -37,3 +37,4 @@ __debug_bin*
 trace.out
 skaffold
 !.gitkeep
+.aider*

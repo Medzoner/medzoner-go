@@ -33,15 +33,6 @@ import (
 
 // Injectors from wire.go:
 
-func InitDbInstance() (*database.DbSQLInstance, error) {
-	configConfig, err := config.NewConfig()
-	if err != nil {
-		return nil, err
-	}
-	dbSQLInstance := database.NewDbSQLInstance(configConfig)
-	return dbSQLInstance, nil
-}
-
 func InitDbMigration() (database.DbMigration, error) {
 	configConfig, err := config.NewConfig()
 	if err != nil {
@@ -66,7 +57,7 @@ func InitServer() (*server.Server, error) {
 	useSugar := logger.NewUseSugar()
 	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
 	technoJSONRepository := repository.NewTechnoJSONRepository(zapLoggerAdapter, configConfig)
-	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository)
+	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository, httpTracer)
 	dbSQLInstance := database.NewDbSQLInstance(configConfig)
 	mysqlContactRepository := repository.NewMysqlContactRepository(dbSQLInstance, zapLoggerAdapter)
 	mailerSMTP := mailersmtp.NewMailerSMTP(configConfig)
@@ -93,7 +84,7 @@ func InitServerTest(mocks2 mocks.Mocks) (*server.Server, error) {
 	useSugar := logger.NewUseSugar()
 	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
 	technoJSONRepository := repository.NewTechnoJSONRepository(zapLoggerAdapter, configConfig)
-	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository)
+	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository, mockTracer)
 	mockContactRepository := mocks2.ContactRepository
 	mailerSMTP := mailersmtp.NewMailerSMTP(configConfig)
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP, zapLoggerAdapter)

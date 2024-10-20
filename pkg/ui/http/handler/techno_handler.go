@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
@@ -41,11 +42,11 @@ func (h *TechnoHandler) IndexHandle(w http.ResponseWriter, r *http.Request) {
 	view := TechnoView{
 		Locale:      "fr",
 		PageTitle:   "MedZoner.com",
-		Stacks:      h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "stack"}),
-		Experiences: h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "experience"}),
-		Formations:  h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "formation"}),
-		Langs:       h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "lang"}),
-		Others:      h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "other"}),
+		Stacks:      h.ListTechnoQueryHandler.Handle(context.Background(), query.ListTechnoQuery{Type: "stack"}),
+		Experiences: h.ListTechnoQueryHandler.Handle(context.Background(), query.ListTechnoQuery{Type: "experience"}),
+		Formations:  h.ListTechnoQueryHandler.Handle(context.Background(), query.ListTechnoQuery{Type: "formation"}),
+		Langs:       h.ListTechnoQueryHandler.Handle(context.Background(), query.ListTechnoQuery{Type: "lang"}),
+		Others:      h.ListTechnoQueryHandler.Handle(context.Background(), query.ListTechnoQuery{Type: "other"}),
 	}
 	view.TorHost = r.Header.Get("TOR-HOST")
 	_, err := h.Template.Render("technos", view, w, http.StatusOK)
