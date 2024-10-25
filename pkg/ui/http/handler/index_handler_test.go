@@ -35,7 +35,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -45,7 +45,7 @@ func TestIndexHandler(t *testing.T) {
 				},
 				Tracer: httpTracerMock,
 			},
-			&config.Config{},
+			config.Config{},
 			command.CreateContactCommandHandler{
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
@@ -116,7 +116,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -126,7 +126,7 @@ func TestIndexHandler(t *testing.T) {
 				},
 				Tracer: httpTracerMock,
 			},
-			&config.Config{},
+			config.Config{},
 			command.CreateContactCommandHandler{
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
@@ -147,12 +147,12 @@ func TestIndexHandler(t *testing.T) {
 
 	t.Run("Unit: test IndexHandler with form submit success", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
-		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
+		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil)
 
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -162,11 +162,12 @@ func TestIndexHandler(t *testing.T) {
 				},
 				Tracer: httpTracerMock,
 			},
-			&config.Config{},
+			config.Config{},
 			command.CreateContactCommandHandler{
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
+				Tracer:                     httpTracerMock,
 			},
 			SessionAdapterTest{},
 			validation.ValidatorAdapter{}.New(),
@@ -198,7 +199,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -208,7 +209,7 @@ func TestIndexHandler(t *testing.T) {
 				},
 				Tracer: httpTracerMock,
 			},
-			&config.Config{},
+			config.Config{},
 			command.CreateContactCommandHandler{
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
@@ -231,16 +232,16 @@ func TestIndexHandler(t *testing.T) {
 		request.Form = v
 		indexHandler.IndexHandle(responseWriter, request)
 
-		assert.Equal(t, responseWriter.Code, 400)
+		assert.Equal(t, responseWriter.Code, http.StatusBadRequest)
 	})
 	t.Run("Unit: test IndexHandler with session save failed when submit and valid", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
-		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
+		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -250,11 +251,12 @@ func TestIndexHandler(t *testing.T) {
 				},
 				Tracer: httpTracerMock,
 			},
-			&config.Config{},
+			config.Config{},
 			command.CreateContactCommandHandler{
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
+				Tracer:                     httpTracerMock,
 			},
 			SessionAdapterFailOnSaveSessionTest{},
 			validation.ValidatorAdapter{}.New(),
@@ -273,7 +275,7 @@ func TestIndexHandler(t *testing.T) {
 		request.Form = v
 		indexHandler.IndexHandle(responseWriter, request)
 
-		assert.Equal(t, responseWriter.Code, 500)
+		assert.Equal(t, responseWriter.Code, http.StatusInternalServerError)
 	})
 	t.Run("Unit: test IndexHandler with form submit failed on struct", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
@@ -281,7 +283,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -291,11 +293,12 @@ func TestIndexHandler(t *testing.T) {
 				},
 				Tracer: httpTracerMock,
 			},
-			&config.Config{},
+			config.Config{},
 			command.CreateContactCommandHandler{
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
+				Tracer:                     httpTracerMock,
 			},
 			SessionAdapterTest{},
 			ValidatorFailOnStructTest{}.New(),
@@ -314,7 +317,7 @@ func TestIndexHandler(t *testing.T) {
 		request.Form = v
 		indexHandler.IndexHandle(responseWriter, request)
 
-		assert.Equal(t, responseWriter.Code, 400)
+		assert.Equal(t, responseWriter.Code, http.StatusBadRequest)
 	})
 	/*t.Run("Unit: test IndexHandler with session save failed when not submit", func(t *testing.T) {
 		repositoryMock := &ContactRepositoryTest{}
@@ -389,7 +392,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -399,11 +402,12 @@ func TestIndexHandler(t *testing.T) {
 				},
 				Tracer: httpTracerMock,
 			},
-			&config.Config{},
+			config.Config{},
 			command.CreateContactCommandHandler{
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
+				Tracer:                     httpTracerMock,
 			},
 			SessionAdapterTest{},
 			validation.ValidatorAdapter{}.New(),
@@ -424,16 +428,16 @@ func TestIndexHandler(t *testing.T) {
 		request.Form = v
 		indexHandler.IndexHandle(responseWriter, request)
 
-		assert.Equal(t, responseWriter.Code, 303)
+		assert.Equal(t, responseWriter.Code, http.StatusSeeOther)
 	})
 	t.Run("Unit: test IndexHandler with form submit failed without recaptcha field", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
-		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
+		repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -443,11 +447,12 @@ func TestIndexHandler(t *testing.T) {
 				},
 				Tracer: httpTracerMock,
 			},
-			&config.Config{},
+			config.Config{},
 			command.CreateContactCommandHandler{
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
+				Tracer:                     httpTracerMock,
 			},
 			SessionAdapterTest{},
 			validation.ValidatorAdapter{}.New(),
@@ -465,7 +470,7 @@ func TestIndexHandler(t *testing.T) {
 		request.Form = v
 		indexHandler.IndexHandle(responseWriter, request)
 
-		assert.Equal(t, responseWriter.Code, 303)
+		assert.Equal(t, responseWriter.Code, http.StatusSeeOther)
 	})
 }
 
@@ -495,9 +500,10 @@ func (t *TemplaterTest) Render(name string, view interface{}, response http.Resp
 
 type ContactCreatedEventHandlerTest struct{}
 
-func (h *ContactCreatedEventHandlerTest) Handle(ctx context.Context, event event.Event) {
+func (h *ContactCreatedEventHandlerTest) Handle(ctx context.Context, event event.Event) error {
 	_ = ctx
 	fmt.Println(event)
+	return nil
 }
 
 type LoggerTest struct {

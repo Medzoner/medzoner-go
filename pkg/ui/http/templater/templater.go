@@ -22,9 +22,9 @@ type TemplateHTML struct {
 }
 
 // NewTemplateHTML is a function that returns a new TemplateHTML
-func NewTemplateHTML(config config.IConfig) *TemplateHTML {
+func NewTemplateHTML(config config.Config) *TemplateHTML {
 	return &TemplateHTML{
-		RootPath: string(config.GetRootPath()),
+		RootPath: string(config.RootPath),
 	}
 }
 

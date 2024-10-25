@@ -16,11 +16,11 @@ type DbSQLInstance struct {
 }
 
 // NewDbSQLInstance NewDbSQLInstance
-func NewDbSQLInstance(conf config.IConfig) *DbSQLInstance {
+func NewDbSQLInstance(conf config.Config) *DbSQLInstance {
 	d := &DbSQLInstance{
-		Dsn:          conf.GetMysqlDsn(),
-		DatabaseName: conf.GetDatabaseName(),
-		DriverName:   conf.GetDatabaseDriver(),
+		Dsn:          conf.Database.Dsn,
+		DatabaseName: conf.Database.Name,
+		DriverName:   conf.Database.Driver,
 		Connection:   nil,
 	}
 	d.Connect()

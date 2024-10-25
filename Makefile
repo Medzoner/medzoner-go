@@ -10,7 +10,7 @@ githooks:
 
 test_all:
 	export DEBUG=true
-	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out $(go list ./... | grep -v /var/)
+	go test -v -cover -coverpkg=./... -covermode=count -coverprofile=coverage.out $(go list ./... | grep -v /var/)
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out -o coverage.html
 

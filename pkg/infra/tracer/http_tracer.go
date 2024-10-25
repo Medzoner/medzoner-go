@@ -212,8 +212,8 @@ func (t HttpTracer) Int64Counter(name string, options ...metric.Int64CounterOpti
 	return t.Meter.Int64Counter(name, options...)
 }
 
-func NewHttpTracer(config config.IConfig) (*HttpTracer, error) {
-	f, err := os.Create(config.GetTraceFile())
+func NewHttpTracer(config config.Config) (*HttpTracer, error) {
+	f, err := os.Create(config.TracerFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create trace output file: %v", err)
 	}
@@ -227,7 +227,7 @@ func NewHttpTracer(config config.IConfig) (*HttpTracer, error) {
 	}
 	defer trace.Stop()
 
-	tracer, meter, logger, shutdownTracerProvider, shutdownMeterProvider, shutdownLoggerProvider := initOtel(config.GetOtelHost())
+	tracer, meter, logger, shutdownTracerProvider, shutdownMeterProvider, shutdownLoggerProvider := initOtel(config.OtelHost)
 	return &HttpTracer{
 		Tracer:                 tracer,
 		Meter:                  meter,

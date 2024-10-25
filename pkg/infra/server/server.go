@@ -32,7 +32,7 @@ type Server struct {
 
 // NewServer NewServer
 func NewServer(
-	conf config.IConfig,
+	conf config.Config,
 	route router.IRouter,
 	logger logger.ILogger,
 	tracer tracer.Tracer,
@@ -41,13 +41,13 @@ func NewServer(
 		Logger: logger,
 		Router: route,
 		HTTPServer: &http.Server{
-			Addr:    fmt.Sprintf(":%d", conf.GetAPIPort()),
+			Addr:    fmt.Sprintf(":%d", conf.APIPort),
 			Handler: route,
 
 			ReadHeaderTimeout: time.Second,
 		},
-		APIPort:            conf.GetAPIPort(),
-		RecaptchaSecretKey: conf.GetRecaptchaSecretKey(),
+		APIPort:            conf.APIPort,
+		RecaptchaSecretKey: conf.RecaptchaSecretKey,
 		Tracer:             tracer,
 	}
 }

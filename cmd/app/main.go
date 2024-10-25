@@ -7,12 +7,12 @@ import (
 )
 
 func main() {
-
 	ctx := context.Background()
 
 	server, err := wiring.InitServer()
 	if err != nil {
 		panic(err)
 	}
+
 	server.Start(ctx)
 }

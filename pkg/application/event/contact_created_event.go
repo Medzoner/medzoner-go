@@ -10,7 +10,6 @@ type ContactCreatedEvent struct {
 }
 
 // GetModel returns model Contact
-// @return interface{}
 func (c ContactCreatedEvent) GetModel() interface{} {
 	return c.Contact
 }

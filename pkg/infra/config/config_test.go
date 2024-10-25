@@ -7,24 +7,6 @@ import (
 	"testing"
 )
 
-func TestConfig(t *testing.T) {
-	var conf = config.Config{
-		Environment: "test",
-		RootPath:    "./../../../",
-		DebugMode:   false,
-		Options:     nil,
-	}
-	c, err := conf.Init()
-	if err != nil {
-		t.Error(err)
-	}
-	t.Run("Unit: test config GetRootPath success", func(t *testing.T) {
-
-		fmt.Println(c.GetRootPath())
-		fmt.Println(c.GetEnvironment())
-	})
-}
-
 func TestEnv(t *testing.T) {
 	var conf = config.Config{
 		Environment: "test",

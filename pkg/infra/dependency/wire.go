@@ -46,7 +46,6 @@ var (
 		captcha.NewRecaptchaAdapter,
 		mailersmtp.NewMailerSMTP,
 
-		wire.Bind(new(config.IConfig), new(*config.Config)),
 		wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)),
 		wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)),
 		wire.Bind(new(server.IServer), new(*server.Server)),

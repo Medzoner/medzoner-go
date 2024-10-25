@@ -45,6 +45,7 @@ func (c *CreateContactCommandHandler) Handle(ctx context.Context, command Create
 	defer func() {
 		iSpan.End()
 	}()
+
 	contact := entity.Contact{
 		Name:    command.Name,
 		Message: command.Message,
@@ -52,17 +53,13 @@ func (c *CreateContactCommandHandler) Handle(ctx context.Context, command Create
 		DateAdd: time.Now(),
 		UUID:    uuid.UUID{}.String(),
 	}
-
 	if err := c.ContactRepository.Save(ctx, contact); err != nil {
-		c.Logger.Error(fmt.Sprintf("Error during save contact: %s", err))
-		return err
+		return fmt.Errorf("error during save contact: %w", err)
 	}
 	c.Logger.Log("Contact was created.")
 
-	contactCreatedEvent := event.ContactCreatedEvent{Contact: contact}
-	if err := c.ContactCreatedEventHandler.Handle(ctx, contactCreatedEvent); err != nil {
-		c.Logger.Error(fmt.Sprintf("Error during handle event: %s", err))
-		return err
+	if err := c.ContactCreatedEventHandler.Handle(ctx, event.ContactCreatedEvent{Contact: contact}); err != nil {
+		return fmt.Errorf("error during handle event: %w", err)
 	}
 
 	return nil

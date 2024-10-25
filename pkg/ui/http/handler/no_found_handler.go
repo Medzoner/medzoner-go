@@ -40,6 +40,7 @@ func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := h.Template.Render("404", view, w, http.StatusNotFound)
 	if err != nil {
-		panic(err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
 	}
 }

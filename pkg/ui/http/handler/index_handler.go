@@ -64,7 +64,7 @@ type IndexHandler struct {
 func NewIndexHandler(
 	template templater.Templater,
 	listTechnoQueryHandler query.ListTechnoQueryHandler,
-	conf config.IConfig,
+	conf config.Config,
 	createContactCommandHandler command.CreateContactCommandHandler,
 	session session.Sessioner,
 	validation validation.MzValidator,
@@ -79,7 +79,7 @@ func NewIndexHandler(
 	return &IndexHandler{
 		Template:                    template,
 		ListTechnoQueryHandler:      listTechnoQueryHandler,
-		RecaptchaSiteKey:            conf.GetRecaptchaSiteKey(),
+		RecaptchaSiteKey:            conf.RecaptchaSiteKey,
 		CreateContactCommandHandler: createContactCommandHandler,
 		Session:                     session,
 		Validation:                  validation,
@@ -114,6 +114,8 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	ctx, span := h.Tracer.Start(
 		contextIndex,
 		"IndexHandler.IndexHandle",
+		otelTrace.WithSpanKind(otelTrace.SpanKindServer),
+		otelTrace.WithNewRoot(),
 		otelTrace.WithAttributes([]attribute.KeyValue{
 			attribute.String("host", request.Host),
 			attribute.String("path", request.URL.Path),

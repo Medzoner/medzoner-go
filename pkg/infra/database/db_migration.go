@@ -20,10 +20,10 @@ type DbMigration struct {
 }
 
 // NewDbMigration NewDbMigration
-func NewDbMigration(dbInstance IDbInstance, conf config.IConfig) DbMigration {
+func NewDbMigration(dbInstance IDbInstance, conf config.Config) DbMigration {
 	db := DbMigration{
 		DbInstance: dbInstance,
-		RootPath:   string(conf.GetRootPath()),
+		RootPath:   string(conf.RootPath),
 	}
 	db.MigrationDir = db.getMigrationDir()
 	return db

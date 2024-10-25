@@ -10,26 +10,6 @@ import (
 	"strings"
 )
 
-// IConfig IConfig
-type IConfig interface {
-	Init() (*Config, error)
-	GetRootPath() RootPath
-	GetEnvironment() string
-	GetMysqlDsn() string
-	GetAPIPort() int
-	GetDatabaseName() string
-	GetDatabaseDriver() string
-	GetMailerUser() string
-	GetMailerPassword() string
-	GetMailerHost() string
-	GetMailerPort() string
-	GetRecaptchaSiteKey() string
-	GetRecaptchaSecretKey() string
-	GetTraceFile() string
-	GetOtelHost() string
-	Debug() bool
-}
-
 type RootPath string
 
 // Config Config
@@ -47,6 +27,7 @@ type Config struct {
 	RecaptchaSiteKey   string         `env:"RECAPTCHA_SITE_KEY" envDefault:"xxxxxxxxxxxx"`
 	RecaptchaSecretKey string         `env:"RECAPTCHA_SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
 	TracerFile         string         `env:"TRACER_FILE" envDefault:"trace.out"`
+	OtelHost           string         `env:"OTEL_HOST" envDefault:"localhost:4317"`
 }
 
 // DatabaseConfig DatabaseConfig
@@ -57,12 +38,16 @@ type DatabaseConfig struct {
 }
 
 // NewConfig is a constructor for Config
-func NewConfig() (*Config, error) {
+func NewConfig() (Config, error) {
 	conf, err := parseEnv()
 	if err != nil {
-		return nil, err
+		return Config{}, err
 	}
-	return conf.Init()
+	cfg, err := conf.Init()
+	if err != nil {
+		return Config{}, err
+	}
+	return *cfg, nil
 }
 
 // Init Init
@@ -88,56 +73,6 @@ func (c *Config) Init() (*Config, error) {
 	c.APIPort, _ = strconv.Atoi(getEnv("API_PORT", "8002"))
 
 	return c, nil
-}
-
-// GetMysqlDsn GetMysqlDsn
-func (c *Config) GetMysqlDsn() string {
-	return c.Database.Dsn
-}
-
-// GetDatabaseDriver is a getter for DatabaseDriver
-func (c *Config) GetDatabaseDriver() string {
-	return c.Database.Driver
-}
-
-// GetDatabaseName GetDatabaseName
-func (c *Config) GetDatabaseName() string {
-	return c.Database.Name
-}
-
-// GetAPIPort GetAPIPort
-func (c *Config) GetAPIPort() int {
-	return c.APIPort
-}
-
-// GetRootPath is a getter for RootPath
-func (c *Config) GetRootPath() RootPath {
-	return c.RootPath
-}
-
-// GetEnvironment GetEnvironment
-func (c *Config) GetEnvironment() string {
-	return c.Environment
-}
-
-// GetMailerUser GetMailerUser
-func (c *Config) GetMailerUser() string {
-	return c.MailerUser
-}
-
-// GetMailerPassword GetMailerPassword
-func (c *Config) GetMailerPassword() string {
-	return c.MailerPassword
-}
-
-// GetMailerHost GetMailerHost
-func (c *Config) GetMailerHost() string {
-	return c.MailerHost
-}
-
-// GetMailerPort GetMailerPort
-func (c *Config) GetMailerPort() string {
-	return c.MailerPort
 }
 
 func getEnv(key string, defaultVal string) string {
@@ -172,21 +107,6 @@ func getEnvAsSlice(name string, defaultVal []string, sep string) []string {
 	return val
 }
 
-// GetRecaptchaSiteKey is a getter for RecaptchaSiteKey
-func (c *Config) GetRecaptchaSiteKey() string {
-	return c.RecaptchaSiteKey
-}
-
-// GetRecaptchaSecretKey is a getter for RecaptchaSecretKey
-func (c *Config) GetRecaptchaSecretKey() string {
-	return c.RecaptchaSecretKey
-}
-
-// GetTraceFile is a getter for TracerFile
-func (c *Config) GetTraceFile() string {
-	return c.TracerFile
-}
-
 // GetOtelHost GetOtelHost
 func (c *Config) GetOtelHost() string {
 	//return getEnv("OTEL_HOST", "otel-collector-opentelemetry-collector.default.svc.cluster.local:4317")
@@ -194,13 +114,13 @@ func (c *Config) GetOtelHost() string {
 }
 
 // parseEnv parseEnv
-func parseEnv() (*Config, error) {
+func parseEnv() (Config, error) {
 	cfg := &Config{}
 	err := env.Parse(cfg)
 	if err != nil {
-		return nil, err
+		return Config{}, err
 	}
-	return cfg, nil
+	return *cfg, nil
 }
 
 // Debug Debug
