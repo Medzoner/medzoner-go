@@ -38,3 +38,4 @@ trace.out
 skaffold
 !.gitkeep
 .aider*
+/var/

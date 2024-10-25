@@ -22,7 +22,7 @@ Feature: Global behavior "Medzoner"
         And I add "Content-Type" header equal to "text/html"
         When    I send a POST request to "/" with body:
           """
-          {"name":"else", "email":"email@fake.com", "message":"else"}
+          {"name": "else", "email" :"email@fake.com", "message": "else", "g-captcha-response": "else"}
           """
         Then    the response status code should be 303
 

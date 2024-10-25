@@ -61,8 +61,8 @@ func InitServer() (*server.Server, error) {
 	dbSQLInstance := database.NewDbSQLInstance(configConfig)
 	mysqlContactRepository := repository.NewMysqlContactRepository(dbSQLInstance, zapLoggerAdapter)
 	mailerSMTP := mailersmtp.NewMailerSMTP(configConfig)
-	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP, zapLoggerAdapter)
-	createContactCommandHandler := command.NewCreateContactCommandHandler(mysqlContactRepository, contactCreatedEventHandler, zapLoggerAdapter)
+	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP, zapLoggerAdapter, httpTracer)
+	createContactCommandHandler := command.NewCreateContactCommandHandler(mysqlContactRepository, contactCreatedEventHandler, zapLoggerAdapter, httpTracer)
 	sessionKey := session.NewSessionKey()
 	sessionerAdapter := session.NewSessionerAdapter(sessionKey)
 	validatorAdapter := validation.NewValidatorAdapter()
@@ -73,7 +73,7 @@ func InitServer() (*server.Server, error) {
 	return serverServer, nil
 }
 
-func InitServerTest(mocks2 mocks.Mocks) (*server.Server, error) {
+func InitServerTest(mocks2 *mocks.Mocks) (*server.Server, error) {
 	configConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, err
@@ -87,8 +87,8 @@ func InitServerTest(mocks2 mocks.Mocks) (*server.Server, error) {
 	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository, mockTracer)
 	mockContactRepository := mocks2.ContactRepository
 	mailerSMTP := mailersmtp.NewMailerSMTP(configConfig)
-	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP, zapLoggerAdapter)
-	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler, zapLoggerAdapter)
+	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP, zapLoggerAdapter, mockTracer)
+	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler, zapLoggerAdapter, mockTracer)
 	sessionKey := session.NewSessionKey()
 	sessionerAdapter := session.NewSessionerAdapter(sessionKey)
 	validatorAdapter := validation.NewValidatorAdapter()
@@ -106,16 +106,16 @@ var (
 	DbWiring         = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.IDbInstance), new(*database.DbSQLInstance)))
 	TracerWiring     = wire.NewSet(tracer.NewHttpTracer, wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)))
 	TracerMockWiring = wire.NewSet(wire.FieldsOf(
-		new(mocks.Mocks),
+		new(*mocks.Mocks),
 		"HttpTracer",
 	), wire.Bind(new(tracer.Tracer), new(*tracerMock.MockTracer)),
 	)
 	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)))
 	RepositoryMockWiring = wire.NewSet(repository.NewTechnoJSONRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.FieldsOf(
-		new(mocks.Mocks),
+		new(*mocks.Mocks),
 		"ContactRepository",
 	), wire.Bind(new(repository2.ContactRepository), new(*contactMock.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
-	UiWiring  = wire.NewSet(handler.NewIndexHandler, handler.NewTechnoHandler, handler.NewNotFoundHandler)
+	UiWiring  = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)
 )

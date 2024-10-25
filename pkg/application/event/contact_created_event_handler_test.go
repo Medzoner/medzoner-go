@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
-	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"gotest.tools/assert"
@@ -15,13 +14,13 @@ import (
 )
 
 func TestContactCreatedEventHandler(t *testing.T) {
-	contact := &ContactTest{}
-	contact.
-		SetName("a name").
-		SetEmail(customtype.NullString{String: "an email", Valid: true}).
-		SetMessage("the message").
-		SetDateAdd(time.Time{}).
-		SetID(1)
+	contact := entity.Contact{
+		Name:    "a name",
+		Email:   customtype.NullString{String: "an email", Valid: true},
+		Message: "the message",
+		DateAdd: time.Time{},
+		ID:      1,
+	}
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
 		contactCreatedEvent := event.ContactCreatedEvent{
@@ -68,14 +67,6 @@ func (l *LoggerTest) Error(msg string) {
 }
 func (l LoggerTest) New() (logger.ILogger, error) {
 	return &LoggerTest{}, nil
-}
-
-type ContactTest struct {
-	entity.Contact
-}
-
-func (*ContactTest) New() model.IContact {
-	return &ContactTest{}
 }
 
 type MailerTest struct {

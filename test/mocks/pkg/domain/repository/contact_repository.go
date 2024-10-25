@@ -6,9 +6,9 @@ package contactMock
 
 import (
 	context "context"
+	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	reflect "reflect"
 
-	model "github.com/Medzoner/medzoner-go/pkg/domain/model"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,9 +36,10 @@ func (m *MockContactRepository) EXPECT() *MockContactRepositoryMockRecorder {
 }
 
 // Save mocks base method.
-func (m *MockContactRepository) Save(ctx context.Context, contact model.IContact) {
+func (m *MockContactRepository) Save(ctx context.Context, contact entity.Contact) error {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "Save", ctx, contact)
+	return nil
 }
 
 // Save indicates an expected call of Save.

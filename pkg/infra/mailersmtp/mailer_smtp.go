@@ -22,8 +22,8 @@ func NewMailerSMTP(config config.IConfig) *MailerSMTP {
 		RootPath: string(config.GetRootPath()),
 		User:     config.GetMailerUser(),
 		Password: config.GetMailerPassword(),
-		Host:     "smtp.gmail.com",
-		Port:     "587",
+		Host:     config.GetMailerHost(),
+		Port:     config.GetMailerPort(),
 	}
 }
 
@@ -47,7 +47,7 @@ func NewRequest(to []string, subject, body string) *Request {
 func (m *MailerSMTP) Send(view interface{}) (bool, error) {
 	auth := smtp.PlainAuth("", m.User, m.Password, m.Host)
 
-	r := NewRequest([]string{m.User}, "Hello Junk!", "Hello, World!")
+	r := NewRequest([]string{m.User}, "Message [medzoner.com]", "Hello, World!")
 
 	err := r.ParseTemplate(m.RootPath+"/tmpl/contact/contactEmail.html", view)
 

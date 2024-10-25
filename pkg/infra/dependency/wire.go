@@ -68,7 +68,7 @@ var (
 	)
 	TracerMockWiring = wire.NewSet(
 		wire.FieldsOf(
-			new(mocks.Mocks),
+			new(*mocks.Mocks),
 			"HttpTracer",
 		),
 		wire.Bind(new(tracer.Tracer), new(*tracerMock.MockTracer)),
@@ -84,7 +84,7 @@ var (
 		repository.NewTechnoJSONRepository,
 		wire.Bind(new(domainRepository.TechnoRepository), new(*repository.TechnoJSONRepository)),
 		wire.FieldsOf(
-			new(mocks.Mocks),
+			new(*mocks.Mocks),
 			"ContactRepository",
 		),
 		wire.Bind(new(domainRepository.ContactRepository), new(*contactMock.MockContactRepository)),
@@ -98,7 +98,6 @@ var (
 	)
 	UiWiring = wire.NewSet(
 		handler.NewIndexHandler,
-		handler.NewTechnoHandler,
 		handler.NewNotFoundHandler,
 	)
 )
@@ -111,6 +110,6 @@ func InitServer() (*server.Server, error) {
 	panic(wire.Build(InfraWiring, TracerWiring, DbWiring, RepositoryWiring, AppWiring, UiWiring))
 }
 
-func InitServerTest(mocks mocks.Mocks) (*server.Server, error) {
+func InitServerTest(mocks *mocks.Mocks) (*server.Server, error) {
 	panic(wire.Build(InfraWiring, TracerMockWiring, RepositoryMockWiring, AppWiring, UiWiring))
 }

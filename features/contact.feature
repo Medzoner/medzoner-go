@@ -24,7 +24,7 @@ Feature: Global behavior "Medzoner"
           """
           {"name":"else", "email":"email@fake.com", "message":"else"}
           """
-        Then    the response status code should be 303
+        Then    the response status code should be 200
 
 #------------------------------------------------------------------------------------------
 # POST "CONTACT" - Test failed

@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
-	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"gotest.tools/assert"
 	"testing"
 	"time"
@@ -23,13 +21,11 @@ func TestCreateContactCommandHandler(t *testing.T) {
 			DateAdd: date,
 		}
 
-		contact := &ContactTest{}
 		loggerTest := &LoggerTest{}
 		handler := command.NewCreateContactCommandHandler(&ContactRepositoryTest{}, CreateContactEventHandlerTest{}, loggerTest)
 
 		handler.Handle(context.Background(), createContactCommand)
 		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
-		assert.Equal(t, "", contact.GetEmailString())
 	})
 }
 
@@ -45,26 +41,18 @@ func (l *LoggerTest) Error(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
 }
-func (l LoggerTest) New() (logger.ILogger, error) {
-	return &LoggerTest{}, nil
-}
 
 type ContactRepositoryTest struct{}
 
-func (r ContactRepositoryTest) Save(ctx context.Context, contact model.IContact) {
+func (r ContactRepositoryTest) Save(ctx context.Context, contact entity.Contact) error {
+	_ = ctx
 	fmt.Println(contact)
-}
-
-type ContactTest struct {
-	entity.Contact
-}
-
-func (*ContactTest) New() model.IContact {
-	return &ContactTest{}
+	return nil
 }
 
 type CreateContactEventHandlerTest struct{}
 
 func (c CreateContactEventHandlerTest) Handle(ctx context.Context, event event.Event) {
+	_ = ctx
 	_ = event
 }

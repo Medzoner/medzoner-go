@@ -22,6 +22,30 @@ import (
 	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
+// IndexView IndexView
+type IndexView struct {
+	Locale    string
+	PageTitle string
+	TorHost   string
+	TechnoView
+	Errors           interface{}
+	RecaptchaSiteKey string
+	PageDescription  string
+	FormMessage      string
+}
+
+// TechnoView TechnoView
+type TechnoView struct {
+	Locale      string
+	PageTitle   string
+	Stacks      interface{}
+	Experiences interface{}
+	Formations  interface{}
+	Langs       interface{}
+	Others      interface{}
+	TorHost     string
+}
+
 // IndexHandler IndexHandler
 type IndexHandler struct {
 	Template                    templater.Templater
@@ -33,6 +57,7 @@ type IndexHandler struct {
 	Recaptcha                   captcha.Captcher
 	Tracer                      tracer.Tracer
 	Logger                      logger.ILogger
+	Debug                       bool
 }
 
 // NewIndexHandler NewIndexHandler
@@ -61,19 +86,8 @@ func NewIndexHandler(
 		Recaptcha:                   recaptcha,
 		Tracer:                      tracer,
 		Logger:                      Logger,
+		Debug:                       conf.Debug(),
 	}
-}
-
-// IndexView IndexView
-type IndexView struct {
-	Locale    string
-	PageTitle string
-	TorHost   string
-	TechnoView
-	Errors           interface{}
-	RecaptchaSiteKey string
-	PageDescription  string
-	FormMessage      string
 }
 
 func (h *IndexHandler) processRequest(request *http.Request) (err error) {
@@ -84,7 +98,7 @@ func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 			log.Println("captcha server error", err)
 			return err
 		}
-		if !result {
+		if !result && !h.Debug {
 			return fmt.Errorf("captcha was incorrect; try again")
 		}
 	}
@@ -95,6 +109,7 @@ func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
 	contextIndex, cancel := context.WithTimeout(request.Context(), 60*time.Second)
 	defer cancel()
+	contextIndex = context.WithValue(contextIndex, "request", request)
 
 	ctx, span := h.Tracer.Start(
 		contextIndex,
@@ -108,7 +123,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		span.End()
 	}()
 
-	h.Tracer.WriteLog(contextIndex, "IndexHandle start")
+	//h.Tracer.WriteLog(contextIndex, "IndexHandle start")
 	newSession, err := h.Session.Init(request)
 	if err != nil {
 		http.Error(response, "internal error", http.StatusInternalServerError)
@@ -137,7 +152,16 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		}
 		v := h.Validation
 		if err := v.Struct(createContactCommand); err == nil {
-			h.CreateContactCommandHandler.Handle(contextIndex, createContactCommand)
+			err = h.CreateContactCommandHandler.Handle(contextIndex, createContactCommand)
+			if err != nil {
+				newSession.SetValue("message", "Error during send message")
+				if err = newSession.Save(request, response); err != nil {
+					http.Error(response, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				http.Redirect(response, request, "/#contact", http.StatusSeeOther)
+				return
+			}
 			newSession.SetValue("message", "Your Message has been sent")
 
 			if err = newSession.Save(request, response); err != nil {
@@ -165,7 +189,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 
 	view.FormMessage = ""
 	_ = request
-	h.Tracer.WriteLog(contextIndex, "IndexHandle end")
+	//h.Tracer.WriteLog(contextIndex, "IndexHandle end")
 }
 
 func (h *IndexHandler) initView(request *http.Request, ctx context.Context) IndexView {

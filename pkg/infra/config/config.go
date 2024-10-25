@@ -21,10 +21,13 @@ type IConfig interface {
 	GetDatabaseDriver() string
 	GetMailerUser() string
 	GetMailerPassword() string
+	GetMailerHost() string
+	GetMailerPort() string
 	GetRecaptchaSiteKey() string
 	GetRecaptchaSecretKey() string
 	GetTraceFile() string
 	GetOtelHost() string
+	Debug() bool
 }
 
 type RootPath string
@@ -39,6 +42,8 @@ type Config struct {
 	Database           DatabaseConfig `env:"DATABASE_"`
 	MailerUser         string         `env:"MAILER_USER" envDefault:"medzoner@xxx.fake"`
 	MailerPassword     string         `env:"MAILER_PASSWORD" envDefault:"xxxxxxxxxxxx"`
+	MailerHost         string         `env:"MAILER_HOST" envDefault:"smtp.gmail.com"`
+	MailerPort         string         `env:"MAILER_PORT" envDefault:"587"`
 	RecaptchaSiteKey   string         `env:"RECAPTCHA_SITE_KEY" envDefault:"xxxxxxxxxxxx"`
 	RecaptchaSecretKey string         `env:"RECAPTCHA_SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
 	TracerFile         string         `env:"TRACER_FILE" envDefault:"trace.out"`
@@ -46,7 +51,7 @@ type Config struct {
 
 // DatabaseConfig DatabaseConfig
 type DatabaseConfig struct {
-	Dsn    string `env:"DSN" envDefault:"root:changeme@tcp(0.0.0.0:3366)"`
+	Dsn    string `env:"DSN" envDefault:"root:changeme@tcp(0.0.0.0:3306)"`
 	Name   string `env:"NAME" envDefault:"dev_medzoner"`
 	Driver string `env:"DRIVER" envDefault:"mysql"`
 }
@@ -67,12 +72,12 @@ func (c *Config) Init() (*Config, error) {
 		return nil, err
 	}
 	c.RootPath = RootPath(pwd + "/")
-	err = godotenv.Load(string(c.RootPath) + "/.env")
+	err = godotenv.Load(string(c.RootPath) + ".env")
 	if err == nil {
 		fmt.Println(".env file found")
 	}
 	if c.Environment == "test" {
-		err = godotenv.Load(string(c.RootPath) + "/.env.test")
+		err = godotenv.Load(string(c.RootPath) + ".env.test")
 		if err == nil {
 			fmt.Println(".env.test file found")
 		}
@@ -123,6 +128,16 @@ func (c *Config) GetMailerUser() string {
 // GetMailerPassword GetMailerPassword
 func (c *Config) GetMailerPassword() string {
 	return c.MailerPassword
+}
+
+// GetMailerHost GetMailerHost
+func (c *Config) GetMailerHost() string {
+	return c.MailerHost
+}
+
+// GetMailerPort GetMailerPort
+func (c *Config) GetMailerPort() string {
+	return c.MailerPort
 }
 
 func getEnv(key string, defaultVal string) string {
@@ -186,4 +201,9 @@ func parseEnv() (*Config, error) {
 		return nil, err
 	}
 	return cfg, nil
+}
+
+// Debug Debug
+func (c *Config) Debug() bool {
+	return c.DebugMode
 }

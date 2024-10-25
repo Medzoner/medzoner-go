@@ -10,6 +10,7 @@ import (
 	"runtime/trace"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"

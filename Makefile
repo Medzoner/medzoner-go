@@ -9,7 +9,8 @@ githooks:
 	git config core.hooksPath .githooks
 
 test_all:
-	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
+	export DEBUG=true
+	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out $(go list ./... | grep -v /var/)
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out -o coverage.html
 

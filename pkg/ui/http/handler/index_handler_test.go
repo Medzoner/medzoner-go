@@ -14,7 +14,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
-	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
@@ -48,7 +47,6 @@ func TestIndexHandler(t *testing.T) {
 			},
 			&config.Config{},
 			command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
@@ -130,7 +128,6 @@ func TestIndexHandler(t *testing.T) {
 			},
 			&config.Config{},
 			command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
@@ -167,7 +164,6 @@ func TestIndexHandler(t *testing.T) {
 			},
 			&config.Config{},
 			command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
@@ -214,7 +210,6 @@ func TestIndexHandler(t *testing.T) {
 			},
 			&config.Config{},
 			command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
@@ -257,7 +252,6 @@ func TestIndexHandler(t *testing.T) {
 			},
 			&config.Config{},
 			command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
@@ -299,7 +293,6 @@ func TestIndexHandler(t *testing.T) {
 			},
 			&config.Config{},
 			command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
@@ -408,7 +401,6 @@ func TestIndexHandler(t *testing.T) {
 			},
 			&config.Config{},
 			command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
@@ -453,7 +445,6 @@ func TestIndexHandler(t *testing.T) {
 			},
 			&config.Config{},
 			command.CreateContactCommandHandler{
-				ContactFactory:             &entity.Contact{},
 				ContactRepository:          repositoryMock,
 				ContactCreatedEventHandler: &ContactCreatedEventHandlerTest{},
 				Logger:                     &LoggerTest{},
@@ -505,6 +496,7 @@ func (t *TemplaterTest) Render(name string, view interface{}, response http.Resp
 type ContactCreatedEventHandlerTest struct{}
 
 func (h *ContactCreatedEventHandlerTest) Handle(ctx context.Context, event event.Event) {
+	_ = ctx
 	fmt.Println(event)
 }
 

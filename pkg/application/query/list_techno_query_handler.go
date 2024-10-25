@@ -25,21 +25,14 @@ func NewListTechnoQueryHandler(technoRepository repository.TechnoRepository, tra
 func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQuery) map[string]interface{} {
 	_, iSpan := l.Tracer.Start(ctx, fmt.Sprintf("ListTechnoQueryHandler.Handle"))
 	iSpan.AddEvent("ListTechnoQueryHandler.Handle-Event")
+	defer func() {
+		iSpan.End()
+	}()
+
+	resp := map[string]interface{}{}
 	if query.Type == "stack" {
-		return l.TechnoRepository.FetchStack()
+		resp = l.TechnoRepository.FetchStack()
 	}
-	if query.Type == "experience" {
-		return l.TechnoRepository.FetchExperience()
-	}
-	if query.Type == "formation" {
-		return l.TechnoRepository.FetchFormation()
-	}
-	if query.Type == "lang" {
-		return l.TechnoRepository.FetchLang()
-	}
-	if query.Type == "other" {
-		return l.TechnoRepository.FetchOther()
-	}
-	iSpan.End()
-	return map[string]interface{}{}
+
+	return resp
 }

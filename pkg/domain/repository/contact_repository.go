@@ -3,11 +3,10 @@ package repository
 
 import (
 	"context"
-
-	"github.com/Medzoner/medzoner-go/pkg/domain/model"
+	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 )
 
 // ContactRepository ContactRepository
 type ContactRepository interface {
-	Save(ctx context.Context, contact model.IContact)
+	Save(ctx context.Context, contact entity.Contact) error
 }

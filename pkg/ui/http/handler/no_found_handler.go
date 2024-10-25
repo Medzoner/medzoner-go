@@ -1,10 +1,19 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-	"net/http"
 )
+
+// NotFoundView NotFoundView
+type NotFoundView struct {
+	Locale          string
+	PageTitle       string
+	TorHost         string
+	PageDescription string
+}
 
 // NotFoundHandler NotFoundHandler
 type NotFoundHandler struct {
@@ -18,14 +27,6 @@ func NewNotFoundHandler(template templater.Templater, tracer tracer.Tracer) *Not
 		Template: template,
 		Tracer:   tracer,
 	}
-}
-
-// NotFoundView NotFoundView
-type NotFoundView struct {
-	Locale          string
-	PageTitle       string
-	TorHost         string
-	PageDescription string
 }
 
 // Handle Handle
