@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 )
@@ -22,15 +23,15 @@ func NewListTechnoQueryHandler(technoRepository repository.TechnoRepository, tra
 
 // Handle handles ListTechnoQuery and return map[string]interface{}
 func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQuery) (map[string]interface{}, error) {
-	_, iSpan := l.Tracer.Start(ctx, "ListTechnoQueryHandler.Publish")
+	ctx, iSpan := l.Tracer.Start(ctx, "ListTechnoQueryHandler.Publish")
 	defer iSpan.End()
 
 	resp := map[string]interface{}{}
 	if query.Type == "stack" {
-		resp, err := l.TechnoRepository.FetchStack()
+		resp, err := l.TechnoRepository.FetchStack(ctx)
 		if err != nil {
 			iSpan.RecordError(err)
-			return nil, err
+			return nil, fmt.Errorf("error fetching stack: %w", err)
 		}
 		return resp, nil
 	}

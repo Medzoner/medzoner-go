@@ -99,7 +99,7 @@ func TestListTechnoQueryHandler(t *testing.T) {
 
 type TechnoRepositoryTest struct{}
 
-func (m *TechnoRepositoryTest) FetchStack() (map[string]interface{}, error) {
+func (m *TechnoRepositoryTest) FetchStack(ctx context.Context) (map[string]interface{}, error) {
 	return map[string]interface{}{}, nil
 }
 func (m *TechnoRepositoryTest) FetchExperience() (map[string]interface{}, error) {

@@ -155,8 +155,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		}
 		v := h.Validation
 		if err := v.Struct(createContactCommand); err == nil {
-			err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand)
-			if err != nil {
+			if err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
 				newSession.SetValue("message", "Error during send message")
 				if err = newSession.Save(request, response); err != nil {
 					span.RecordError(err)

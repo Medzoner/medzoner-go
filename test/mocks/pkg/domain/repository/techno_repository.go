@@ -5,6 +5,7 @@
 package domainRepositoryMock
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,16 +35,16 @@ func (m *MockTechnoRepository) EXPECT() *MockTechnoRepositoryMockRecorder {
 }
 
 // FetchStack mocks base method.
-func (m *MockTechnoRepository) FetchStack() (map[string]interface{}, error) {
+func (m *MockTechnoRepository) FetchStack(ctx context.Context) (map[string]interface{}, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchStack")
+	ret := m.ctrl.Call(m, "FetchStack", ctx)
 	ret0, _ := ret[0].(map[string]interface{})
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FetchStack indicates an expected call of FetchStack.
-func (mr *MockTechnoRepositoryMockRecorder) FetchStack() *gomock.Call {
+func (mr *MockTechnoRepositoryMockRecorder) FetchStack(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchStack", reflect.TypeOf((*MockTechnoRepository)(nil).FetchStack))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchStack", reflect.TypeOf((*MockTechnoRepository)(nil).FetchStack), ctx)
 }
