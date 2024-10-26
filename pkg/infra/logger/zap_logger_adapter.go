@@ -64,8 +64,7 @@ func (z ZapLoggerAdapter) New() *ZapLoggerAdapter {
 }
 
 func (z ZapLoggerAdapter) deferLogger(zapLogger *zap.Logger) {
-	err := zapLogger.Sync()
-	if err == nil {
+	if err := zapLogger.Sync(); err == nil {
 		fmt.Println("sync defer")
 	}
 }
@@ -84,10 +83,8 @@ func (z ZapLoggerAdapter) Log(msg string) {
 // Error Error
 func (z ZapLoggerAdapter) Error(msg string) {
 	if z.UseSugar {
-		sugar := z.Zap.Sugar()
-		sugar.Errorw(msg)
+		z.Zap.Sugar().Errorw(msg)
+		return
 	}
-	if !z.UseSugar {
-		z.Zap.Error(msg)
-	}
+	z.Zap.Error(msg)
 }

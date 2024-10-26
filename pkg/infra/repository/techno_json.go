@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,7 +26,8 @@ func NewTechnoJSONRepository(logger logger.ILogger, config config.Config) *Techn
 }
 
 // FetchStack FetchStack
-func (m *TechnoJSONRepository) FetchStack() (map[string]interface{}, error) {
+func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]interface{}, error) {
+	_ = ctx
 	jsonFile, err := os.Open(m.RootPath + "pkg/infra/resources/data/jobs/stacks.json")
 	if err != nil {
 		return nil, fmt.Errorf("error during open json file: %w", err)
