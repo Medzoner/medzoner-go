@@ -19,7 +19,7 @@ type DbMigration struct {
 	MigrationDir *string
 }
 
-// NewDbMigration NewDbMigration
+// NewDbMigration is a function that returns a new DbMigration
 func NewDbMigration(dbInstance IDbInstance, conf config.Config) DbMigration {
 	db := DbMigration{
 		DbInstance: dbInstance,
@@ -30,33 +30,62 @@ func NewDbMigration(dbInstance IDbInstance, conf config.Config) DbMigration {
 
 }
 
-// MigrateUp MigrateUp
-func (d *DbMigration) MigrateUp() {
-	err := d.getNewWithDatabaseInstance().Up()
-	d.checkMigrateErrors(err)
-	log.Println("Database migrated ok: up")
-}
-
-// MigrateDown MigrateDown
-func (d *DbMigration) MigrateDown() {
-	err := d.getNewWithDatabaseInstance().Down()
-	d.checkMigrateErrors(err)
-	log.Println("Database migrated ok: down")
-}
-
-func (d *DbMigration) checkMigrateErrors(err error) {
-	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		log.Fatalf("An error occurred while syncing the database.. %v", err)
-	}
-}
-
-func (d *DbMigration) getNewWithDatabaseInstance() *migrate.Migrate {
-	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *d.MigrationDir), d.DbInstance.GetDatabaseName(), d.DbInstance.GetDatabaseDriver())
-
+// MigrateUp is a function that migrates the database up
+func (d *DbMigration) MigrateUp() error {
+	db, err := d.getNewWithDatabaseInstance()
 	if err != nil {
-		log.Fatalf("migration failed... %v", err)
+		return fmt.Errorf("database instantiate failed: %w", err)
 	}
-	return m
+	err = db.Up()
+	if err != nil {
+		return fmt.Errorf("database migration up failed: %w", err)
+	}
+	err = d.checkMigrateErrors(err)
+	if err != nil {
+		return fmt.Errorf("database checkMigrateErrors failed: %w", err)
+	}
+	log.Println("Database migrated ok: up")
+
+	return nil
+}
+
+// MigrateDown is a function that migrates down
+func (d *DbMigration) MigrateDown() error {
+	db, err := d.getNewWithDatabaseInstance()
+	if err != nil {
+		return fmt.Errorf("database instantiate failed: %w", err)
+	}
+	err = db.Down()
+	if err != nil {
+		return fmt.Errorf("database migration down failed: %w", err)
+	}
+	err = d.checkMigrateErrors(err)
+	if err != nil {
+		return fmt.Errorf("database checkMigrateErrors failed: %w", err)
+	}
+
+	log.Println("Database migrated ok: down")
+
+	return nil
+}
+
+func (d *DbMigration) checkMigrateErrors(err error) error {
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return fmt.Errorf("an error occurred while syncing the database.. %w", err)
+	}
+	return nil
+}
+
+func (d *DbMigration) getNewWithDatabaseInstance() (*migrate.Migrate, error) {
+	driver, err := d.DbInstance.GetDatabaseDriver()
+	if err != nil {
+		return nil, fmt.Errorf("database driver failed... %w", err)
+	}
+	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *d.MigrationDir), d.DbInstance.GetDatabaseName(), driver)
+	if err != nil {
+		return nil, fmt.Errorf("migration failed... %w", err)
+	}
+	return m, nil
 }
 
 func (d *DbMigration) getMigrationDir() *string {

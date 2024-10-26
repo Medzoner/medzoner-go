@@ -48,6 +48,7 @@ func (t *TemplateHTML) Render(name string, view interface{}, response http.Respo
 func (t *TemplateHTML) parseTemplates(name string) (*template.Template, error) {
 	tpl := template.New(name)
 	err := filepath.Walk(t.RootPath+"/tmpl/", func(path string, info os.FileInfo, err error) error {
+		_ = info
 		if strings.Contains(path, ".html") {
 			_, err = tpl.ParseFiles(path)
 			if err != nil {

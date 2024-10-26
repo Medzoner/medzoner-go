@@ -61,7 +61,7 @@ func (s Server) Start(ctx context.Context) {
 	go func() {
 		s.Logger.Log(fmt.Sprintf("Server up on port '%d'", s.APIPort))
 		if err := s.HTTPServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("listen and serve returned err: %v", err)
+			s.Logger.Error(fmt.Sprintf("listen and serve returned err: %v", err))
 		}
 	}()
 

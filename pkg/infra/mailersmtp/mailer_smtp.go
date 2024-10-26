@@ -2,8 +2,12 @@ package mailersmtp
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
+	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
+	"go.opentelemetry.io/otel/attribute"
 	"html/template"
 	"net/smtp"
 )
@@ -15,16 +19,18 @@ type MailerSMTP struct {
 	Password string
 	Host     string
 	Port     string
+	Tracer   tracer.Tracer
 }
 
 // NewMailerSMTP NewMailerSMTP
-func NewMailerSMTP(config config.Config) *MailerSMTP {
+func NewMailerSMTP(config config.Config, tracer tracer.Tracer) *MailerSMTP {
 	return &MailerSMTP{
 		RootPath: string(config.RootPath),
 		User:     config.MailerUser,
 		Password: config.MailerPassword,
 		Host:     config.MailerHost,
 		Port:     config.MailerPort,
+		Tracer:   tracer,
 	}
 }
 
@@ -45,9 +51,15 @@ func NewRequest(to []string, subject, body string) *Request {
 }
 
 // Send is a function that sends an email
-func (m *MailerSMTP) Send(view interface{}) (bool, error) {
-	auth := smtp.PlainAuth("", m.User, m.Password, m.Host)
+func (m *MailerSMTP) Send(ctx context.Context, view interface{}) (bool, error) {
+	_, iSpan := m.Tracer.Start(ctx, "MailerSMTP.Send")
+	defer func() {
+		iSpan.End()
+	}()
+	correlationID := middleware.GetCorrelationID(ctx)
+	iSpan.SetAttributes(attribute.String("correlation_id", correlationID))
 
+	auth := smtp.PlainAuth("", m.User, m.Password, m.Host)
 	r := NewRequest([]string{m.User}, "Message [medzoner.com]", "Hello, World!")
 	if err := r.ParseTemplate(m.RootPath+"/tmpl/contact/contactEmail.html", view); err != nil {
 		return false, err

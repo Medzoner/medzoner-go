@@ -26,6 +26,9 @@ func TestContactCreatedEventHandler(t *testing.T) {
 	}
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
+
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		contactCreatedEvent := event.ContactCreatedEvent{
 			Contact: contact,
 		}
@@ -37,6 +40,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		handler := event.ContactCreatedEventHandler{
 			Mailer: mailer,
 			Logger: loggerTest,
+			Tracer: httpTracerMock,
 		}
 
 		err := handler.Handle(context.Background(), contactCreatedEvent)
@@ -56,7 +60,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 
 		err := handler.Handle(context.Background(), BadEvent{})
 		assert.Equal(t, err, nil)
-		assert.Equal(t, loggerTest.LogMessages[0], "Error during send mail.")
+		assert.Equal(t, loggerTest.LogMessages[0], "Error bad event type.")
 		assert.Equal(t, mailer.isSend, false)
 	})
 }
@@ -85,7 +89,8 @@ type MailerTest struct {
 	isSend   bool
 }
 
-func (m *MailerTest) Send(view interface{}) (bool, error) {
+func (m *MailerTest) Send(ctx context.Context, view interface{}) (bool, error) {
+	_ = ctx
 	m.isSend = true
 	_, err := fmt.Println(reflect.TypeOf(view))
 	if err != nil {

@@ -31,7 +31,6 @@ func TestFeatures(t *testing.T) {
 	mockedRepository.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 	mockedRepository.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()
 	mockedRepository.HttpTracer.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().AnyTimes()
-	//mockedRepository.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return().AnyTimes()
 	srv, err := dependency.InitServerTest(&mockedRepository)
 	if err != nil {
 		t.Error(err)
@@ -42,7 +41,6 @@ func TestFeatures(t *testing.T) {
 		Output: colors.Colored(os.Stdout),
 		Format: "pretty",
 		Paths:  []string{"./features"},
-		//Randomize: time.Now().UTC().UnixNano(),
 	}
 
 	featureCtx := bootstrap.New(*srv)

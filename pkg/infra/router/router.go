@@ -66,6 +66,7 @@ func (a MuxRouterAdapter) ServeHTTP(writer http.ResponseWriter, request *http.Re
 func InitRoutes(a IRouter, notFoundHandler *handler.NotFoundHandler, indexHandler *handler.IndexHandler) {
 	a.SetNotFoundHandler(notFoundHandler.Handle)
 	a.HandleFunc("/", indexHandler.IndexHandle).Methods("GET", "POST")
+	a.Use(middleware.CorrelationMiddleware)
 	a.Use(middleware.NewAPIMiddleware().Middleware)
 	fs := http.FileServer(http.Dir("."))
 

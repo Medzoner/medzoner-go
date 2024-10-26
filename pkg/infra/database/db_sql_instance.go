@@ -1,11 +1,11 @@
 package database
 
 import (
+	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/jmoiron/sqlx"
-	"log"
 )
 
 type DbSQLInstance struct {
@@ -61,17 +61,17 @@ func (d *DbSQLInstance) GetDatabaseName() string {
 	return d.DatabaseName
 }
 
-// GetDatabaseDriver GetDatabaseDriver
-func (d *DbSQLInstance) GetDatabaseDriver() database.Driver {
+// GetDatabaseDriver is a function that returns the database driver
+func (d *DbSQLInstance) GetDatabaseDriver() (database.Driver, error) {
 	driver, err := mysql.WithInstance(d.Connection.DB, &mysql.Config{})
 	if err != nil {
-		log.Fatalf("could not start sql migration... %v", err)
+		return nil, fmt.Errorf("could not start sql migration... %vw", err)
 	}
 
 	if driver == nil {
-		log.Fatalf("driver fail %v", d.Connection.DriverName())
+		return nil, fmt.Errorf("driver fail %v", d.Connection.DriverName())
 	}
-	return driver
+	return driver, nil
 }
 
 func (d *DbSQLInstance) openDb(dsn string) *sqlx.DB {

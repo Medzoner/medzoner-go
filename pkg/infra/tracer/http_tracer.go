@@ -241,14 +241,10 @@ func NewHttpTracer(config config.Config) (*HttpTracer, error) {
 func (t HttpTracer) WriteLog(ctx context.Context, message string) {
 	ctx, task := trace.NewTask(ctx, "awesomeTask")
 	trace.Log(ctx, "orderID", message)
-	trace.WithRegion(ctx, message, func() {
-		fmt.Printf(message)
-	})
+	trace.WithRegion(ctx, message, func() {})
 	// preparation of the task
 	go func() { // continue processing the task in a separate goroutine.
 		defer task.End()
-		trace.WithRegion(ctx, message, func() {
-			fmt.Printf(message)
-		})
+		trace.WithRegion(ctx, message, func() {})
 	}()
 }

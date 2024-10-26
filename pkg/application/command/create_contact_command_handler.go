@@ -3,6 +3,8 @@ package command
 import (
 	"context"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
+	"go.opentelemetry.io/otel/attribute"
 	"time"
 
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
@@ -40,11 +42,12 @@ func NewCreateContactCommandHandler(
 
 // Handle handles command CreateContactCommand and create contact in database and send mail to admin with event ContactCreatedEvent
 func (c *CreateContactCommandHandler) Handle(ctx context.Context, command CreateContactCommand) error {
-	_, iSpan := c.Tracer.Start(ctx, fmt.Sprintf("CreateContactCommandHandler.Handle"))
-	iSpan.AddEvent("CreateContactCommandHandler.Handle-Event")
+	ctx, iSpan := c.Tracer.Start(ctx, "CreateContactCommandHandler.Handle")
 	defer func() {
 		iSpan.End()
 	}()
+	correlationID := middleware.GetCorrelationID(ctx)
+	iSpan.SetAttributes(attribute.String("correlation_id", correlationID))
 
 	contact := entity.Contact{
 		Name:    command.Name,
@@ -54,11 +57,13 @@ func (c *CreateContactCommandHandler) Handle(ctx context.Context, command Create
 		UUID:    uuid.UUID{}.String(),
 	}
 	if err := c.ContactRepository.Save(ctx, contact); err != nil {
+		iSpan.RecordError(err)
 		return fmt.Errorf("error during save contact: %w", err)
 	}
 	c.Logger.Log("Contact was created.")
 
 	if err := c.ContactCreatedEventHandler.Handle(ctx, event.ContactCreatedEvent{Contact: contact}); err != nil {
+		iSpan.RecordError(err)
 		return fmt.Errorf("error during handle event: %w", err)
 	}
 

@@ -29,7 +29,8 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		loggerTest := &LoggerTest{}
 		handler := command.NewCreateContactCommandHandler(&ContactRepositoryTest{}, CreateContactEventHandlerTest{}, loggerTest, httpTracerMock)
 
-		handler.Handle(context.Background(), createContactCommand)
+		err := handler.Handle(context.Background(), createContactCommand)
+		assert.Equal(t, err, nil)
 		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
 	})
 	t.Run(
@@ -48,7 +49,8 @@ func TestCreateContactCommandHandler(t *testing.T) {
 			loggerTest := &LoggerTest{}
 			handler := command.NewCreateContactCommandHandler(&ContactRepositoryTest{}, CreateContactEventHandlerTest{}, loggerTest, httpTracerMock)
 
-			handler.Handle(context.Background(), createContactCommand)
+			err := handler.Handle(context.Background(), createContactCommand)
+			assert.Equal(t, err, nil)
 			assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
 		},
 	)

@@ -35,7 +35,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -93,7 +93,7 @@ func TestIndexHandler(t *testing.T) {
 		}()
 		indexHandler.IndexHandle(httptest.NewRecorder(), request)
 	})
-	t.Run("Unit: test IndexHandler failed with session error on Init", func(t *testing.T) {
+	t.Run("Unit: test IndexHandler failed with session error on init", func(t *testing.T) {
 		indexHandler := handler.IndexHandler{
 			Session: &SessionAdapterTestFailed{
 				onInit: true,
@@ -116,7 +116,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -152,7 +152,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -199,7 +199,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -241,7 +241,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -283,7 +283,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
+		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -346,7 +346,7 @@ func TestIndexHandler(t *testing.T) {
 
 		assert.Equal(t, responseWriter.Code, 500)
 	})*/
-	//t.Run("Unit: test IndexHandler with session init failed when not submit", func(t *testing.T) {
+	// t.Run("Unit: test IndexHandler with session init failed when not submit", func(t *testing.T) {
 	//	repositoryMock := mockedRepository.ContactRepository
 	//
 	//	httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
@@ -385,14 +385,14 @@ func TestIndexHandler(t *testing.T) {
 	//		}
 	//	}()
 	//	indexHandler.IndexHandle(responseWriter, request)
-	//})
+	// })
 	t.Run("Unit: test IndexHandler with form submit failed on recaptcha confirm", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
 
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -437,7 +437,7 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		//httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
+		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -550,7 +550,7 @@ type SessionAdapterTestFailed struct {
 func (s SessionAdapterTestFailed) Init(request *http.Request) (session.Sessioner, error) {
 	_ = request
 	if s.onInit {
-		return nil, errors.New("SessionAdapterTestFailed - Init")
+		return nil, errors.New("SessionAdapterTestFailed - init")
 	}
 	return s, nil
 }
@@ -558,7 +558,7 @@ func (s SessionAdapterTestFailed) Init(request *http.Request) (session.Sessioner
 func (s SessionAdapterTestFailed) GetValue(name string) interface{} {
 	_ = name
 	if s.onGet {
-		return errors.New("SessionAdapterTestFailed - Init")
+		return errors.New("SessionAdapterTestFailed - init")
 	}
 	return name
 }

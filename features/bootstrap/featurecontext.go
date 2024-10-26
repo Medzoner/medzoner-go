@@ -63,6 +63,7 @@ func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 // InitializeScenario InitializeScenario
 func (a *APIFeature) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, s *godog.Scenario) (context.Context, error) {
+		_ = s
 		a.resetResponse()
 		return ctx, nil
 	})
@@ -95,7 +96,7 @@ func (a *APIFeature) resetResponse() {
 	a.Response = &http.Response{}
 }
 
-func (a *APIFeature) iAddHeaderEqualTo(arg1 string, arg2 string) (err error) {
+func (a *APIFeature) iAddHeaderEqualTo(arg1, arg2 string) (err error) {
 	a.Request.Header.Set(arg1, arg2)
 	return
 }

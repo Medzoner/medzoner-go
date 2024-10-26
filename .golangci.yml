@@ -1,0 +1,6 @@
+linters-settings:
+  exclude:
+    - "var/mysql/"
+
+  exclude-dirs:
+    - "var"

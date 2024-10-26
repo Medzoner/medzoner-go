@@ -29,7 +29,7 @@ services:
     networks:
       - "default"
     volumes:
-      - "./var/mysql:/var/lib/mysql"
+      - "mysql:/var/lib/mysql"
 
   mailhog:
     image: "mailhog/mailhog"
@@ -39,3 +39,7 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+volumes:
+    mysql:
+        driver: local
