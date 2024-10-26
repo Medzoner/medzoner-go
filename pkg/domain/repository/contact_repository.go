@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=../../../test/mocks/pkg/domain/repository/contact_repository.go -package=contactMock -source=./contact_repository.go
+//go:generate mockgen -destination=../../../test/mocks/pkg/domain/repository/contact_repository.go -package=domainRepositoryMock -source=./contact_repository.go
 package repository
 
 import (

@@ -27,6 +27,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/test"
 	"github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
+	"github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/service/mailer"
 	"github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 	"github.com/google/wire"
 )
@@ -81,13 +82,13 @@ func InitServerTest(mocks2 *mocks.Mocks) (*server.Server, error) {
 	templateHTML := templater.NewTemplateHTML(configConfig)
 	mockTracer := mocks2.HttpTracer
 	notFoundHandler := handler.NewNotFoundHandler(templateHTML, mockTracer)
+	mockTechnoRepository := mocks2.TechnoRepository
+	listTechnoQueryHandler := query.NewListTechnoQueryHandler(mockTechnoRepository, mockTracer)
+	mockContactRepository := mocks2.ContactRepository
+	mockMailer := mocks2.Mailer
 	useSugar := logger.NewUseSugar()
 	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
-	technoJSONRepository := repository.NewTechnoJSONRepository(zapLoggerAdapter, configConfig)
-	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository, mockTracer)
-	mockContactRepository := mocks2.ContactRepository
-	mailerSMTP := mailersmtp.NewMailerSMTP(configConfig, mockTracer)
-	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP, zapLoggerAdapter, mockTracer)
+	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mockMailer, zapLoggerAdapter, mockTracer)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler, zapLoggerAdapter, mockTracer)
 	sessionKey := session.NewSessionKey()
 	sessionerAdapter := session.NewSessionerAdapter(sessionKey)
@@ -102,7 +103,7 @@ func InitServerTest(mocks2 *mocks.Mocks) (*server.Server, error) {
 // wire.go:
 
 var (
-	InfraWiring      = wire.NewSet(config.NewConfig, logger.NewUseSugar, logger.NewLoggerAdapter, router.NewMuxRouterAdapter, server.NewServer, templater.NewTemplateHTML, session.NewSessionKey, session.NewSessionerAdapter, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, mailersmtp.NewMailerSMTP, wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)), wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)), wire.Bind(new(server.IServer), new(*server.Server)), wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)), wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)))
+	InfraWiring      = wire.NewSet(config.NewConfig, logger.NewUseSugar, logger.NewLoggerAdapter, router.NewMuxRouterAdapter, server.NewServer, templater.NewTemplateHTML, session.NewSessionKey, session.NewSessionerAdapter, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)), wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)), wire.Bind(new(server.IServer), new(*server.Server)), wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
 	DbWiring         = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)))
 	TracerWiring     = wire.NewSet(tracer.NewHttpTracer, wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)))
 	TracerMockWiring = wire.NewSet(wire.FieldsOf(
@@ -110,11 +111,20 @@ var (
 		"HttpTracer",
 	), wire.Bind(new(tracer.Tracer), new(*tracerMock.MockTracer)),
 	)
+	MailerWiring     = wire.NewSet(mailersmtp.NewMailerSMTP, wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)))
+	MailerMockWiring = wire.NewSet(wire.FieldsOf(
+		new(*mocks.Mocks),
+		"Mailer",
+	), wire.Bind(new(mailer.Mailer), new(*mailerMock.MockMailer)),
+	)
 	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)))
-	RepositoryMockWiring = wire.NewSet(repository.NewTechnoJSONRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.FieldsOf(
+	RepositoryMockWiring = wire.NewSet(wire.FieldsOf(
+		new(*mocks.Mocks),
+		"TechnoRepository",
+	), wire.Bind(new(repository2.TechnoRepository), new(*domainRepositoryMock.MockTechnoRepository)), wire.FieldsOf(
 		new(*mocks.Mocks),
 		"ContactRepository",
-	), wire.Bind(new(repository2.ContactRepository), new(*contactMock.MockContactRepository)),
+	), wire.Bind(new(repository2.ContactRepository), new(*domainRepositoryMock.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
 	UiWiring  = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)

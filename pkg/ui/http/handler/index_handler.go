@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"log"
 	"net/http"
 	"time"
@@ -121,15 +120,11 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			attribute.String("path", request.URL.Path),
 			attribute.String("method", request.Method),
 		}...))
-	defer func() {
-		span.End()
-	}()
-	correlationID := middleware.GetCorrelationID(ctx)
-	span.SetAttributes(attribute.String("correlation_id", correlationID))
+	defer span.End()
 
 	newSession, err := h.Session.Init(request)
 	if err != nil {
-		http.Error(response, "internal error", http.StatusInternalServerError)
+		http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		span.RecordError(err)
 		return
 	}
@@ -141,10 +136,8 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("submit") == "" {
 		if err = h.processRequest(request); err != nil {
-			fmt.Println("Recaptcha was incorrect; try again.")
 			newSession.SetValue("message", "Recaptcha was incorrect; try again.")
 			_ = newSession.Save(request, response)
-			request.Header.Set("X-Correlation-ID", correlationID)
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 			return
 		}
@@ -161,22 +154,20 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			if err != nil {
 				newSession.SetValue("message", "Error during send message")
 				if err = newSession.Save(request, response); err != nil {
-					http.Error(response, err.Error(), http.StatusInternalServerError)
 					span.RecordError(err)
+					http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 					return
 				}
-				request.Header.Set("X-Correlation-ID", correlationID)
 				http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 				return
 			}
 			newSession.SetValue("message", "Your Message has been sent")
 
 			if err = newSession.Save(request, response); err != nil {
-				http.Error(response, err.Error(), http.StatusInternalServerError)
 				span.RecordError(err)
+				http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				return
 			}
-			request.Header.Set("X-Correlation-ID", correlationID)
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 			return
 		}
@@ -186,7 +177,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		response.WriteHeader(statusCode)
 		newSession.SetValue("message", "")
 		if err = newSession.Save(request, response); err != nil {
-			http.Error(response, "internal error", http.StatusInternalServerError)
+			http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			span.RecordError(err)
 			return
 		}

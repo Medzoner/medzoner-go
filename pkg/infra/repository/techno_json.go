@@ -10,13 +10,13 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 )
 
-// TechnoJSONRepository TechnoJSONRepository
+// TechnoJSONRepository is implementation of TechnoRepository
 type TechnoJSONRepository struct {
 	Logger   logger.ILogger
 	RootPath string
 }
 
-// NewTechnoJSONRepository NewTechnoJSONRepository
+// NewTechnoJSONRepository is a constructor
 func NewTechnoJSONRepository(logger logger.ILogger, config config.Config) *TechnoJSONRepository {
 	return &TechnoJSONRepository{
 		Logger:   logger,
@@ -26,17 +26,15 @@ func NewTechnoJSONRepository(logger logger.ILogger, config config.Config) *Techn
 
 // FetchStack FetchStack
 func (m *TechnoJSONRepository) FetchStack() map[string]interface{} {
-	jsonFile, err := os.Open(m.RootPath + "/pkg/infra/resources/data/jobs/stacks.json")
+	jsonFile, err := os.Open(m.RootPath + "pkg/infra/resources/data/jobs/stacks.json")
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer m.deferJSONFile(jsonFile)
 
 	byteValue, _ := io.ReadAll(jsonFile)
-
 	c := make(map[string]interface{})
-	err = json.Unmarshal(byteValue, &c)
-	if err != nil {
+	if err = json.Unmarshal(byteValue, &c); err != nil {
 		panic(err)
 	}
 

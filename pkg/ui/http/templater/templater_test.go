@@ -12,7 +12,7 @@ import (
 func TestRender(t *testing.T) {
 	t.Run("Unit: test Render success", func(t *testing.T) {
 		var tpl = templater.TemplateHTML{
-			RootPath: "../../../..",
+			RootPath: "../../../../",
 		}
 		_, err := tpl.Render(
 			"index",

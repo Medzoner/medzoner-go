@@ -7,8 +7,10 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	contactMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
+	mailerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/service/mailer"
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+
+	domainRepositoryMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
 
 	domainRepository "github.com/Medzoner/medzoner-go/pkg/domain/repository"
 
@@ -44,7 +46,6 @@ var (
 		session.NewSessionerAdapter,
 		validation.NewValidatorAdapter,
 		captcha.NewRecaptchaAdapter,
-		mailersmtp.NewMailerSMTP,
 
 		wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)),
 		wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)),
@@ -53,7 +54,6 @@ var (
 		wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)),
 		wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)),
 		wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)),
-		wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)),
 	)
 	DbWiring = wire.NewSet(
 		database.NewDbSQLInstance,
@@ -72,6 +72,17 @@ var (
 		),
 		wire.Bind(new(tracer.Tracer), new(*tracerMock.MockTracer)),
 	)
+	MailerWiring = wire.NewSet(
+		mailersmtp.NewMailerSMTP,
+		wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)),
+	)
+	MailerMockWiring = wire.NewSet(
+		wire.FieldsOf(
+			new(*mocks.Mocks),
+			"Mailer",
+		),
+		wire.Bind(new(mailer.Mailer), new(*mailerMock.MockMailer)),
+	)
 	RepositoryWiring = wire.NewSet(
 		repository.NewTechnoJSONRepository,
 		repository.NewMysqlContactRepository,
@@ -80,13 +91,16 @@ var (
 		wire.Bind(new(domainRepository.ContactRepository), new(*repository.MysqlContactRepository)),
 	)
 	RepositoryMockWiring = wire.NewSet(
-		repository.NewTechnoJSONRepository,
-		wire.Bind(new(domainRepository.TechnoRepository), new(*repository.TechnoJSONRepository)),
+		wire.FieldsOf(
+			new(*mocks.Mocks),
+			"TechnoRepository",
+		),
+		wire.Bind(new(domainRepository.TechnoRepository), new(*domainRepositoryMock.MockTechnoRepository)),
 		wire.FieldsOf(
 			new(*mocks.Mocks),
 			"ContactRepository",
 		),
-		wire.Bind(new(domainRepository.ContactRepository), new(*contactMock.MockContactRepository)),
+		wire.Bind(new(domainRepository.ContactRepository), new(*domainRepositoryMock.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(
 		event.NewContactCreatedEventHandler,
@@ -106,9 +120,9 @@ func InitDbMigration() (database.DbMigration, error) {
 }
 
 func InitServer() (*server.Server, error) {
-	panic(wire.Build(InfraWiring, TracerWiring, DbWiring, RepositoryWiring, AppWiring, UiWiring))
+	panic(wire.Build(InfraWiring, TracerWiring, MailerWiring, DbWiring, RepositoryWiring, AppWiring, UiWiring))
 }
 
 func InitServerTest(mocks *mocks.Mocks) (*server.Server, error) {
-	panic(wire.Build(InfraWiring, TracerMockWiring, RepositoryMockWiring, AppWiring, UiWiring))
+	panic(wire.Build(InfraWiring, TracerMockWiring, MailerMockWiring, RepositoryMockWiring, AppWiring, UiWiring))
 }
