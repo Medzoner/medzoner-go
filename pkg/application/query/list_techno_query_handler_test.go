@@ -20,7 +20,10 @@ func TestListTechnoQueryHandler(t *testing.T) {
 
 		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
 
-		handler.Handle(context.Background(), listTechnoQuery)
+		_, err := handler.Handle(context.Background(), listTechnoQuery)
+		if err != nil {
+			t.Errorf("Error: %v", err)
+		}
 	})
 
 	t.Run("Unit: test ListTechnoQueryHandler \"experience\" success", func(t *testing.T) {
@@ -30,7 +33,11 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
-		handler.Handle(context.Background(), listTechnoQuery)
+
+		_, err := handler.Handle(context.Background(), listTechnoQuery)
+		if err != nil {
+			t.Errorf("Error: %v", err)
+		}
 	})
 
 	t.Run("Unit: test ListTechnoQueryHandler \"formation\" success", func(t *testing.T) {
@@ -40,7 +47,11 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
-		handler.Handle(context.Background(), listTechnoQuery)
+
+		_, err := handler.Handle(context.Background(), listTechnoQuery)
+		if err != nil {
+			t.Errorf("Error: %v", err)
+		}
 	})
 
 	t.Run("Unit: test ListTechnoQueryHandler \"lang\" success", func(t *testing.T) {
@@ -50,7 +61,11 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
-		handler.Handle(context.Background(), listTechnoQuery)
+
+		_, err := handler.Handle(context.Background(), listTechnoQuery)
+		if err != nil {
+			t.Errorf("Error: %v", err)
+		}
 	})
 
 	t.Run("Unit: test ListTechnoQueryHandler \"other\" success", func(t *testing.T) {
@@ -60,7 +75,11 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
-		handler.Handle(context.Background(), listTechnoQuery)
+
+		_, err := handler.Handle(context.Background(), listTechnoQuery)
+		if err != nil {
+			t.Errorf("Error: %v", err)
+		}
 	})
 
 	t.Run("Unit: test ListTechnoQueryHandler non existent type success", func(t *testing.T) {
@@ -70,24 +89,28 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
-		handler.Handle(context.Background(), listTechnoQuery)
+
+		_, err := handler.Handle(context.Background(), listTechnoQuery)
+		if err != nil {
+			t.Errorf("Error: %v", err)
+		}
 	})
 }
 
 type TechnoRepositoryTest struct{}
 
-func (m *TechnoRepositoryTest) FetchStack() map[string]interface{} {
-	return map[string]interface{}{}
+func (m *TechnoRepositoryTest) FetchStack() (map[string]interface{}, error) {
+	return map[string]interface{}{}, nil
 }
-func (m *TechnoRepositoryTest) FetchExperience() map[string]interface{} {
-	return map[string]interface{}{}
+func (m *TechnoRepositoryTest) FetchExperience() (map[string]interface{}, error) {
+	return map[string]interface{}{}, nil
 }
-func (m *TechnoRepositoryTest) FetchFormation() map[string]interface{} {
-	return map[string]interface{}{}
+func (m *TechnoRepositoryTest) FetchFormation() (map[string]interface{}, error) {
+	return map[string]interface{}{}, nil
 }
-func (m *TechnoRepositoryTest) FetchLang() map[string]interface{} {
-	return map[string]interface{}{}
+func (m *TechnoRepositoryTest) FetchLang() (map[string]interface{}, error) {
+	return map[string]interface{}{}, nil
 }
-func (m *TechnoRepositoryTest) FetchOther() map[string]interface{} {
-	return map[string]interface{}{}
+func (m *TechnoRepositoryTest) FetchOther() (map[string]interface{}, error) {
+	return map[string]interface{}{}, nil
 }

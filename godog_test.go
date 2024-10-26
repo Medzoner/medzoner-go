@@ -26,24 +26,29 @@ func init() {
 }
 
 func TestFeatures(t *testing.T) {
-	mockedRepository := mocks.New(t)
+	mocked := mocks.New(t)
+	mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()
+	mocked.HttpTracer.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().AnyTimes()
+	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
+	mocked.TechnoRepository.EXPECT().FetchStack().Return(map[string]interface{}{}, nil).AnyTimes()
 
-	mockedRepository.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-	mockedRepository.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()
-	mockedRepository.HttpTracer.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().AnyTimes()
-	srv, err := dependency.InitServerTest(&mockedRepository)
+	_ = os.Setenv("APP_ENV", "test")
+	_ = os.Setenv("DEBUG", "true")
+	srv, err := dependency.InitServerTest(&mocked)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	opts := godog.Options{
-		Output: colors.Colored(os.Stdout),
-		Format: "pretty",
-		Paths:  []string{"./features"},
+		Output:      colors.Colored(os.Stdout),
+		Format:      "pretty",
+		Paths:       []string{"./features"},
+		Concurrency: 4,
 	}
-
-	featureCtx := bootstrap.New(*srv)
+	featureCtx := bootstrap.New(*srv, mocked)
 	suite := godog.TestSuite{
 		Name: "medzoner",
 		TestSuiteInitializer: func(suiteContext *godog.TestSuiteContext) {
@@ -55,7 +60,9 @@ func TestFeatures(t *testing.T) {
 		Options: &opts,
 	}
 
-	if suite.Run() != 0 {
+	status := suite.Run()
+
+	if status != 0 {
 		t.Fatal("non-zero status returned, failed to run feature tests")
 	}
 }

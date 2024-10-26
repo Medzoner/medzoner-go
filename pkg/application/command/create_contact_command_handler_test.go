@@ -79,7 +79,7 @@ func (r ContactRepositoryTest) Save(ctx context.Context, contact entity.Contact)
 
 type CreateContactEventHandlerTest struct{}
 
-func (c CreateContactEventHandlerTest) Handle(ctx context.Context, event event.Event) error {
+func (c CreateContactEventHandlerTest) Publish(ctx context.Context, event event.Event) error {
 	_ = ctx
 	_ = event
 	return nil

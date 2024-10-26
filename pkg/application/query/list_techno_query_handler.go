@@ -3,9 +3,7 @@ package query
 import (
 	"context"
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
-	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
-	"go.opentelemetry.io/otel/attribute"
 )
 
 // ListTechnoQueryHandler ListTechnoQueryHandler
@@ -23,18 +21,19 @@ func NewListTechnoQueryHandler(technoRepository repository.TechnoRepository, tra
 }
 
 // Handle handles ListTechnoQuery and return map[string]interface{}
-func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQuery) map[string]interface{} {
-	_, iSpan := l.Tracer.Start(ctx, "ListTechnoQueryHandler.Handle")
-	defer func() {
-		iSpan.End()
-	}()
-	correlationID := middleware.GetCorrelationID(ctx)
-	iSpan.SetAttributes(attribute.String("correlation_id", correlationID))
+func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQuery) (map[string]interface{}, error) {
+	_, iSpan := l.Tracer.Start(ctx, "ListTechnoQueryHandler.Publish")
+	defer iSpan.End()
 
 	resp := map[string]interface{}{}
 	if query.Type == "stack" {
-		resp = l.TechnoRepository.FetchStack()
+		resp, err := l.TechnoRepository.FetchStack()
+		if err != nil {
+			iSpan.RecordError(err)
+			return nil, err
+		}
+		return resp, nil
 	}
 
-	return resp
+	return resp, nil
 }

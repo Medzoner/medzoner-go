@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"github.com/golang/mock/gomock"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -14,6 +12,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
@@ -21,21 +20,81 @@ import (
 	mocks "github.com/Medzoner/medzoner-go/test"
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 
+	"github.com/golang/mock/gomock"
 	metricNoop "go.opentelemetry.io/otel/metric/noop"
 	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/assert"
 )
 
+// func TestIntegrationIndexHandler(t *testing.T) {
+//	mocked := mocks.New(t)
+//	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+//	mocked.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()
+//	mocked.HttpTracer.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().AnyTimes()
+//	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
+//	mocked.TechnoRepository.EXPECT().FetchStack().Return(map[string]interface{}{}).AnyTimes()
+//	_ = os.Setenv("APP_ENV", "test")
+//	_ = os.Setenv("DEBUG", "true")
+//	srv, err := dependency.InitServerTest(&mocked)
+//	if err != nil {
+//		t.Error(err)
+//	}
+//
+//	testCase := []struct {
+//		name         string
+//		method       string
+//		url          string
+//		body         url.Values
+//		expectedCode int
+//		mocks        func()
+//	}{
+//		{
+//			name:         "Unit: test IndexHandler success",
+//			method:       http.MethodGet,
+//			url:          "/",
+//			body:         url.Values{},
+//			expectedCode: http.StatusOK,
+//			mocks:        func() {},
+//		},
+//		{
+//			name:   "Unit: test IndexHandler with form submit success",
+//			method: http.MethodPost,
+//			url:    "/",
+//			body: url.Values{
+//				"name":               {"a name"},
+//				"email":              {""},
+//				"message":            {"a message"},
+//				"g-captcha-response": {"captcha"},
+//				"submit":             {""},
+//			},
+//			mocks: func() {
+//				//mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil)
+//			},
+//			expectedCode: http.StatusOK,
+//		},
+//	}
+//
+//	for _, tc := range testCase {
+//		t.Run(tc.name, func(t *testing.T) {
+//			tc.mocks()
+//			recorder := httptest.NewRecorder()
+//			request := httptest.NewRequest(tc.method, tc.url, nil)
+//			request.Form = tc.body
+//			srv.Router.ServeHTTP(recorder, request)
+//
+//			assert.Equal(t, recorder.Code, tc.expectedCode)
+//		})
+//	}
+//}
+
 func TestIndexHandler(t *testing.T) {
 	mockedRepository := mocks.New(t)
 	t.Run("Unit: test IndexHandler success", func(t *testing.T) {
 		repositoryMock := mockedRepository.ContactRepository
-		//repositoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return()
 
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -500,7 +559,7 @@ func (t *TemplaterTest) Render(name string, view interface{}, response http.Resp
 
 type ContactCreatedEventHandlerTest struct{}
 
-func (h *ContactCreatedEventHandlerTest) Handle(ctx context.Context, event event.Event) error {
+func (h *ContactCreatedEventHandlerTest) Publish(ctx context.Context, event event.Event) error {
 	_ = ctx
 	fmt.Println(event)
 	return nil

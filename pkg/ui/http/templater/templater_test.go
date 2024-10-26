@@ -3,7 +3,6 @@ package templater_test
 import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"gotest.tools/assert"
-	"log"
 	"net/http/httptest"
 	"os"
 	"testing"
@@ -12,7 +11,7 @@ import (
 func TestRender(t *testing.T) {
 	t.Run("Unit: test Render success", func(t *testing.T) {
 		var tpl = templater.TemplateHTML{
-			RootPath: "../../../..",
+			RootPath: "../../../../",
 		}
 		_, err := tpl.Render(
 			"index",
@@ -33,7 +32,7 @@ func TestRender(t *testing.T) {
 		}
 		err := os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0000)
 		if err != nil {
-			log.Fatal(err)
+			t.Error(err)
 		}
 
 		_, err = tpl.Render(
@@ -48,9 +47,9 @@ func TestRender(t *testing.T) {
 		if err == nil {
 			assert.Equal(t, true, false)
 		}
-		err = os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0700)
+		err = os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0600)
 		if err != nil {
-			log.Fatal(err)
+			t.Error(err)
 		}
 	})
 	t.Run("Unit: test Render failed with bad tpl name", func(t *testing.T) {

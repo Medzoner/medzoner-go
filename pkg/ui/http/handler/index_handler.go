@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"log"
 	"net/http"
 	"time"
@@ -121,30 +120,29 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			attribute.String("path", request.URL.Path),
 			attribute.String("method", request.Method),
 		}...))
-	defer func() {
-		span.End()
-	}()
-	correlationID := middleware.GetCorrelationID(ctx)
-	span.SetAttributes(attribute.String("correlation_id", correlationID))
+	defer span.End()
 
 	newSession, err := h.Session.Init(request)
 	if err != nil {
-		http.Error(response, "internal error", http.StatusInternalServerError)
+		http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		span.RecordError(err)
 		return
 	}
 
-	view := h.initView(ctx, request)
+	view, err := h.initView(ctx, request)
+	if err != nil {
+		http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		span.RecordError(err)
+		return
+	}
 	if newSession.GetValue("message") != nil {
 		view.FormMessage = newSession.GetValue("message").(string)
 	}
 	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("submit") == "" {
 		if err = h.processRequest(request); err != nil {
-			fmt.Println("Recaptcha was incorrect; try again.")
 			newSession.SetValue("message", "Recaptcha was incorrect; try again.")
 			_ = newSession.Save(request, response)
-			request.Header.Set("X-Correlation-ID", correlationID)
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 			return
 		}
@@ -161,22 +159,20 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			if err != nil {
 				newSession.SetValue("message", "Error during send message")
 				if err = newSession.Save(request, response); err != nil {
-					http.Error(response, err.Error(), http.StatusInternalServerError)
 					span.RecordError(err)
+					http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 					return
 				}
-				request.Header.Set("X-Correlation-ID", correlationID)
 				http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 				return
 			}
 			newSession.SetValue("message", "Your Message has been sent")
 
 			if err = newSession.Save(request, response); err != nil {
-				http.Error(response, err.Error(), http.StatusInternalServerError)
 				span.RecordError(err)
+				http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				return
 			}
-			request.Header.Set("X-Correlation-ID", correlationID)
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 			return
 		}
@@ -186,7 +182,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		response.WriteHeader(statusCode)
 		newSession.SetValue("message", "")
 		if err = newSession.Save(request, response); err != nil {
-			http.Error(response, "internal error", http.StatusInternalServerError)
+			http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			span.RecordError(err)
 			return
 		}
@@ -199,16 +195,22 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	}
 }
 
-func (h *IndexHandler) initView(ctx context.Context, request *http.Request) IndexView {
+func (h *IndexHandler) initView(ctx context.Context, request *http.Request) (IndexView, error) {
+	stacks, err := h.ListTechnoQueryHandler.Handle(ctx, query.ListTechnoQuery{Type: "stack"})
+	if err != nil {
+		h.Logger.Error(fmt.Sprintln(err))
+		return IndexView{}, fmt.Errorf("error during fetch stack: %w", err)
+	}
+
 	return IndexView{
 		Locale:    "fr",
 		PageTitle: "MedZoner.com",
 		TorHost:   request.Header.Get("TOR-HOST"),
 		TechnoView: TechnoView{
-			Stacks: h.ListTechnoQueryHandler.Handle(ctx, query.ListTechnoQuery{Type: "stack"}),
+			Stacks: stacks,
 		},
 		RecaptchaSiteKey: h.RecaptchaSiteKey,
 		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
 		FormMessage:      "",
-	}
+	}, nil
 }

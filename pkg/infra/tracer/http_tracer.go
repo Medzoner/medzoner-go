@@ -3,6 +3,8 @@ package tracer
 import (
 	"context"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
+	"go.opentelemetry.io/otel/attribute"
 	"log"
 	"log/slog"
 	"os"
@@ -202,10 +204,10 @@ func (t HttpTracer) ShutdownMeter(ctx context.Context) error {
 }
 
 func (t HttpTracer) Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span) {
-	return t.Tracer.Start(
-		ctx,
-		spanName,
-		opts...)
+	ctx, span := t.Tracer.Start(ctx, spanName, opts...)
+	correlationID := middleware.GetCorrelationID(ctx)
+	span.SetAttributes(attribute.String("correlation_id", correlationID))
+	return ctx, span
 }
 
 func (t HttpTracer) Int64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error) {

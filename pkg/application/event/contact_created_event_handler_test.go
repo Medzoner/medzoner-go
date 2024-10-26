@@ -43,7 +43,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 			Tracer: httpTracerMock,
 		}
 
-		err := handler.Handle(context.Background(), contactCreatedEvent)
+		err := handler.Publish(context.Background(), contactCreatedEvent)
 		assert.Equal(t, err, nil)
 		assert.Equal(t, loggerTest.LogMessages[0], "Mail was send.")
 		assert.Equal(t, mailer.isSend, true)
@@ -58,7 +58,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		loggerTest := &LoggerTest{}
 		handler := event.NewContactCreatedEventHandler(mailer, loggerTest, httpTracerMock)
 
-		err := handler.Handle(context.Background(), BadEvent{})
+		err := handler.Publish(context.Background(), BadEvent{})
 		assert.Equal(t, err, nil)
 		assert.Equal(t, loggerTest.LogMessages[0], "Error bad event type.")
 		assert.Equal(t, mailer.isSend, false)
@@ -89,7 +89,7 @@ type MailerTest struct {
 	isSend   bool
 }
 
-func (m *MailerTest) Send(ctx context.Context, view interface{}) (bool, error) {
+func (m *MailerTest) Send(ctx context.Context, view entity.Contact) (bool, error) {
 	_ = ctx
 	m.isSend = true
 	_, err := fmt.Println(reflect.TypeOf(view))
