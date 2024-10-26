@@ -87,7 +87,7 @@ func NewIndexHandler(
 		Recaptcha:                   recaptcha,
 		Tracer:                      tracer,
 		Logger:                      Logger,
-		Debug:                       conf.Debug(),
+		Debug:                       conf.DebugMode,
 	}
 }
 
