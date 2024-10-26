@@ -55,12 +55,12 @@ func New(srv server.Server, mocked mocks.Mocks) *APIFeature {
 func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 	ctx.BeforeSuite(func() {
 		fmt.Println("BeforeSuite", ctx)
-		//a.resetBdd()
+		// a.resetBdd()
 	})
 	ctx.AfterSuite(func() {
 		fmt.Println("AfterSuite", ctx)
-		//mg := wiring.InitDbMigration()
-		//mg.MigrateDown()
+		// mg := wiring.InitDbMigration()
+		// mg.MigrateDown()
 	})
 }
 

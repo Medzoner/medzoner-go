@@ -129,7 +129,12 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		return
 	}
 
-	view := h.initView(ctx, request)
+	view, err := h.initView(ctx, request)
+	if err != nil {
+		http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		span.RecordError(err)
+		return
+	}
 	if newSession.GetValue("message") != nil {
 		view.FormMessage = newSession.GetValue("message").(string)
 	}
@@ -190,16 +195,22 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	}
 }
 
-func (h *IndexHandler) initView(ctx context.Context, request *http.Request) IndexView {
+func (h *IndexHandler) initView(ctx context.Context, request *http.Request) (IndexView, error) {
+	stacks, err := h.ListTechnoQueryHandler.Handle(ctx, query.ListTechnoQuery{Type: "stack"})
+	if err != nil {
+		h.Logger.Error(fmt.Sprintln(err))
+		return IndexView{}, fmt.Errorf("error during fetch stack: %w", err)
+	}
+
 	return IndexView{
 		Locale:    "fr",
 		PageTitle: "MedZoner.com",
 		TorHost:   request.Header.Get("TOR-HOST"),
 		TechnoView: TechnoView{
-			Stacks: h.ListTechnoQueryHandler.Handle(ctx, query.ListTechnoQuery{Type: "stack"}),
+			Stacks: stacks,
 		},
 		RecaptchaSiteKey: h.RecaptchaSiteKey,
 		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
 		FormMessage:      "",
-	}
+	}, nil
 }

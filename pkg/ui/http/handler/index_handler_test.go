@@ -26,7 +26,7 @@ import (
 	"gotest.tools/assert"
 )
 
-//func TestIntegrationIndexHandler(t *testing.T) {
+// func TestIntegrationIndexHandler(t *testing.T) {
 //	mocked := mocks.New(t)
 //	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 //	mocked.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()

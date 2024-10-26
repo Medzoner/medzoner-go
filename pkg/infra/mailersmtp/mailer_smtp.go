@@ -3,6 +3,7 @@ package mailersmtp
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
@@ -10,10 +11,8 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"go.opentelemetry.io/otel/attribute"
 	"html/template"
-	"math/rand"
 	"net/smtp"
 	"strconv"
-	"time"
 )
 
 // MailerSMTP MailerSMTP
@@ -70,8 +69,8 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 		return false, fmt.Errorf("parse template failed: %w", err)
 	}
 
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	messageID := strconv.FormatInt(r.Int63(), 10) + "@" + m.Host
+	r, _ := rand.Read(nil)
+	messageID := strconv.FormatInt(int64(r), 10) + "@" + m.Host
 	msg := []byte("From: " + m.User + " <" + m.User + ">" + "\r\n" +
 		"To: " + m.User + "\r\n" +
 		"Subject: " + "Message de [www.medzoner.com]" + "\r\n\r\n" +

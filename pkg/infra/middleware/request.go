@@ -33,6 +33,7 @@ func CorrelationMiddleware(next http.Handler) http.Handler {
 
 		if w.Header().Get("Status") == string(rune(http.StatusInternalServerError)) {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
 		}
 	})
 }

@@ -34,11 +34,12 @@ func (m *MockTechnoRepository) EXPECT() *MockTechnoRepositoryMockRecorder {
 }
 
 // FetchStack mocks base method.
-func (m *MockTechnoRepository) FetchStack() map[string]interface{} {
+func (m *MockTechnoRepository) FetchStack() (map[string]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchStack")
 	ret0, _ := ret[0].(map[string]interface{})
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // FetchStack indicates an expected call of FetchStack.

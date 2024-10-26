@@ -32,7 +32,7 @@ func TestFeatures(t *testing.T) {
 	mocked.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()
 	mocked.HttpTracer.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().AnyTimes()
 	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
-	mocked.TechnoRepository.EXPECT().FetchStack().Return(map[string]interface{}{}).AnyTimes()
+	mocked.TechnoRepository.EXPECT().FetchStack().Return(map[string]interface{}{}, nil).AnyTimes()
 
 	_ = os.Setenv("APP_ENV", "test")
 	_ = os.Setenv("DEBUG", "true")
