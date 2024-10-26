@@ -37,7 +37,7 @@ type DatabaseConfig struct {
 func NewConfig() (Config, error) {
 	conf, err := parseEnv()
 	if err != nil {
-		return Config{}, err
+		return conf, err
 	}
 	pwd, err := os.Getwd()
 	if err != nil {
