@@ -15,7 +15,7 @@ type Config struct {
 	DebugMode          bool           `env:"DEBUG" envDefault:"false"`
 	Options            []string       `env:"OPTIONS" envDefault:"[]"`
 	APIPort            int            `env:"API_PORT" envDefault:"8002"`
-	Database           DatabaseConfig `env:"DATABASE_"`
+	Database           DatabaseConfig `envPrefix:"DATABASE_"`
 	MailerUser         string         `env:"MAILER_USER" envDefault:"medzoner@xxx.fake"`
 	MailerPassword     string         `env:"MAILER_PASSWORD" envDefault:"xxxxxxxxxxxx"`
 	MailerHost         string         `env:"MAILER_HOST" envDefault:"smtp.gmail.com"`
@@ -55,9 +55,4 @@ func parseEnv() (Config, error) {
 		return *cfg, err
 	}
 	return *cfg, nil
-}
-
-// Debug Debug
-func (c *Config) Debug() bool {
-	return c.DebugMode
 }

@@ -13,13 +13,13 @@ import (
 
 // MysqlContactRepository MysqlContactRepository
 type MysqlContactRepository struct {
-	DbInstance database.IDbInstance
+	DbInstance database.DbInstantiator
 	Logger     logger.ILogger
 	Tracer     tracer.Tracer
 }
 
 // NewMysqlContactRepository NewMysqlContactRepository
-func NewMysqlContactRepository(dbInstance database.IDbInstance, logger logger.ILogger, tracer tracer.Tracer) *MysqlContactRepository {
+func NewMysqlContactRepository(dbInstance database.DbInstantiator, logger logger.ILogger, tracer tracer.Tracer) *MysqlContactRepository {
 	return &MysqlContactRepository{
 		DbInstance: dbInstance,
 		Logger:     logger,

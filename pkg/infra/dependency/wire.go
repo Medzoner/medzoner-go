@@ -58,7 +58,7 @@ var (
 	DbWiring = wire.NewSet(
 		database.NewDbSQLInstance,
 
-		wire.Bind(new(database.IDbInstance), new(*database.DbSQLInstance)),
+		wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)),
 	)
 	TracerWiring = wire.NewSet(
 		tracer.NewHttpTracer,

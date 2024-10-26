@@ -14,13 +14,13 @@ import (
 )
 
 type DbMigration struct {
-	DbInstance   IDbInstance
+	DbInstance   DbInstantiator
 	RootPath     string
 	MigrationDir *string
 }
 
 // NewDbMigration is a function that returns a new DbMigration
-func NewDbMigration(dbInstance IDbInstance, conf config.Config) DbMigration {
+func NewDbMigration(dbInstance DbInstantiator, conf config.Config) DbMigration {
 	db := DbMigration{
 		DbInstance: dbInstance,
 		RootPath:   string(conf.RootPath),
@@ -36,14 +36,15 @@ func (d *DbMigration) MigrateUp() error {
 	if err != nil {
 		return fmt.Errorf("database instantiate failed: %w", err)
 	}
-	err = db.Up()
-	if err != nil {
+
+	if err = db.Up(); err != nil {
 		return fmt.Errorf("database migration up failed: %w", err)
 	}
-	err = d.checkMigrateErrors(err)
-	if err != nil {
+
+	if err = d.checkMigrateErrors(err); err != nil {
 		return fmt.Errorf("database checkMigrateErrors failed: %w", err)
 	}
+
 	log.Println("Database migrated ok: up")
 
 	return nil
@@ -55,12 +56,12 @@ func (d *DbMigration) MigrateDown() error {
 	if err != nil {
 		return fmt.Errorf("database instantiate failed: %w", err)
 	}
-	err = db.Down()
-	if err != nil {
+
+	if err = db.Down(); err != nil {
 		return fmt.Errorf("database migration down failed: %w", err)
 	}
-	err = d.checkMigrateErrors(err)
-	if err != nil {
+
+	if err = d.checkMigrateErrors(err); err != nil {
 		return fmt.Errorf("database checkMigrateErrors failed: %w", err)
 	}
 
@@ -71,7 +72,7 @@ func (d *DbMigration) MigrateDown() error {
 
 func (d *DbMigration) checkMigrateErrors(err error) error {
 	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return fmt.Errorf("an error occurred while syncing the database.. %w", err)
+		return fmt.Errorf("an error occurred while syncing the database: %s. %w", *d.MigrationDir, err)
 	}
 	return nil
 }
