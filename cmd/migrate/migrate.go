@@ -2,6 +2,7 @@ package main
 
 import (
 	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
+	"log"
 )
 
 func main() {
@@ -10,5 +11,8 @@ func main() {
 		panic(err)
 	}
 	mg.DbInstance.CreateDatabase(mg.DbInstance.GetDatabaseName())
-	mg.MigrateUp()
+	err = mg.MigrateUp()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

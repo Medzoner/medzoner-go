@@ -12,7 +12,6 @@ import (
 )
 
 type IRouter interface {
-	Handle(path string)
 	HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route
 	PathPrefix(tpl string) *mux.Route
 	Use(mwf ...mux.MiddlewareFunc)
@@ -37,11 +36,6 @@ func NewMuxRouterAdapter(
 	}
 	InitRoutes(rt, notFoundHandler, indexHandler)
 	return rt
-}
-
-// Handle Handle
-func (a MuxRouterAdapter) Handle(path string) {
-	http.Handle(path, a)
 }
 
 // HandleFunc HandleFunc
@@ -72,6 +66,7 @@ func (a MuxRouterAdapter) ServeHTTP(writer http.ResponseWriter, request *http.Re
 func InitRoutes(a IRouter, notFoundHandler *handler.NotFoundHandler, indexHandler *handler.IndexHandler) {
 	a.SetNotFoundHandler(notFoundHandler.Handle)
 	a.HandleFunc("/", indexHandler.IndexHandle).Methods("GET", "POST")
+	a.Use(middleware.CorrelationMiddleware)
 	a.Use(middleware.NewAPIMiddleware().Middleware)
 	fs := http.FileServer(http.Dir("."))
 

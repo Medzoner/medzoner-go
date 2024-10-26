@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
-	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+	"github.com/golang/mock/gomock"
+	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/assert"
 	"reflect"
 	"testing"
@@ -15,15 +17,18 @@ import (
 )
 
 func TestContactCreatedEventHandler(t *testing.T) {
-	contact := &ContactTest{}
-	contact.
-		SetName("a name").
-		SetEmail(customtype.NullString{String: "an email", Valid: true}).
-		SetMessage("the message").
-		SetDateAdd(time.Time{}).
-		SetID(1)
+	contact := entity.Contact{
+		Name:    "a name",
+		Email:   customtype.NullString{String: "an email", Valid: true},
+		Message: "the message",
+		DateAdd: time.Time{},
+		ID:      1,
+	}
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
+
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		contactCreatedEvent := event.ContactCreatedEvent{
 			Contact: contact,
 		}
@@ -35,9 +40,11 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		handler := event.ContactCreatedEventHandler{
 			Mailer: mailer,
 			Logger: loggerTest,
+			Tracer: httpTracerMock,
 		}
 
-		handler.Handle(context.Background(), contactCreatedEvent)
+		err := handler.Handle(context.Background(), contactCreatedEvent)
+		assert.Equal(t, err, nil)
 		assert.Equal(t, loggerTest.LogMessages[0], "Mail was send.")
 		assert.Equal(t, mailer.isSend, true)
 	})
@@ -45,11 +52,15 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		mailer := &MailerTest{
 			isSend: false,
 		}
-		loggerTest := &LoggerTest{}
-		handler := event.NewContactCreatedEventHandler(mailer, loggerTest)
 
-		handler.Handle(context.Background(), BadEvent{})
-		assert.Equal(t, loggerTest.LogMessages[0], "Error during send mail.")
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		loggerTest := &LoggerTest{}
+		handler := event.NewContactCreatedEventHandler(mailer, loggerTest, httpTracerMock)
+
+		err := handler.Handle(context.Background(), BadEvent{})
+		assert.Equal(t, err, nil)
+		assert.Equal(t, loggerTest.LogMessages[0], "Error bad event type.")
 		assert.Equal(t, mailer.isSend, false)
 	})
 }
@@ -70,14 +81,6 @@ func (l LoggerTest) New() (logger.ILogger, error) {
 	return &LoggerTest{}, nil
 }
 
-type ContactTest struct {
-	entity.Contact
-}
-
-func (*ContactTest) New() model.IContact {
-	return &ContactTest{}
-}
-
 type MailerTest struct {
 	User     string
 	Password string
@@ -86,7 +89,8 @@ type MailerTest struct {
 	isSend   bool
 }
 
-func (m *MailerTest) Send(view interface{}) (bool, error) {
+func (m *MailerTest) Send(ctx context.Context, view interface{}) (bool, error) {
+	_ = ctx
 	m.isSend = true
 	_, err := fmt.Println(reflect.TypeOf(view))
 	if err != nil {

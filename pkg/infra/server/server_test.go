@@ -20,9 +20,9 @@ func TestServer(t *testing.T) {
 		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
 		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
 		httpTracerMock.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
-		srv := server.NewServer(&config.Config{APIPort: 8123}, RouterMock{}, &LoggerTest{}, httpTracerMock)
+		srv := server.NewServer(config.Config{APIPort: 8123}, RouterMock{}, &LoggerTest{}, httpTracerMock)
 		go func() {
-			_ = srv.ListenAndServe()
+			srv.Start(context.Background())
 		}()
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer func() {
@@ -32,15 +32,6 @@ func TestServer(t *testing.T) {
 		if err := srv.Shutdown(ctx); err != nil {
 			log.Fatalf("Server Shutdown Failed:%+v", err)
 		}
-	})
-	t.Run("Unit: test Server failed", func(t *testing.T) {
-		srv := server.Server{}
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("The code did not panic")
-			}
-		}()
-		_ = srv.ListenAndServe()
 	})
 }
 

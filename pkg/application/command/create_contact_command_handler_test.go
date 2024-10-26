@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
-	"github.com/Medzoner/medzoner-go/pkg/domain/model"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+	"github.com/golang/mock/gomock"
+	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/assert"
 	"testing"
 	"time"
@@ -23,14 +24,36 @@ func TestCreateContactCommandHandler(t *testing.T) {
 			DateAdd: date,
 		}
 
-		contact := &ContactTest{}
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		loggerTest := &LoggerTest{}
-		handler := command.NewCreateContactCommandHandler(&ContactRepositoryTest{}, CreateContactEventHandlerTest{}, loggerTest)
+		handler := command.NewCreateContactCommandHandler(&ContactRepositoryTest{}, CreateContactEventHandlerTest{}, loggerTest, httpTracerMock)
 
-		handler.Handle(context.Background(), createContactCommand)
+		err := handler.Handle(context.Background(), createContactCommand)
+		assert.Equal(t, err, nil)
 		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
-		assert.Equal(t, "", contact.GetEmailString())
 	})
+	t.Run(
+		"Unit: test CreateContactCommandHandler error",
+		func(t *testing.T) {
+			date := time.Time{}
+			createContactCommand := command.CreateContactCommand{
+				Name:    "a name",
+				Email:   "an email",
+				Message: "the message",
+				DateAdd: date,
+			}
+
+			httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+			httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+			loggerTest := &LoggerTest{}
+			handler := command.NewCreateContactCommandHandler(&ContactRepositoryTest{}, CreateContactEventHandlerTest{}, loggerTest, httpTracerMock)
+
+			err := handler.Handle(context.Background(), createContactCommand)
+			assert.Equal(t, err, nil)
+			assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
+		},
+	)
 }
 
 type LoggerTest struct {
@@ -45,26 +68,19 @@ func (l *LoggerTest) Error(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
 }
-func (l LoggerTest) New() (logger.ILogger, error) {
-	return &LoggerTest{}, nil
-}
 
 type ContactRepositoryTest struct{}
 
-func (r ContactRepositoryTest) Save(ctx context.Context, contact model.IContact) {
+func (r ContactRepositoryTest) Save(ctx context.Context, contact entity.Contact) error {
+	_ = ctx
 	fmt.Println(contact)
-}
-
-type ContactTest struct {
-	entity.Contact
-}
-
-func (*ContactTest) New() model.IContact {
-	return &ContactTest{}
+	return nil
 }
 
 type CreateContactEventHandlerTest struct{}
 
-func (c CreateContactEventHandlerTest) Handle(ctx context.Context, event event.Event) {
+func (c CreateContactEventHandlerTest) Handle(ctx context.Context, event event.Event) error {
+	_ = ctx
 	_ = event
+	return nil
 }

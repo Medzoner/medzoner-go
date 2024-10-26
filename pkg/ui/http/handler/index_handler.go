@@ -3,11 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-	otelTrace "go.opentelemetry.io/otel/trace"
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"log"
 	"net/http"
 	"time"
@@ -15,56 +11,17 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
+	otelTrace "go.opentelemetry.io/otel/trace"
 )
-
-// IndexHandler IndexHandler
-type IndexHandler struct {
-	Template                    templater.Templater
-	ListTechnoQueryHandler      query.ListTechnoQueryHandler
-	RecaptchaSiteKey            string
-	CreateContactCommandHandler command.CreateContactCommandHandler
-	Session                     session.Sessioner
-	Validation                  validation.MzValidator
-	Recaptcha                   captcha.Captcher
-	Tracer                      tracer.Tracer
-	Logger                      logger.ILogger
-}
-
-var runCount metric.Int64Counter
-var err error
-
-// NewIndexHandler NewIndexHandler
-func NewIndexHandler(
-	template templater.Templater,
-	listTechnoQueryHandler query.ListTechnoQueryHandler,
-	conf config.IConfig,
-	createContactCommandHandler command.CreateContactCommandHandler,
-	session session.Sessioner,
-	validation validation.MzValidator,
-	recaptcha captcha.Captcher,
-	tracer tracer.Tracer,
-	Logger logger.ILogger,
-) *IndexHandler {
-	runCount, err = tracer.Int64Counter("run", metric.WithDescription("The number of times the iteration ran"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	return &IndexHandler{
-		Template:                    template,
-		ListTechnoQueryHandler:      listTechnoQueryHandler,
-		RecaptchaSiteKey:            conf.GetRecaptchaSiteKey(),
-		CreateContactCommandHandler: createContactCommandHandler,
-		Session:                     session,
-		Validation:                  validation,
-		Recaptcha:                   recaptcha,
-		Tracer:                      tracer,
-		Logger:                      Logger,
-	}
-}
 
 // IndexView IndexView
 type IndexView struct {
@@ -78,6 +35,62 @@ type IndexView struct {
 	FormMessage      string
 }
 
+// TechnoView TechnoView
+type TechnoView struct {
+	Locale      string
+	PageTitle   string
+	Stacks      interface{}
+	Experiences interface{}
+	Formations  interface{}
+	Langs       interface{}
+	Others      interface{}
+	TorHost     string
+}
+
+// IndexHandler IndexHandler
+type IndexHandler struct {
+	Template                    templater.Templater
+	ListTechnoQueryHandler      query.ListTechnoQueryHandler
+	RecaptchaSiteKey            string
+	CreateContactCommandHandler command.CreateContactCommandHandler
+	Session                     session.Sessioner
+	Validation                  validation.MzValidator
+	Recaptcha                   captcha.Captcher
+	Tracer                      tracer.Tracer
+	Logger                      logger.ILogger
+	Debug                       bool
+}
+
+// NewIndexHandler NewIndexHandler
+func NewIndexHandler(
+	template templater.Templater,
+	listTechnoQueryHandler query.ListTechnoQueryHandler,
+	conf config.Config,
+	createContactCommandHandler command.CreateContactCommandHandler,
+	session session.Sessioner,
+	validation validation.MzValidator,
+	recaptcha captcha.Captcher,
+	tracer tracer.Tracer,
+	Logger logger.ILogger,
+) *IndexHandler {
+	_, err := tracer.Int64Counter("run", metric.WithDescription("The number of times the iteration ran"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &IndexHandler{
+		Template:                    template,
+		ListTechnoQueryHandler:      listTechnoQueryHandler,
+		RecaptchaSiteKey:            conf.RecaptchaSiteKey,
+		CreateContactCommandHandler: createContactCommandHandler,
+		Session:                     session,
+		Validation:                  validation,
+		Recaptcha:                   recaptcha,
+		Tracer:                      tracer,
+		Logger:                      Logger,
+		Debug:                       conf.Debug(),
+	}
+}
+
 func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 	recaptchaResponse, responseFound := request.Form["g-captcha-response"]
 	if responseFound {
@@ -86,7 +99,7 @@ func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 			log.Println("captcha server error", err)
 			return err
 		}
-		if !result {
+		if !result && !h.Debug {
 			return fmt.Errorf("captcha was incorrect; try again")
 		}
 	}
@@ -95,64 +108,43 @@ func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 
 // IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
-	contextIndex, cancel := context.WithTimeout(request.Context(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(request.Context(), 60*time.Second)
 	defer cancel()
 
-	// Attributes represent additional key-value descriptors that can be bound
-	// to a metric observer or recorder.
-	commonAttrs := []attribute.KeyValue{
-		attribute.String("attrA", "chocolate"),
-		attribute.String("attrB", "raspberry"),
-		attribute.String("attrC", "vanilla"),
-	}
-
-	// Work begins
 	ctx, span := h.Tracer.Start(
-		contextIndex,
-		"CollectorExporter-Example",
-		otelTrace.WithAttributes(commonAttrs...))
+		ctx,
+		"IndexHandler.IndexHandle",
+		otelTrace.WithSpanKind(otelTrace.SpanKindServer),
+		otelTrace.WithNewRoot(),
+		otelTrace.WithAttributes([]attribute.KeyValue{
+			attribute.String("host", request.Host),
+			attribute.String("path", request.URL.Path),
+			attribute.String("method", request.Method),
+		}...))
 	defer func() {
 		span.End()
 	}()
-	for i := 0; i < 10; i++ {
-		_, iSpan := h.Tracer.Start(ctx, fmt.Sprintf("Sample-%d", i))
-		runCount.Add(ctx, 1, metric.WithAttributes(commonAttrs...))
-		h.Logger.Log(fmt.Sprintf("Doing really hard work (%d / 10)\n", i+1))
+	correlationID := middleware.GetCorrelationID(ctx)
+	span.SetAttributes(attribute.String("correlation_id", correlationID))
 
-		//<-time.After(time.Second)
-		iSpan.End()
-	}
-
-	log.Printf("Done!")
-
-	h.Tracer.WriteLog(contextIndex, "IndexHandle start")
 	newSession, err := h.Session.Init(request)
 	if err != nil {
-		http.Error(response, err.Error(), http.StatusInternalServerError)
-		panic(err.Error())
+		http.Error(response, "internal error", http.StatusInternalServerError)
+		span.RecordError(err)
+		return
 	}
-	h.Session = newSession
-	view := IndexView{
-		Locale:    "fr",
-		PageTitle: "MedZoner.com",
-		TorHost:   request.Header.Get("TOR-HOST"),
-		TechnoView: TechnoView{
-			Stacks: h.ListTechnoQueryHandler.Handle(query.ListTechnoQuery{Type: "stack"}),
-		},
-		RecaptchaSiteKey: h.RecaptchaSiteKey,
-		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
-		FormMessage:      "",
-	}
-	if h.Session.GetValue("message") != nil {
-		view.FormMessage = h.Session.GetValue("message").(string)
+
+	view := h.initView(ctx, request)
+	if newSession.GetValue("message") != nil {
+		view.FormMessage = newSession.GetValue("message").(string)
 	}
 	statusCode := http.StatusOK
 	if request.Method == "POST" && request.FormValue("submit") == "" {
-		err = h.processRequest(request)
-		if err != nil {
+		if err = h.processRequest(request); err != nil {
 			fmt.Println("Recaptcha was incorrect; try again.")
-			h.Session.SetValue("message", "Recaptcha was incorrect; try again.")
-			_ = h.Session.Save(request, response)
+			newSession.SetValue("message", "Recaptcha was incorrect; try again.")
+			_ = newSession.Save(request, response)
+			request.Header.Set("X-Correlation-ID", correlationID)
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 			return
 		}
@@ -164,15 +156,27 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			Message: request.FormValue("message"),
 		}
 		v := h.Validation
-		err := v.Struct(createContactCommand)
-		if err == nil {
-			h.CreateContactCommandHandler.Handle(contextIndex, createContactCommand)
-			h.Session.SetValue("message", "Your Message has been sent")
-			err = h.Session.Save(request, response)
+		if err := v.Struct(createContactCommand); err == nil {
+			err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand)
 			if err != nil {
-				http.Error(response, err.Error(), http.StatusInternalServerError)
+				newSession.SetValue("message", "Error during send message")
+				if err = newSession.Save(request, response); err != nil {
+					http.Error(response, err.Error(), http.StatusInternalServerError)
+					span.RecordError(err)
+					return
+				}
+				request.Header.Set("X-Correlation-ID", correlationID)
+				http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 				return
 			}
+			newSession.SetValue("message", "Your Message has been sent")
+
+			if err = newSession.Save(request, response); err != nil {
+				http.Error(response, err.Error(), http.StatusInternalServerError)
+				span.RecordError(err)
+				return
+			}
+			request.Header.Set("X-Correlation-ID", correlationID)
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 			return
 		}
@@ -180,19 +184,31 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	}
 	if view.FormMessage != "" {
 		response.WriteHeader(statusCode)
-		h.Session.SetValue("message", "")
-		err = h.Session.Save(request, response)
-		if err != nil {
-			http.Error(response, err.Error(), http.StatusInternalServerError)
+		newSession.SetValue("message", "")
+		if err = newSession.Save(request, response); err != nil {
+			http.Error(response, "internal error", http.StatusInternalServerError)
+			span.RecordError(err)
 			return
 		}
 	}
 	_, err = h.Template.Render("index", view, response, statusCode)
 	if err != nil {
-		panic(err.Error())
+		http.Error(response, "internal error", http.StatusInternalServerError)
+		span.RecordError(err)
+		return
 	}
+}
 
-	view.FormMessage = ""
-	_ = request
-	h.Tracer.WriteLog(contextIndex, "IndexHandle end")
+func (h *IndexHandler) initView(ctx context.Context, request *http.Request) IndexView {
+	return IndexView{
+		Locale:    "fr",
+		PageTitle: "MedZoner.com",
+		TorHost:   request.Header.Get("TOR-HOST"),
+		TechnoView: TechnoView{
+			Stacks: h.ListTechnoQueryHandler.Handle(ctx, query.ListTechnoQuery{Type: "stack"}),
+		},
+		RecaptchaSiteKey: h.RecaptchaSiteKey,
+		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
+		FormMessage:      "",
+	}
 }

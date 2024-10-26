@@ -28,11 +28,6 @@ func TestNotFoundHandler(t *testing.T) {
 		}
 		request := httptest.NewRequest("GET", "/not-found", nil)
 
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("The code did not panic")
-			}
-		}()
 		notFoundHandler.Handle(httptest.NewRecorder(), request)
 	})
 }

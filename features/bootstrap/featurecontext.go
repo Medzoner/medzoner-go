@@ -35,7 +35,9 @@ func (b BodyRequest) Read(p []byte) (n int, err error) {
 
 // New New
 func New(srv server.Server) *APIFeature {
-	feature := &APIFeature{Response: &http.Response{}}
+	feature := &APIFeature{
+		Response: &http.Response{},
+	}
 
 	recorder := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodGet, "/", recorder.Body)
@@ -48,6 +50,7 @@ func New(srv server.Server) *APIFeature {
 
 // InitializeTestSuite InitializeTestSuite
 func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
+	_ = ctx
 	//	//ctx.BeforeSuite(func() {
 	//	//	//a.resetBdd()
 	//	//})
@@ -60,6 +63,7 @@ func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 // InitializeScenario InitializeScenario
 func (a *APIFeature) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, s *godog.Scenario) (context.Context, error) {
+		_ = s
 		a.resetResponse()
 		return ctx, nil
 	})
@@ -92,7 +96,7 @@ func (a *APIFeature) resetResponse() {
 	a.Response = &http.Response{}
 }
 
-func (a *APIFeature) iAddHeaderEqualTo(arg1 string, arg2 string) (err error) {
+func (a *APIFeature) iAddHeaderEqualTo(arg1, arg2 string) (err error) {
 	a.Request.Header.Set(arg1, arg2)
 	return
 }
@@ -132,8 +136,8 @@ func (a *APIFeature) iSendARequestTo(method, endpoint string) (err error) {
 }
 
 func (a *APIFeature) theResponseStatusCodeShouldBe(code int) (err error) {
-	if code <= 399 && code >= 500 {
-		if code != a.Response.StatusCode && a.Response.Request.Response.StatusCode != code {
+	if code < http.StatusBadRequest || code >= http.StatusInternalServerError {
+		if code != a.Response.StatusCode || (a.Response.Request != nil && a.Response.Request.Response.StatusCode != code) {
 			return fmt.Errorf("expected response code to be: %d, but actual is: %d", code, a.Response.StatusCode)
 		}
 	}

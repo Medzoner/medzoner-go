@@ -1,0 +1,45 @@
+services:
+  jaeger:
+    image: jaegertracing/all-in-one
+    ports:
+      - "16686:16686"
+      - "4417:4317"
+      - "4418:4318"
+    environment:
+      - LOG_LEVEL=debug
+
+  otel:
+    image: otel/opentelemetry-collector
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+        - "${PWD}/otel-local-config.yaml:/otel-local-config.yaml"
+    command: --config otel-local-config.yaml
+
+  mariadb:
+    image: "mariadb"
+    container_name: "mariadb"
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: "changeme"
+      MYSQL_DATABASE: "dev_medzoner"
+    ports:
+      - "3306:3306"
+    networks:
+      - "default"
+    volumes:
+      - "mysql:/var/lib/mysql"
+
+  mailhog:
+    image: "mailhog/mailhog"
+    container_name: "medzoner-mailhog"
+    hostname: "medzoner-mailhog"
+    restart: "no"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+    mysql:
+        driver: local

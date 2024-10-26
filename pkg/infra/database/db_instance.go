@@ -10,6 +10,6 @@ type IDbInstance interface {
 	CreateDatabase(databaseName string)
 	DropDatabase(databaseName string)
 	GetDatabaseName() string
-	GetDatabaseDriver() database.Driver
+	GetDatabaseDriver() (database.Driver, error)
 	Connect() (db *sqlx.DB)
 }

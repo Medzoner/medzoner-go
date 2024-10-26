@@ -3,7 +3,6 @@ package tracer
 import (
 	"context"
 	"fmt"
-	"go.opentelemetry.io/otel/log/global"
 	"log"
 	"log/slog"
 	"os"
@@ -11,21 +10,21 @@ import (
 	"runtime/trace"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
 	otelLog "go.opentelemetry.io/otel/sdk/log"
-
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	otelTrace "go.opentelemetry.io/otel/trace"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -183,6 +182,7 @@ type HttpTracer struct {
 }
 
 func (t HttpTracer) ShutdownLogger(ctx context.Context) error {
+	log.Printf("Shutting down LoggerProvider")
 	err := t.ShutdownLoggerProvider(ctx)
 	if err != nil {
 		log.Printf("failed to shutdown LoggerProvider: %s", err)
@@ -192,10 +192,12 @@ func (t HttpTracer) ShutdownLogger(ctx context.Context) error {
 }
 
 func (t HttpTracer) ShutdownTracer(ctx context.Context) error {
+	log.Printf("Shutting down TracerProvider")
 	return t.ShutdownTracerProvider(ctx)
 }
 
 func (t HttpTracer) ShutdownMeter(ctx context.Context) error {
+	log.Printf("Shutting down MeterProvider")
 	return t.ShutdownMeterProvider(ctx)
 }
 
@@ -210,8 +212,8 @@ func (t HttpTracer) Int64Counter(name string, options ...metric.Int64CounterOpti
 	return t.Meter.Int64Counter(name, options...)
 }
 
-func NewHttpTracer(config config.IConfig) (*HttpTracer, error) {
-	f, err := os.Create(config.GetTraceFile())
+func NewHttpTracer(config config.Config) (*HttpTracer, error) {
+	f, err := os.Create(config.TracerFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create trace output file: %v", err)
 	}
@@ -225,7 +227,7 @@ func NewHttpTracer(config config.IConfig) (*HttpTracer, error) {
 	}
 	defer trace.Stop()
 
-	tracer, meter, logger, shutdownTracerProvider, shutdownMeterProvider, shutdownLoggerProvider := initOtel(config.GetOtelHost())
+	tracer, meter, logger, shutdownTracerProvider, shutdownMeterProvider, shutdownLoggerProvider := initOtel(config.OtelHost)
 	return &HttpTracer{
 		Tracer:                 tracer,
 		Meter:                  meter,
@@ -239,14 +241,10 @@ func NewHttpTracer(config config.IConfig) (*HttpTracer, error) {
 func (t HttpTracer) WriteLog(ctx context.Context, message string) {
 	ctx, task := trace.NewTask(ctx, "awesomeTask")
 	trace.Log(ctx, "orderID", message)
-	trace.WithRegion(ctx, message, func() {
-		fmt.Printf("this function will be traced2\n")
-	})
+	trace.WithRegion(ctx, message, func() {})
 	// preparation of the task
 	go func() { // continue processing the task in a separate goroutine.
 		defer task.End()
-		trace.WithRegion(ctx, message, func() {
-			fmt.Printf("this function will be traced2\n")
-		})
+		trace.WithRegion(ctx, message, func() {})
 	}()
 }

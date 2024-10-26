@@ -19,10 +19,10 @@ Feature: Global behavior "Medzoner"
 #------------------------------------------------------------------------------------------
 
     Scenario: [Medzoner - POST] "Home page - Test success"
-        And I add "Content-Type" header equal to "text/html"
+        And I add "Content-Type" header equal to "application/json"
         When    I send a POST request to "/" with body:
           """
-          {"name":"else", "email":"email@fake.com", "message":"else"}
+          {"name": "else", "email" :"email@fake.com", "message": "else", "g-captcha-response": "else", "submit": ""}
           """
         Then    the response status code should be 303
 

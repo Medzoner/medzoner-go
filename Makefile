@@ -9,7 +9,8 @@ githooks:
 	git config core.hooksPath .githooks
 
 test_all:
-	go test -v -cover -coverpkg=./pkg/... -covermode=count -coverprofile=coverage.out ./...
+	export DEBUG=true
+	go test -v -cover -coverpkg=./... -covermode=count -coverprofile=coverage.out $(go list ./... | grep -v /var/)
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out -o coverage.html
 
@@ -35,28 +36,28 @@ wire:
 lint:
 	#curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
 	#golangci-lint --version
-	golangci-lint --issues-exit-code 1 run  ./...
+	golangci-lint --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 govet:
-	go vet ./...
+	go vet $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 gofmt:
 	.github/gofmt.sh
 
 staticcheck:
 	staticcheck --debug.version
-	staticcheck ./...
+	staticcheck $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 gosec:
-	gosec ./...
+	gosec $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 ineffassign:
-	ineffassign ./...
+	ineffassign $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 gocyclo:
-	gocyclo -ignore "_test|Godeps|vendor/" .
+	gocyclo -ignore "_test|Godeps|var|vendor/" .
 
-run-qa: govet gofmt lint staticcheck ineffassign gocyclo
+run-qa: govet gosec gofmt lint staticcheck gocyclo ineffassign
 	echo "QA passed"
 
 #go install github.com/go-critic/go-critic/cmd/gocritic@latest
@@ -64,3 +65,6 @@ run-qa: govet gofmt lint staticcheck ineffassign gocyclo
 
 trivy:
 	trivy image
+
+k6:
+	docker run --rm -i grafana/k6 run  --vus 10 --duration 30s  - <k6/test.js
