@@ -35,23 +35,15 @@ type DatabaseConfig struct {
 
 // NewConfig is a constructor for Config
 func NewConfig() (Config, error) {
-	conf, err := parseEnv()
-	if err != nil {
-		return conf, err
-	}
-	if conf.RootPath == "" {
+	cfg := Config{}
+	err := env.Parse(&cfg)
+	if err == nil && cfg.RootPath == "" {
 		pwd, err := os.Getwd()
 		if err != nil {
-			return conf, err
+			return cfg, err
 		}
-		conf.RootPath = RootPath(pwd + "/")
+		cfg.RootPath = RootPath(pwd + "/")
 	}
 
-	return conf, nil
-}
-
-// parseEnv parseEnv
-func parseEnv() (Config, error) {
-	cfg := &Config{}
-	return *cfg, env.Parse(cfg)
+	return cfg, err
 }

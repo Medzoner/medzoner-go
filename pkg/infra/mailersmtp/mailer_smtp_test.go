@@ -16,6 +16,7 @@ func TestSmtp(t *testing.T) {
 	t.Run("Unit: test Smtp success", func(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		httpTracerMock.EXPECT().Error(gomock.Any(), gomock.Any()).Return(nil).Times(1)
 		mailer := mailersmtp.MailerSMTP{RootPath: "./../../..", Tracer: httpTracerMock}
 		ctx := context.WithValue(context.Background(), middleware.CorrelationContextKey{}, uuid.New().String())
 		_, _ = mailer.Send(ctx, entity.Contact{})

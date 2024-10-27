@@ -89,6 +89,7 @@ func (t HttpTracer) StartRoot(ctx context.Context, request *http.Request, spanNa
 
 func (t HttpTracer) Error(span otelTrace.Span, err error) error {
 	span.RecordError(err)
+	t.Logger.Error(err.Error())
 	return fmt.Errorf("error during handle event: %w", err)
 }
 
