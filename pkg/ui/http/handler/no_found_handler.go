@@ -1,14 +1,10 @@
 package handler
 
 import (
-	"context"
-	"go.opentelemetry.io/otel/attribute"
-	otelTrace "go.opentelemetry.io/otel/trace"
-	"net/http"
-	"time"
-
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
+	"net/http"
 )
 
 // NotFoundView NotFoundView
@@ -35,18 +31,7 @@ func NewNotFoundHandler(template templater.Templater, tracer tracer.Tracer) *Not
 
 // Handle handles NotFoundHandler
 func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
-	defer cancel()
-	ctx, span := h.Tracer.Start(
-		ctx,
-		"IndexHandler.IndexHandle",
-		otelTrace.WithSpanKind(otelTrace.SpanKindServer),
-		otelTrace.WithNewRoot(),
-		otelTrace.WithAttributes([]attribute.KeyValue{
-			attribute.String("host", r.Host),
-			attribute.String("path", r.URL.Path),
-			attribute.String("method", r.Method),
-		}...))
+	_, span := h.Tracer.StartRoot(r.Context(), r, "NotFoundHandler.Handle")
 	defer span.End()
 
 	view := &NotFoundView{
@@ -57,7 +42,7 @@ func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := h.Template.Render("404", view, w, http.StatusNotFound)
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
 		return
 	}
 }

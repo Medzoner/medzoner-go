@@ -6,11 +6,11 @@ import (
 	"net/http"
 )
 
-type correlationContextKey struct{}
+type CorrelationContextKey struct{}
 
 // GetCorrelationID retrieves the correlation ID from the context.
 func GetCorrelationID(ctx context.Context) string {
-	if val := ctx.Value(correlationContextKey{}); val != nil {
+	if val := ctx.Value(CorrelationContextKey{}); val != nil {
 		return val.(string)
 	}
 	return ""
@@ -23,49 +23,9 @@ func (m APIMiddleware) CorrelationMiddleware(next http.Handler) http.Handler {
 		if correlationID == "" {
 			correlationID = uuid.New().String()
 		}
-
-		ctx := context.WithValue(r.Context(), correlationContextKey{}, correlationID)
+		ctx := context.WithValue(r.Context(), CorrelationContextKey{}, correlationID)
 		w.Header().Set("X-Correlation-ID", correlationID)
 
-		//ctx, cancel := context.WithTimeout(request.Context(), 60*time.Second)
-		//defer cancel()
-		//
-		//ctx, span := h.Tracer.Start(
-		//	ctx,
-		//	"IndexHandler.IndexHandle",
-		//	otelTrace.WithSpanKind(otelTrace.SpanKindServer),
-		//	otelTrace.WithNewRoot(),
-		//	otelTrace.WithAttributes([]attribute.KeyValue{
-		//		attribute.String("host", request.Host),
-		//		attribute.String("path", request.URL.Path),
-		//		attribute.String("method", request.Method),
-		//	}...))
-		//defer span.End()
-
-		lrw := NewLoggingResponseWriter(w)
-		next.ServeHTTP(lrw, r.WithContext(ctx))
-
-		if lrw.statusCode == http.StatusInternalServerError {
-			//resp := lrw.ResponseWriter.(http.ResponseWriter)
-			body := "resp."
-			m.Logger.Error("Internal server error : " + body)
-			http.Error(lrw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-
-			return
-		}
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-type LoggingResponseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func (lrw *LoggingResponseWriter) WriteHeader(code int) {
-	lrw.statusCode = code
-	lrw.ResponseWriter.WriteHeader(code)
-}
-
-func NewLoggingResponseWriter(w http.ResponseWriter) *LoggingResponseWriter {
-	return &LoggingResponseWriter{w, http.StatusOK}
 }

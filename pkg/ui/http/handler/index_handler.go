@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
-	"log"
 	"net/http"
 	"time"
 
@@ -12,15 +11,10 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
-	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
 // IndexView IndexView
@@ -57,7 +51,6 @@ type IndexHandler struct {
 	Validation                  validation.MzValidator
 	Recaptcha                   captcha.Captcher
 	Tracer                      tracer.Tracer
-	Logger                      logger.ILogger
 	Debug                       bool
 }
 
@@ -71,12 +64,7 @@ func NewIndexHandler(
 	validation validation.MzValidator,
 	recaptcha captcha.Captcher,
 	tracer tracer.Tracer,
-	Logger logger.ILogger,
 ) *IndexHandler {
-	_, err := tracer.Int64Counter("run", metric.WithDescription("The number of times the iteration ran"))
-	if err != nil {
-		log.Fatal(err)
-	}
 	return &IndexHandler{
 		Template:                    template,
 		ListTechnoQueryHandler:      listTechnoQueryHandler,
@@ -86,7 +74,6 @@ func NewIndexHandler(
 		Validation:                  validation,
 		Recaptcha:                   recaptcha,
 		Tracer:                      tracer,
-		Logger:                      Logger,
 		Debug:                       conf.DebugMode,
 	}
 }
@@ -94,7 +81,7 @@ func NewIndexHandler(
 func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 	recaptchaResponse, responseFound := request.Form["g-captcha-response"]
 	if responseFound {
-		result, err := h.Recaptcha.Confirm("127.0.0.1", recaptchaResponse[0])
+		result, err := h.Recaptcha.Confirm(request.RemoteAddr, recaptchaResponse[0])
 		if err != nil {
 			return fmt.Errorf("captcha server error: %w", err)
 		}
@@ -107,32 +94,18 @@ func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 
 // IndexHandle IndexHandle
 func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
-	ctx, cancel := context.WithTimeout(request.Context(), 60*time.Second)
-	defer cancel()
-
-	ctx, span := h.Tracer.Start(
-		ctx,
-		"IndexHandler.IndexHandle",
-		otelTrace.WithSpanKind(otelTrace.SpanKindServer),
-		otelTrace.WithNewRoot(),
-		otelTrace.WithAttributes([]attribute.KeyValue{
-			attribute.String("host", request.Host),
-			attribute.String("path", request.URL.Path),
-			attribute.String("method", request.Method),
-		}...))
+	ctx, span := h.Tracer.StartRoot(request.Context(), request, "IndexHandler.IndexHandle")
 	defer span.End()
 
 	newSession, err := h.Session.Init(request)
 	if err != nil {
-		span.RecordError(err)
-		http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
+		http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
 		return
 	}
 
 	view, err := h.initView(ctx, request)
 	if err != nil {
-		span.RecordError(err)
-		http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
+		http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
 		return
 	}
 	if newSession.GetValue("message") != nil {
@@ -157,20 +130,20 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		validationError := h.Validation.Struct(createContactCommand)
 		if validationError == nil {
 			if err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
-				newSession.SetValue("message", "Error during send message")
-				if err = newSession.Save(request, response); err != nil {
-					span.RecordError(err)
-					http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				http.Redirect(response, request, "/#contact", http.StatusSeeOther)
+				// newSession.SetValue("message", "Error during send message")
+				// if err = newSession.Save(request, response); err != nil {
+				//	span.RecordError(err)
+				//	http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
+				//	return
+				// }
+				// http.Redirect(response, request, "/#contact", http.StatusSeeOther)
+				http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
 				return
 			}
 			newSession.SetValue("message", "Your Message has been sent")
 
 			if err = newSession.Save(request, response); err != nil {
-				span.RecordError(err)
-				http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
+				http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
 				return
 			}
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
@@ -182,15 +155,13 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		response.WriteHeader(statusCode)
 		newSession.SetValue("message", "")
 		if err = newSession.Save(request, response); err != nil {
-			http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
-			span.RecordError(err)
+			http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
 			return
 		}
 	}
 	_, err = h.Template.Render("index", view, response, statusCode)
 	if err != nil {
-		http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
-		span.RecordError(err)
+		http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
 		return
 	}
 }

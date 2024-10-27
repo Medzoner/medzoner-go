@@ -1,56 +1,42 @@
 package logger
 
 import (
-	"encoding/json"
 	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-var zapConfig = []byte(`{
-		"level": "debug",
-		"outputPaths": ["stdout"],
-		"errorOutputPaths": ["stderr"],
-		"encoding": "json",
-		"encoderConfig": {
-			"timeKey": "ts",
-			"timeEncoder": "ISO8601",
-			"messageKey": "message",
-			"levelKey": "level",
-			"levelEncoder": "lowercase"
-		}
-	}`)
-
-type UseSugar bool
-
-func NewUseSugar() UseSugar {
-	return false
-}
-
 // ZapLoggerAdapter ZapLoggerAdapter
 type ZapLoggerAdapter struct {
-	Zap      *zap.Logger
-	UseSugar bool
+	Zap *zap.Logger
 }
 
 // NewLoggerAdapter NewLoggerAdapter
-func NewLoggerAdapter(useSugar UseSugar) (*ZapLoggerAdapter, error) {
-	cfg := zap.Config{}
-	if err := json.Unmarshal(zapConfig, &cfg); err != nil {
-		return nil, err
+func NewLoggerAdapter() (*ZapLoggerAdapter, error) {
+	cfg := zap.Config{
+		Level:            zap.NewAtomicLevelAt(zap.DebugLevel),
+		Development:      true,
+		OutputPaths:      []string{"stdout"},
+		ErrorOutputPaths: []string{"stderr"},
+		Encoding:         "json",
+		EncoderConfig: zapcore.EncoderConfig{
+			TimeKey:    "ts",
+			EncodeTime: zapcore.ISO8601TimeEncoder,
+			MessageKey: "message",
+			LevelKey:   "level",
+			EncodeLevel: func(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
+				enc.AppendString("[" + level.CapitalString() + "]")
+			},
+		},
 	}
 
-	cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
-		enc.AppendString("[" + level.CapitalString() + "]")
-	}
 	zapLogger, err := cfg.Build()
 	if err != nil {
 		return nil, err
 	}
 
 	zl := ZapLoggerAdapter{
-		UseSugar: bool(useSugar),
-		Zap:      zapLogger,
+		Zap: zapLogger,
 	}
 	defer zl.deferLogger(zapLogger)
 
@@ -65,18 +51,10 @@ func (z ZapLoggerAdapter) deferLogger(zapLogger *zap.Logger) {
 
 // Log Log
 func (z ZapLoggerAdapter) Log(msg string) {
-	if z.UseSugar {
-		sugar := z.Zap.Sugar()
-		sugar.Infow(msg)
-	}
 	z.Zap.Info(msg)
 }
 
 // Error Error
 func (z ZapLoggerAdapter) Error(msg string) {
-	if z.UseSugar {
-		z.Zap.Sugar().Errorw(msg)
-		return
-	}
 	z.Zap.Error(msg)
 }

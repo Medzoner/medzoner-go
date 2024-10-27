@@ -35,8 +35,7 @@ func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) er
 		contactCreated := event.GetModel().(entity.Contact)
 		_, err := c.Mailer.Send(ctx, contactCreated)
 		if err != nil {
-			iSpan.RecordError(err)
-			return fmt.Errorf("error during send mail: %w", err)
+			return c.Tracer.Error(iSpan, fmt.Errorf("error during send mail: %w", err))
 		}
 		c.Logger.Log("Mail was send.")
 	default:

@@ -48,6 +48,7 @@ func InitRoutes(a *MuxRouterAdapter) {
 	a.SetNotFoundHandler(a.NotFoundHandler.Handle)
 	a.HandleFunc("/", a.IndexHandler.IndexHandle).Methods("GET", "POST")
 	a.Use(a.Middlewares.CorrelationMiddleware)
+	a.Use(a.Middlewares.LogMiddleware)
 	a.Use(a.Middlewares.CorsMiddleware)
 	fs := http.FileServer(http.Dir("."))
 

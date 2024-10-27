@@ -4,16 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/dpapathanasiou/go-recaptcha"
-	"log"
-	"net/http"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 type IServer interface {
@@ -66,25 +66,26 @@ func (s Server) Start(ctx context.Context) {
 	}()
 
 	<-ctx.Done()
-	log.Println("got interruption signal")
+	s.Logger.Log("got interruption signal")
 	if err := s.Shutdown(context.TODO()); err != nil { // Use here context with a required timeout
-		log.Printf("server shutdown returned an err: %v\n", err)
+		s.Logger.Error(fmt.Sprintf("server shutdown returned an err: %v", err))
 	}
 
-	log.Println("server stopped!")
+	s.Logger.Log("server stopped!")
 }
 
 func (s Server) Shutdown(ctx context.Context) error {
 	defer func() {
 		if err := s.Tracer.ShutdownTracer(ctx); err != nil {
-			log.Printf("failed to shutdown TracerProvider: %s", err)
+			s.Logger.Error(fmt.Sprintf("failed to shutdown TracerProvider: %s", err))
 		}
 		if err := s.Tracer.ShutdownMeter(ctx); err != nil {
-			log.Printf("failed to shutdown MeterProvider: %s", err)
+			s.Logger.Error(fmt.Sprintf("failed to shutdown MeterProvider: %s", err))
 		}
 		if err := s.Tracer.ShutdownLogger(ctx); err != nil {
-			log.Printf("failed to shutdown LoggerProvider: %s", err)
+			s.Logger.Error(fmt.Sprintf("failed to shutdown LoggerProvider: %s", err))
 		}
+		s.Logger.Log("Tracer, Meter and Logger providers are shutdown")
 	}()
 	return s.HTTPServer.Shutdown(ctx)
 }
