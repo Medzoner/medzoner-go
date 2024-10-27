@@ -1,7 +1,11 @@
 package handler
 
 import (
+	"context"
+	"go.opentelemetry.io/otel/attribute"
+	otelTrace "go.opentelemetry.io/otel/trace"
 	"net/http"
+	"time"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
@@ -29,9 +33,22 @@ func NewNotFoundHandler(template templater.Templater, tracer tracer.Tracer) *Not
 	}
 }
 
-// Handle Handle
+// Handle handles NotFoundHandler
 func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	h.Tracer.WriteLog(r.Context(), "NotFoundHandle")
+	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
+	defer cancel()
+	ctx, span := h.Tracer.Start(
+		ctx,
+		"IndexHandler.IndexHandle",
+		otelTrace.WithSpanKind(otelTrace.SpanKindServer),
+		otelTrace.WithNewRoot(),
+		otelTrace.WithAttributes([]attribute.KeyValue{
+			attribute.String("host", r.Host),
+			attribute.String("path", r.URL.Path),
+			attribute.String("method", r.Method),
+		}...))
+	defer span.End()
+
 	view := &NotFoundView{
 		Locale:          "fr",
 		PageTitle:       "MedZoner.com - Not Found",

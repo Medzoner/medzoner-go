@@ -36,6 +36,20 @@ func (m *MockTracer) EXPECT() *MockTracerMockRecorder {
 	return m.recorder
 }
 
+// Error mocks base method.
+func (m *MockTracer) Error(span trace.Span, err error) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Error", span, err)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Error indicates an expected call of Error.
+func (mr *MockTracerMockRecorder) Error(span, err interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Error", reflect.TypeOf((*MockTracer)(nil).Error), span, err)
+}
+
 // Int64Counter mocks base method.
 func (m *MockTracer) Int64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error) {
 	m.ctrl.T.Helper()
@@ -116,16 +130,4 @@ func (mr *MockTracerMockRecorder) Start(ctx, spanName interface{}, opts ...inter
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, spanName}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Start", reflect.TypeOf((*MockTracer)(nil).Start), varargs...)
-}
-
-// WriteLog mocks base method.
-func (m *MockTracer) WriteLog(ctx context.Context, message string) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "WriteLog", ctx, message)
-}
-
-// WriteLog indicates an expected call of WriteLog.
-func (mr *MockTracerMockRecorder) WriteLog(ctx, message interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteLog", reflect.TypeOf((*MockTracer)(nil).WriteLog), ctx, message)
 }

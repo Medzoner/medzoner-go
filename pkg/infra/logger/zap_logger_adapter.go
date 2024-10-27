@@ -7,30 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type UseSugar bool
-
-func NewUseSugar() UseSugar {
-	return false
-}
-
-// ZapLoggerAdapter ZapLoggerAdapter
-type ZapLoggerAdapter struct {
-	Zap      *zap.Logger
-	UseSugar bool
-}
-
-// NewLoggerAdapter NewLoggerAdapter
-func NewLoggerAdapter(useSugar UseSugar) *ZapLoggerAdapter {
-	zl := ZapLoggerAdapter{
-		UseSugar: bool(useSugar),
-	}
-	logger := zl.New()
-	return logger
-}
-
-// New New
-func (z ZapLoggerAdapter) New() *ZapLoggerAdapter {
-	rawJSON := []byte(`{
+var zapConfig = []byte(`{
 		"level": "debug",
 		"outputPaths": ["stdout"],
 		"errorOutputPaths": ["stderr"],
@@ -44,9 +21,23 @@ func (z ZapLoggerAdapter) New() *ZapLoggerAdapter {
 		}
 	}`)
 
+type UseSugar bool
+
+func NewUseSugar() UseSugar {
+	return false
+}
+
+// ZapLoggerAdapter ZapLoggerAdapter
+type ZapLoggerAdapter struct {
+	Zap      *zap.Logger
+	UseSugar bool
+}
+
+// NewLoggerAdapter NewLoggerAdapter
+func NewLoggerAdapter(useSugar UseSugar) (*ZapLoggerAdapter, error) {
 	cfg := zap.Config{}
-	if err := json.Unmarshal(rawJSON, &cfg); err != nil {
-		panic(err)
+	if err := json.Unmarshal(zapConfig, &cfg); err != nil {
+		return nil, err
 	}
 
 	cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
@@ -54,13 +45,16 @@ func (z ZapLoggerAdapter) New() *ZapLoggerAdapter {
 	}
 	zapLogger, err := cfg.Build()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	defer z.deferLogger(zapLogger)
+	zl := ZapLoggerAdapter{
+		UseSugar: bool(useSugar),
+		Zap:      zapLogger,
+	}
+	defer zl.deferLogger(zapLogger)
 
-	z.Zap = zapLogger
-	return &z
+	return &zl, nil
 }
 
 func (z ZapLoggerAdapter) deferLogger(zapLogger *zap.Logger) {
@@ -75,9 +69,7 @@ func (z ZapLoggerAdapter) Log(msg string) {
 		sugar := z.Zap.Sugar()
 		sugar.Infow(msg)
 	}
-	if !z.UseSugar {
-		z.Zap.Info(msg)
-	}
+	z.Zap.Info(msg)
 }
 
 // Error Error

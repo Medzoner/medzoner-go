@@ -17,6 +17,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/mailersmtp"
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
@@ -56,7 +57,10 @@ func InitServer() (*server.Server, error) {
 	}
 	notFoundHandler := handler.NewNotFoundHandler(templateHTML, httpTracer)
 	useSugar := logger.NewUseSugar()
-	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
+	zapLoggerAdapter, err := logger.NewLoggerAdapter(useSugar)
+	if err != nil {
+		return nil, err
+	}
 	technoJSONRepository := repository.NewTechnoJSONRepository(zapLoggerAdapter, configConfig)
 	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository, httpTracer)
 	dbSQLInstance := database.NewDbSQLInstance(configConfig)
@@ -69,7 +73,8 @@ func InitServer() (*server.Server, error) {
 	validatorAdapter := validation.NewValidatorAdapter()
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, httpTracer, zapLoggerAdapter)
-	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler)
+	apiMiddleware := middleware.NewAPIMiddleware(zapLoggerAdapter)
+	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler, apiMiddleware)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter, httpTracer)
 	return serverServer, nil
 }
@@ -87,7 +92,10 @@ func InitServerTest(mocks2 *mocks.Mocks) (*server.Server, error) {
 	mockContactRepository := mocks2.ContactRepository
 	mockMailer := mocks2.Mailer
 	useSugar := logger.NewUseSugar()
-	zapLoggerAdapter := logger.NewLoggerAdapter(useSugar)
+	zapLoggerAdapter, err := logger.NewLoggerAdapter(useSugar)
+	if err != nil {
+		return nil, err
+	}
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mockMailer, zapLoggerAdapter, mockTracer)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler, zapLoggerAdapter, mockTracer)
 	sessionKey := session.NewSessionKey()
@@ -95,7 +103,8 @@ func InitServerTest(mocks2 *mocks.Mocks) (*server.Server, error) {
 	validatorAdapter := validation.NewValidatorAdapter()
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, sessionerAdapter, validatorAdapter, recaptchaAdapter, mockTracer, zapLoggerAdapter)
-	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler)
+	apiMiddleware := middleware.NewAPIMiddleware(zapLoggerAdapter)
+	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler, apiMiddleware)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, zapLoggerAdapter, mockTracer)
 	return serverServer, nil
 }
@@ -103,7 +112,7 @@ func InitServerTest(mocks2 *mocks.Mocks) (*server.Server, error) {
 // wire.go:
 
 var (
-	InfraWiring      = wire.NewSet(config.NewConfig, logger.NewUseSugar, logger.NewLoggerAdapter, router.NewMuxRouterAdapter, server.NewServer, templater.NewTemplateHTML, session.NewSessionKey, session.NewSessionerAdapter, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)), wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)), wire.Bind(new(server.IServer), new(*server.Server)), wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
+	InfraWiring      = wire.NewSet(config.NewConfig, logger.NewUseSugar, logger.NewLoggerAdapter, router.NewMuxRouterAdapter, server.NewServer, templater.NewTemplateHTML, session.NewSessionKey, session.NewSessionerAdapter, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, middleware.NewAPIMiddleware, wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)), wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)), wire.Bind(new(server.IServer), new(*server.Server)), wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
 	DbWiring         = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)))
 	TracerWiring     = wire.NewSet(tracer.NewHttpTracer, wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)))
 	TracerMockWiring = wire.NewSet(wire.FieldsOf(

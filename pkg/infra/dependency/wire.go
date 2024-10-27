@@ -4,6 +4,7 @@
 package dependency
 
 import (
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	mocks "github.com/Medzoner/medzoner-go/test"
@@ -46,6 +47,7 @@ var (
 		session.NewSessionerAdapter,
 		validation.NewValidatorAdapter,
 		captcha.NewRecaptchaAdapter,
+		middleware.NewAPIMiddleware,
 
 		wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)),
 		wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)),

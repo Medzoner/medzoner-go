@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -15,6 +14,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
@@ -28,14 +28,14 @@ import (
 	"gotest.tools/assert"
 )
 
-func TestIntegrationIndexHandler(t *testing.T) {
+func TestIntegration_IndexHandler_Success(t *testing.T) {
 	mocked := mocks.New(t)
 	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 	mocked.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()
-	mocked.HttpTracer.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().AnyTimes()
 	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
 	_ = os.Setenv("APP_ENV", "test")
 	_ = os.Setenv("DEBUG", "true")
+	_ = os.Setenv("ROOT_PATH", "./../../../../")
 	srv, err := dependency.InitServerTest(&mocked)
 	if err != nil {
 		t.Error(err)
@@ -50,30 +50,31 @@ func TestIntegrationIndexHandler(t *testing.T) {
 		mocks        func()
 	}{
 		{
-			name:         "Unit: test IndexHandler success",
-			method:       http.MethodGet,
-			url:          "/",
-			body:         url.Values{},
-			expectedCode: http.StatusOK,
+			name:   "Unit: GET test IndexHandler success",
+			method: http.MethodGet,
+			url:    "/",
+			body:   url.Values{},
 			mocks: func() {
-				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
+				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
 			},
+			expectedCode: http.StatusOK,
 		},
 		{
-			name:   "Unit: test IndexHandler with form submit success",
+			name:   "Unit: POST test IndexHandler with form submit success",
 			method: http.MethodPost,
 			url:    "/",
 			body: url.Values{
 				"name":               {"a name"},
-				"email":              {""},
+				"email":              {"fake@fake.fake"},
 				"message":            {"a message"},
 				"g-captcha-response": {"captcha"},
 				"submit":             {""},
 			},
 			mocks: func() {
-				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
+				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
+				mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil)
 			},
-			expectedCode: http.StatusOK,
+			expectedCode: http.StatusSeeOther,
 		},
 		{
 			name:   "Unit: test IndexHandler with form submit failed on struct",
@@ -87,18 +88,10 @@ func TestIntegrationIndexHandler(t *testing.T) {
 				"submit":             {""},
 			},
 			mocks: func() {
-				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
+				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
 				//mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil)
 			},
-		},
-		{
-			name:   "Unit: test IndexHandler with list techno failed",
-			method: http.MethodGet,
-			url:    "/",
-			body:   url.Values{},
-			mocks: func() {
-				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(nil, errors.New("error")).AnyTimes()
-			},
+			expectedCode: http.StatusOK,
 		},
 		{
 			name:   "Unit: test IndexHandler with TechnoRepository save failed",
@@ -112,37 +105,20 @@ func TestIntegrationIndexHandler(t *testing.T) {
 				"submit":             {""},
 			},
 			mocks: func() {
-				// mocked.TechnoRepository.EXPECT().FetchStack().Return(map[string]interface{}{}, errors.New("error"))
+				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
 				mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("error"))
 			},
-			expectedCode: http.StatusInternalServerError,
+			expectedCode: http.StatusSeeOther,
 		},
-		//{
-		//	name:   "Unit: test IndexHandler with ContactRepository save failed",
-		//	method: http.MethodPost,
-		//	url:    "/",
-		//	body: url.Values{
-		//		"name":               {"a name"},
-		//		"email":              {""},
-		//		"message":            {"a message"},
-		//		"g-captcha-response": {"captcha"},
-		//		"submit":             {""},
-		//	},
-		//	mocks: func() {
-		//		mocked.TechnoRepository.EXPECT().FetchStack().Return(map[string]interface{}{}, nil)
-		//		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("error"))
-		//	},
-		//	expectedCode: http.StatusInternalServerError,
-		//},
 		{
-			name:         "Unit: test IndexHandler with TechnoRepository save failed",
-			method:       http.MethodGet,
-			url:          "/",
-			body:         url.Values{},
-			expectedCode: http.StatusOK,
+			name:   "Unit: test IndexHandler with list techno failed",
+			method: http.MethodGet,
+			url:    "/",
+			body:   url.Values{},
 			mocks: func() {
-				// mocked.TechnoRepository.EXPECT().FetchStack().Return(map[string]interface{}{}, errors.New("error"))
+				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(nil, errors.New("error")).Times(1)
 			},
+			expectedCode: http.StatusInternalServerError,
 		},
 	}
 
@@ -154,9 +130,32 @@ func TestIntegrationIndexHandler(t *testing.T) {
 			request.Form = tc.body
 			srv.Router.ServeHTTP(recorder, request)
 
-			// assert.Equal(t, recorder.Code, tc.expectedCode)
+			assert.Equal(t, recorder.Code, tc.expectedCode)
 		})
 	}
+}
+
+func TestIntegration_IndexHandler_Failed_Tpl(t *testing.T) {
+	mocked := mocks.New(t)
+	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTracer.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil).AnyTimes()
+	mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
+	_ = os.Setenv("APP_ENV", "test")
+	_ = os.Setenv("DEBUG", "true")
+	_ = os.Setenv("ROOT_PATH", "./")
+	srv, err := dependency.InitServerTest(&mocked)
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Run("Unit: GET test IndexHandler failed template path", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest(http.MethodGet, "/", nil)
+		request.Form = url.Values{}
+		srv.Router.ServeHTTP(recorder, request)
+
+		assert.Equal(t, recorder.Code, http.StatusInternalServerError)
+	})
 }
 
 func TestIndexHandler(t *testing.T) {
@@ -247,7 +246,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -283,7 +281,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -330,7 +327,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -372,7 +368,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -414,7 +409,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(2)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -483,8 +477,6 @@ func TestIndexHandler(t *testing.T) {
 	//	httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 	//	httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 	//	httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-	//	httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
-	//
 	//	indexHandler := handler.NewIndexHandler(
 	//		&TemplaterTest{},
 	//		query.ListTechnoQueryHandler{
@@ -523,7 +515,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(2)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},
@@ -568,7 +559,6 @@ func TestIndexHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(3)
 		httpTracerMock.EXPECT().Int64Counter(gomock.Any(), gomock.Any()).Return(metricNoop.Int64Counter{}, nil)
-		// httpTracerMock.EXPECT().WriteLog(gomock.Any(), gomock.Any()).Return().Times(1)
 
 		indexHandler := handler.NewIndexHandler(
 			&TemplaterTest{},

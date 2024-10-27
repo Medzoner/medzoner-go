@@ -57,8 +57,7 @@ func (c *CreateContactCommandHandler) Handle(ctx context.Context, command Create
 	c.Logger.Log("Contact was created.")
 
 	if err := c.ContactCreatedEventHandler.Publish(ctx, event.ContactCreatedEvent{Contact: contact}); err != nil {
-		iSpan.RecordError(err)
-		return fmt.Errorf("error during handle event: %w", err)
+		return c.Tracer.Error(iSpan, fmt.Errorf("error during handle event: %w", err))
 	}
 
 	return nil

@@ -7,21 +7,31 @@ import (
 
 func TestZapLoggerAdapterSuccess(t *testing.T) {
 	t.Run("Unit: test ZapLoggerAdapter log success", func(t *testing.T) {
-		loggerTest := logger.ZapLoggerAdapter{
-			UseSugar: false,
-		}.New()
+		loggerTest, err := logger.NewLoggerAdapter(false)
+		if err != nil {
+			t.Errorf("error creating logger: %v", err)
+		}
 		loggerTest.Log("log zap")
 	})
 	t.Run("Unit: test ZapLoggerAdapter error log success", func(t *testing.T) {
-		loggerTest := logger.NewLoggerAdapter(false).New()
+		loggerTest, err := logger.NewLoggerAdapter(false)
+		if err != nil {
+			t.Errorf("error creating logger: %v", err)
+		}
 		loggerTest.Error("error zap")
 	})
 	t.Run("Unit: test ZapLoggerAdapter (sugared) log success", func(t *testing.T) {
-		loggerTest := logger.NewLoggerAdapter(true).New()
+		loggerTest, err := logger.NewLoggerAdapter(true)
+		if err != nil {
+			t.Errorf("error creating logger: %v", err)
+		}
 		loggerTest.Log("log (sugared) zap")
 	})
 	t.Run("Unit: test ZapLoggerAdapter (sugared) error log success", func(t *testing.T) {
-		loggerTest := logger.NewLoggerAdapter(true).New()
+		loggerTest, err := logger.NewLoggerAdapter(true)
+		if err != nil {
+			t.Errorf("error creating logger: %v", err)
+		}
 		loggerTest.Error("error (sugared) zap")
 	})
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
 	"log"
 	"net/http"
 	"time"
@@ -95,8 +96,7 @@ func (h *IndexHandler) processRequest(request *http.Request) (err error) {
 	if responseFound {
 		result, err := h.Recaptcha.Confirm("127.0.0.1", recaptchaResponse[0])
 		if err != nil {
-			log.Println("captcha server error", err)
-			return err
+			return fmt.Errorf("captcha server error: %w", err)
 		}
 		if !result && !h.Debug {
 			return fmt.Errorf("captcha was incorrect; try again")
@@ -124,15 +124,15 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 
 	newSession, err := h.Session.Init(request)
 	if err != nil {
-		http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		span.RecordError(err)
+		http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	view, err := h.initView(ctx, request)
 	if err != nil {
-		http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		span.RecordError(err)
+		http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if newSession.GetValue("message") != nil {
@@ -153,13 +153,14 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			Email:   request.FormValue("email"),
 			Message: request.FormValue("message"),
 		}
-		v := h.Validation
-		if err := v.Struct(createContactCommand); err == nil {
+
+		validationError := h.Validation.Struct(createContactCommand)
+		if validationError == nil {
 			if err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
 				newSession.SetValue("message", "Error during send message")
 				if err = newSession.Save(request, response); err != nil {
 					span.RecordError(err)
-					http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+					http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
 					return
 				}
 				http.Redirect(response, request, "/#contact", http.StatusSeeOther)
@@ -169,7 +170,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 
 			if err = newSession.Save(request, response); err != nil {
 				span.RecordError(err)
-				http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
@@ -181,14 +182,14 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		response.WriteHeader(statusCode)
 		newSession.SetValue("message", "")
 		if err = newSession.Save(request, response); err != nil {
-			http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
 			span.RecordError(err)
 			return
 		}
 	}
 	_, err = h.Template.Render("index", view, response, statusCode)
 	if err != nil {
-		http.Error(response, "internal error", http.StatusInternalServerError)
+		http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
 		span.RecordError(err)
 		return
 	}
@@ -197,7 +198,6 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 func (h *IndexHandler) initView(ctx context.Context, request *http.Request) (IndexView, error) {
 	stacks, err := h.ListTechnoQueryHandler.Handle(ctx, query.ListTechnoQuery{Type: "stack"})
 	if err != nil {
-		h.Logger.Error(fmt.Sprintln(err))
 		return IndexView{}, fmt.Errorf("error during fetch stack: %w", err)
 	}
 

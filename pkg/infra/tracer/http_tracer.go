@@ -91,6 +91,7 @@ func initMeterProvider(ctx context.Context, res *resource.Resource, conn *grpc.C
 }
 
 func initLogger(ctx context.Context, res *resource.Resource, conn *grpc.ClientConn) (func(context.Context) error, *slog.Logger, error) {
+	_ = res
 	// Create the OTLP log exporter that sends logs to configured destination
 	logExporter, err := otlploggrpc.New(ctx, otlploggrpc.WithGRPCConn(conn))
 	if err != nil {
@@ -104,7 +105,7 @@ func initLogger(ctx context.Context, res *resource.Resource, conn *grpc.ClientCo
 	)
 
 	// Ensure the logger is shutdown before exiting so all pending logs are exported
-	//defer lp.Shutdown(ctx)
+	// defer lp.Shutdown(ctx)
 
 	// Set the logger provider globally
 	global.SetLoggerProvider(lp)
@@ -165,9 +166,10 @@ func initOtel(host string) (otelTrace.Tracer, metric.Meter, *slog.Logger, func(c
 
 //go:generate mockgen -destination=../../../test/mocks/pkg/infra/tracer/http_tracer.go -package=tracerMock -source=./http_tracer.go Tracer
 type Tracer interface {
-	WriteLog(ctx context.Context, message string)
 	Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span)
 	Int64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error)
+
+	Error(span otelTrace.Span, err error) error
 
 	ShutdownTracer(ctx context.Context) error
 	ShutdownMeter(ctx context.Context) error
@@ -191,6 +193,11 @@ func (t HttpTracer) ShutdownLogger(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+func (t HttpTracer) Error(span otelTrace.Span, err error) error {
+	span.RecordError(err)
+	return fmt.Errorf("error during handle event: %w", err)
 }
 
 func (t HttpTracer) ShutdownTracer(ctx context.Context) error {
@@ -238,15 +245,4 @@ func NewHttpTracer(config config.Config) (*HttpTracer, error) {
 		ShutdownMeterProvider:  shutdownMeterProvider,
 		ShutdownLoggerProvider: shutdownLoggerProvider,
 	}, nil
-}
-
-func (t HttpTracer) WriteLog(ctx context.Context, message string) {
-	ctx, task := trace.NewTask(ctx, "awesomeTask")
-	trace.Log(ctx, "orderID", message)
-	trace.WithRegion(ctx, message, func() {})
-	// preparation of the task
-	go func() { // continue processing the task in a separate goroutine.
-		defer task.End()
-		trace.WithRegion(ctx, message, func() {})
-	}()
 }
