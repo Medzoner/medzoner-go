@@ -37,10 +37,7 @@ func (t *TemplateHTML) Render(name string, view interface{}, response http.Respo
 		return nil, fmt.Errorf("error parsing templates: %v", err)
 	}
 
-	if err = htmlTemplate.ExecuteTemplate(response, name, view); err != nil {
-		return nil, fmt.Errorf("error executing template: %v", err)
-	}
-	return nil, nil
+	return nil, htmlTemplate.ExecuteTemplate(response, name, view)
 }
 
 // parseTemplates parses templates

@@ -1,18 +1,23 @@
 package templater_test
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-	"gotest.tools/assert"
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
+
+	"gotest.tools/assert"
 )
 
 func TestRender(t *testing.T) {
+	rootPath := "../../../../"
 	t.Run("Unit: test Render success", func(t *testing.T) {
-		var tpl = templater.TemplateHTML{
-			RootPath: "../../../../",
+		cfg := config.Config{
+			RootPath: config.RootPath(rootPath),
 		}
+		var tpl = templater.NewTemplateHTML(cfg)
 		_, err := tpl.Render(
 			"index",
 			nil,

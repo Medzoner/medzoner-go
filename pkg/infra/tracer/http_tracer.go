@@ -188,7 +188,6 @@ func initLogger(ctx context.Context, conn *grpc.ClientConn) (func(context.Contex
 	lp := otelLog.NewLoggerProvider(
 		otelLog.WithProcessor(otelLog.NewBatchProcessor(logExporter)),
 	)
-
 	global.SetLoggerProvider(lp)
 
 	logger := otelslog.NewLogger(serviceName.Value.AsString())
