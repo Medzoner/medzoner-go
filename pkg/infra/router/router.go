@@ -47,9 +47,7 @@ func NewMuxRouterAdapter(
 func InitRoutes(a *MuxRouterAdapter) {
 	a.SetNotFoundHandler(a.NotFoundHandler.Handle)
 	a.HandleFunc("/", a.IndexHandler.IndexHandle).Methods("GET", "POST")
-	a.Use(a.Middlewares.CorrelationMiddleware)
-	a.Use(a.Middlewares.LogMiddleware)
-	a.Use(a.Middlewares.CorsMiddleware)
+	a.Use(a.Middlewares.CorrelationMiddleware, a.Middlewares.LogMiddleware, a.Middlewares.CorsMiddleware)
 	fs := http.FileServer(http.Dir("."))
 
 	m := minify.New()
@@ -73,7 +71,7 @@ func (a MuxRouterAdapter) PathPrefix(tpl string) *mux.Route {
 
 // Use Use
 func (a MuxRouterAdapter) Use(mwf ...mux.MiddlewareFunc) {
-	a.MuxRouter.Use(mwf[0])
+	a.MuxRouter.Use(mwf...)
 }
 
 // SetNotFoundHandler SetNotFoundHandler

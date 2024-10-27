@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"runtime/trace"
 	"time"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
@@ -58,19 +57,6 @@ type HttpTracer struct {
 }
 
 func NewHttpTracer(config config.Config) (*HttpTracer, error) {
-	f, err := os.Create(config.TracerFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create trace output file: %v", err)
-	}
-	if err := f.Close(); err != nil {
-		return nil, fmt.Errorf("failed to close trace file: %v", err)
-	}
-
-	if err := trace.Start(f); err != nil {
-		return nil, fmt.Errorf("failed to start trace: %v", err)
-	}
-	defer trace.Stop()
-
 	tracer, meter, logger, shutdownTracerProvider, shutdownMeterProvider, shutdownLoggerProvider := initOtel(config.OtelHost)
 	return &HttpTracer{
 		Tracer:                 tracer,
