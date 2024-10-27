@@ -2,7 +2,9 @@ package query_test
 
 import (
 	"context"
+	"errors"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	mocks "github.com/Medzoner/medzoner-go/test"
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
@@ -10,7 +12,6 @@ import (
 )
 
 func TestListTechnoQueryHandler(t *testing.T) {
-
 	t.Run("Unit: test ListTechnoQueryHandler \"stack\" success", func(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "stack",
@@ -89,6 +90,24 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
+
+		_, err := handler.Handle(context.Background(), listTechnoQuery)
+		if err != nil {
+			t.Errorf("Error: %v", err)
+		}
+	})
+
+	t.Run("Unit: test ListTechnoQueryHandler \"stack\" failed", func(t *testing.T) {
+		mocked := mocks.New(t)
+		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(nil, errors.New("error")).AnyTimes()
+		listTechnoQuery := query.ListTechnoQuery{
+			Type: "stack",
+		}
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		httpTracerMock.EXPECT().Error(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+
+		handler := query.NewListTechnoQueryHandler(mocked.TechnoRepository, httpTracerMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {

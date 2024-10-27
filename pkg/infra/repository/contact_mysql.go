@@ -30,9 +30,7 @@ func NewMysqlContactRepository(dbInstance database.DbInstantiator, logger logger
 // Save Save
 func (m *MysqlContactRepository) Save(ctx context.Context, contact entity.Contact) error {
 	_, iSpan := m.Tracer.Start(ctx, "MysqlContactRepository.Save")
-	defer func() {
-		iSpan.End()
-	}()
+	defer iSpan.End()
 
 	conn, err := m.DbInstance.GetConnection().Begin()
 	if err != nil {

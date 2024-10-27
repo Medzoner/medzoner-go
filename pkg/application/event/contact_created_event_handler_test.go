@@ -7,6 +7,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	mocks "github.com/Medzoner/medzoner-go/test"
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
@@ -62,6 +63,22 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		assert.Equal(t, err, nil)
 		assert.Equal(t, loggerTest.LogMessages[0], "Error bad event type.")
 		assert.Equal(t, mailer.isSend, false)
+	})
+	t.Run("Unit: test ContactCreatedEventHandler failed send mail", func(t *testing.T) {
+		mocked := mocks.New(t)
+		mailer := mocked.Mailer
+		mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(false, fmt.Errorf("error")).AnyTimes()
+
+		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
+		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		httpTracerMock.EXPECT().Error(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+		loggerTest := &LoggerTest{}
+		handler := event.NewContactCreatedEventHandler(mailer, loggerTest, httpTracerMock)
+		contactCreatedEvent := event.ContactCreatedEvent{
+			Contact: contact,
+		}
+		err := handler.Publish(context.Background(), contactCreatedEvent)
+		assert.Equal(t, err, nil)
 	})
 }
 
