@@ -53,8 +53,5 @@ func NewConfig() (Config, error) {
 // parseEnv parseEnv
 func parseEnv() (Config, error) {
 	cfg := &Config{}
-	if err := env.Parse(cfg); err != nil {
-		return *cfg, err
-	}
-	return *cfg, nil
+	return *cfg, env.Parse(cfg)
 }

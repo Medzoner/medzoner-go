@@ -102,7 +102,7 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 			},
 			mocks: func() {
 				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
-				mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("error"))
+				mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
 				mocked.HttpTracer.EXPECT().Error(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
 			},
 			expectedCode: http.StatusInternalServerError,

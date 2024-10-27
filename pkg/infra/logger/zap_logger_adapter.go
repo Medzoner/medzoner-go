@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -31,22 +30,13 @@ func NewLoggerAdapter() (*ZapLoggerAdapter, error) {
 	}
 
 	zapLogger, err := cfg.Build()
-	if err != nil {
-		return nil, err
-	}
 
 	zl := ZapLoggerAdapter{
 		Zap: zapLogger,
 	}
-	defer zl.deferLogger(zapLogger)
+	defer zapLogger.Sync()
 
-	return &zl, nil
-}
-
-func (z ZapLoggerAdapter) deferLogger(zapLogger *zap.Logger) {
-	if err := zapLogger.Sync(); err == nil {
-		fmt.Println("sync defer")
-	}
+	return &zl, err
 }
 
 // Log Log

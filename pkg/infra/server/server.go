@@ -41,9 +41,8 @@ func NewServer(
 		Logger: logger,
 		Router: route,
 		HTTPServer: &http.Server{
-			Addr:    fmt.Sprintf(":%d", conf.APIPort),
-			Handler: route,
-
+			Addr:              fmt.Sprintf(":%d", conf.APIPort),
+			Handler:           route,
 			ReadHeaderTimeout: time.Second,
 		},
 		APIPort:            conf.APIPort,
