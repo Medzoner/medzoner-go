@@ -100,17 +100,6 @@ func TestListTechnoQueryHandler(t *testing.T) {
 type TechnoRepositoryTest struct{}
 
 func (m *TechnoRepositoryTest) FetchStack(ctx context.Context) (map[string]interface{}, error) {
-	return map[string]interface{}{}, nil
-}
-func (m *TechnoRepositoryTest) FetchExperience() (map[string]interface{}, error) {
-	return map[string]interface{}{}, nil
-}
-func (m *TechnoRepositoryTest) FetchFormation() (map[string]interface{}, error) {
-	return map[string]interface{}{}, nil
-}
-func (m *TechnoRepositoryTest) FetchLang() (map[string]interface{}, error) {
-	return map[string]interface{}{}, nil
-}
-func (m *TechnoRepositoryTest) FetchOther() (map[string]interface{}, error) {
+	_ = ctx
 	return map[string]interface{}{}, nil
 }

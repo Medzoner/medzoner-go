@@ -4,32 +4,29 @@
 package dependency
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-	mocks "github.com/Medzoner/medzoner-go/test"
-	mailerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/service/mailer"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
-
-	domainRepositoryMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
-
-	domainRepository "github.com/Medzoner/medzoner-go/pkg/domain/repository"
-
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/application/service/mailer"
-
+	domainRepository "github.com/Medzoner/medzoner-go/pkg/domain/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/mailersmtp"
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
+	mocks "github.com/Medzoner/medzoner-go/test"
+	domainRepositoryMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
+	mailerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/service/mailer"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 
 	"github.com/google/wire"
 )
@@ -37,7 +34,6 @@ import (
 var (
 	InfraWiring = wire.NewSet(
 		config.NewConfig,
-		logger.NewUseSugar,
 		logger.NewLoggerAdapter,
 		router.NewMuxRouterAdapter,
 		server.NewServer,
@@ -46,6 +42,7 @@ var (
 		session.NewSessionerAdapter,
 		validation.NewValidatorAdapter,
 		captcha.NewRecaptchaAdapter,
+		middleware.NewAPIMiddleware,
 
 		wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)),
 		wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)),

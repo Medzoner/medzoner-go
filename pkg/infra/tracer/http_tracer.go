@@ -3,18 +3,20 @@ package tracer
 import (
 	"context"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
-	"go.opentelemetry.io/otel/attribute"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"runtime/trace"
+	"time"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -31,143 +33,15 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+var tracerName = "medzoner/otel-collector"
 var serviceName = semconv.ServiceNameKey.String("medzoner-service")
-
-// Initialize a gRPC connection to be used by both the tracer and meter
-// providers.
-func initConn(host string) (*grpc.ClientConn, error) {
-	// It connects the OpenTelemetry Collector through local gRPC connection.
-	// You may replace `localhost:4317` with your endpoint.
-	conn, err := grpc.NewClient(host,
-		// Note the use of insecure transport here. TLS is recommended in production.
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create gRPC connection to collector: %w", err)
-	}
-
-	return conn, err
-}
-
-// Initializes an OTLP exporter, and configures the corresponding trace provider.
-func initTracerProvider(ctx context.Context, res *resource.Resource, conn *grpc.ClientConn) (func(context.Context) error, error) {
-	// Set up a trace exporter
-	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create trace exporter: %w", err)
-	}
-
-	// Register the trace exporter with a TracerProvider, using a batch
-	// span processor to aggregate spans before export.
-	bsp := sdktrace.NewBatchSpanProcessor(traceExporter)
-	tracerProvider := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithResource(res),
-		sdktrace.WithSpanProcessor(bsp),
-	)
-	otel.SetTracerProvider(tracerProvider)
-
-	// Set global propagator to tracecontext (the default is no-op).
-	otel.SetTextMapPropagator(propagation.TraceContext{})
-
-	// Shutdown will flush any remaining spans and shut down the exporter.
-	return tracerProvider.Shutdown, nil
-}
-
-// Initializes an OTLP exporter, and configures the corresponding meter provider.
-func initMeterProvider(ctx context.Context, res *resource.Resource, conn *grpc.ClientConn) (func(context.Context) error, error) {
-	metricExporter, err := otlpmetricgrpc.New(ctx, otlpmetricgrpc.WithGRPCConn(conn))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create metrics exporter: %w", err)
-	}
-
-	meterProvider := sdkmetric.NewMeterProvider(
-		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter)),
-		sdkmetric.WithResource(res),
-	)
-	otel.SetMeterProvider(meterProvider)
-
-	return meterProvider.Shutdown, nil
-}
-
-func initLogger(ctx context.Context, res *resource.Resource, conn *grpc.ClientConn) (func(context.Context) error, *slog.Logger, error) {
-	// Create the OTLP log exporter that sends logs to configured destination
-	logExporter, err := otlploggrpc.New(ctx, otlploggrpc.WithGRPCConn(conn))
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create logs exporter: %w", err)
-	}
-
-	lp := otelLog.NewLoggerProvider(
-		otelLog.WithProcessor(
-			otelLog.NewBatchProcessor(logExporter),
-		),
-	)
-
-	// Ensure the logger is shutdown before exiting so all pending logs are exported
-	//defer lp.Shutdown(ctx)
-
-	// Set the logger provider globally
-	global.SetLoggerProvider(lp)
-
-	// Instantiate a new slog logger
-	logger := otelslog.NewLogger(serviceName.Value.AsString())
-
-	// You can use the logger directly anywhere in your app now
-	logger.Debug("Something interesting happened")
-
-	return lp.Shutdown, logger, nil
-}
-
-func initOtel(host string) (otelTrace.Tracer, metric.Meter, *slog.Logger, func(context.Context) error, func(context.Context) error, func(context.Context) error) {
-	log.Printf("Otel: Waiting for connection...")
-
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
-
-	conn, err := initConn(host)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	res, err := resource.New(ctx,
-		resource.WithAttributes(
-			// The service name used to display traces in backends
-			serviceName,
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	shutdownTracerProvider, err := initTracerProvider(ctx, res, conn)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	shutdownMeterProvider, err := initMeterProvider(ctx, res, conn)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	shutdownLoggerProvider, logger, err := initLogger(ctx, res, conn)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	name := "medzoner/otel-collector"
-	tracer := otel.Tracer(name)
-	meter := otel.Meter(name)
-
-	log.Printf("Otel: Done!")
-
-	return tracer, meter, logger, shutdownTracerProvider, shutdownMeterProvider, shutdownLoggerProvider
-}
 
 //go:generate mockgen -destination=../../../test/mocks/pkg/infra/tracer/http_tracer.go -package=tracerMock -source=./http_tracer.go Tracer
 type Tracer interface {
-	WriteLog(ctx context.Context, message string)
+	StartRoot(ctx context.Context, request *http.Request, spanName string) (context.Context, otelTrace.Span)
 	Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span)
-	Int64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error)
+
+	Error(span otelTrace.Span, err error) error
 
 	ShutdownTracer(ctx context.Context) error
 	ShutdownMeter(ctx context.Context) error
@@ -183,49 +57,17 @@ type HttpTracer struct {
 	Logger                 *slog.Logger
 }
 
-func (t HttpTracer) ShutdownLogger(ctx context.Context) error {
-	log.Printf("Shutting down LoggerProvider")
-	err := t.ShutdownLoggerProvider(ctx)
-	if err != nil {
-		log.Printf("failed to shutdown LoggerProvider: %s", err)
-		return err
-	}
-	return nil
-}
-
-func (t HttpTracer) ShutdownTracer(ctx context.Context) error {
-	log.Printf("Shutting down TracerProvider")
-	return t.ShutdownTracerProvider(ctx)
-}
-
-func (t HttpTracer) ShutdownMeter(ctx context.Context) error {
-	log.Printf("Shutting down MeterProvider")
-	return t.ShutdownMeterProvider(ctx)
-}
-
-func (t HttpTracer) Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span) {
-	ctx, span := t.Tracer.Start(ctx, spanName, opts...)
-	correlationID := middleware.GetCorrelationID(ctx)
-	span.SetAttributes(attribute.String("correlation_id", correlationID))
-	return ctx, span
-}
-
-func (t HttpTracer) Int64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error) {
-	return t.Meter.Int64Counter(name, options...)
-}
-
 func NewHttpTracer(config config.Config) (*HttpTracer, error) {
 	f, err := os.Create(config.TracerFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create trace output file: %v", err)
 	}
-
 	if err := f.Close(); err != nil {
 		return nil, fmt.Errorf("failed to close trace file: %v", err)
 	}
 
 	if err := trace.Start(f); err != nil {
-		log.Fatalf("failed to start trace: %v", err)
+		return nil, fmt.Errorf("failed to start trace: %v", err)
 	}
 	defer trace.Stop()
 
@@ -240,13 +82,131 @@ func NewHttpTracer(config config.Config) (*HttpTracer, error) {
 	}, nil
 }
 
-func (t HttpTracer) WriteLog(ctx context.Context, message string) {
-	ctx, task := trace.NewTask(ctx, "awesomeTask")
-	trace.Log(ctx, "orderID", message)
-	trace.WithRegion(ctx, message, func() {})
-	// preparation of the task
-	go func() { // continue processing the task in a separate goroutine.
-		defer task.End()
-		trace.WithRegion(ctx, message, func() {})
-	}()
+func (t HttpTracer) Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span) {
+	ctx, span := t.Tracer.Start(ctx, spanName, opts...)
+	span.SetAttributes(attribute.String("correlation_id", middleware.GetCorrelationID(ctx)))
+	return ctx, span
+}
+
+func (t HttpTracer) StartRoot(ctx context.Context, request *http.Request, spanName string) (context.Context, otelTrace.Span) {
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+	return t.Start(ctx, spanName,
+		otelTrace.WithSpanKind(otelTrace.SpanKindServer),
+		otelTrace.WithNewRoot(),
+		otelTrace.WithAttributes([]attribute.KeyValue{
+			attribute.String("host", request.Host),
+			attribute.String("path", request.URL.Path),
+			attribute.String("method", request.Method),
+		}...))
+}
+
+func (t HttpTracer) Error(span otelTrace.Span, err error) error {
+	span.RecordError(err)
+	return fmt.Errorf("error during handle event: %w", err)
+}
+
+func (t HttpTracer) ShutdownLogger(ctx context.Context) error {
+	return t.ShutdownLoggerProvider(ctx)
+}
+
+func (t HttpTracer) ShutdownTracer(ctx context.Context) error {
+	return t.ShutdownTracerProvider(ctx)
+}
+
+func (t HttpTracer) ShutdownMeter(ctx context.Context) error {
+	return t.ShutdownMeterProvider(ctx)
+}
+
+func initOtel(host string) (otelTrace.Tracer, metric.Meter, *slog.Logger, func(context.Context) error, func(context.Context) error, func(context.Context) error) {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	conn, err := initConn(host)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := resource.New(ctx, resource.WithAttributes(serviceName))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	shutdownTracerProvider, err := initTracerProvider(ctx, res, conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	shutdownMeterProvider, err := initMeterProvider(ctx, res, conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	shutdownLoggerProvider, logger, err := initLogger(ctx, conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tracer := otel.Tracer(tracerName)
+	meter := otel.Meter(tracerName)
+
+	return tracer, meter, logger, shutdownTracerProvider, shutdownMeterProvider, shutdownLoggerProvider
+}
+
+func initConn(host string) (*grpc.ClientConn, error) {
+	return grpc.NewClient(host,
+		// Note the use of insecure transport here. TLS is recommended in production.
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+}
+
+func initTracerProvider(ctx context.Context, res *resource.Resource, conn *grpc.ClientConn) (func(context.Context) error, error) {
+	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create trace exporter: %w", err)
+	}
+
+	bsp := sdktrace.NewBatchSpanProcessor(traceExporter)
+	tracerProvider := sdktrace.NewTracerProvider(
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithResource(res),
+		sdktrace.WithSpanProcessor(bsp),
+	)
+	otel.SetTracerProvider(tracerProvider)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+
+	return tracerProvider.Shutdown, nil
+}
+
+func initMeterProvider(ctx context.Context, res *resource.Resource, conn *grpc.ClientConn) (func(context.Context) error, error) {
+	metricExporter, err := otlpmetricgrpc.New(ctx, otlpmetricgrpc.WithGRPCConn(conn))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create metrics exporter: %w", err)
+	}
+
+	meterProvider := sdkmetric.NewMeterProvider(
+		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter)),
+		sdkmetric.WithResource(res),
+	)
+	otel.SetMeterProvider(meterProvider)
+
+	return meterProvider.Shutdown, nil
+}
+
+func initLogger(ctx context.Context, conn *grpc.ClientConn) (func(context.Context) error, *slog.Logger, error) {
+	logExporter, err := otlploggrpc.New(ctx, otlploggrpc.WithGRPCConn(conn))
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create logs exporter: %w", err)
+	}
+
+	lp := otelLog.NewLoggerProvider(
+		otelLog.WithProcessor(otelLog.NewBatchProcessor(logExporter)),
+	)
+
+	global.SetLoggerProvider(lp)
+
+	logger := otelslog.NewLogger(serviceName.Value.AsString())
+	logger.Debug("initLogger")
+
+	return lp.Shutdown, logger, nil
 }

@@ -4,22 +4,8 @@ import (
 	"net/http"
 )
 
-// IMiddleware IMiddleware
-type IMiddleware interface {
-	Middleware(next http.Handler) http.Handler
-}
-
-// APIMiddleware APIMiddleware
-type APIMiddleware struct{}
-
-// NewAPIMiddleware NewAPIMiddleware
-func NewAPIMiddleware() IMiddleware {
-	return &APIMiddleware{}
-
-}
-
-// Middleware Middleware
-func (m APIMiddleware) Middleware(next http.Handler) http.Handler {
+// CorsMiddleware is a middleware to handle CORS
+func (m APIMiddleware) CorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")

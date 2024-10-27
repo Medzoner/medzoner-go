@@ -54,13 +54,12 @@ func New(srv server.Server, mocked mocks.Mocks) *APIFeature {
 // InitializeTestSuite InitializeTestSuite
 func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 	ctx.BeforeSuite(func() {
-		fmt.Println("BeforeSuite", ctx)
 		// a.resetBdd()
 	})
 	ctx.AfterSuite(func() {
-		fmt.Println("AfterSuite", ctx)
-		// mg := wiring.InitDbMigration()
-		// mg.MigrateDown()
+		if err := a.Server.Shutdown(context.Background()); err != nil {
+			fmt.Println(err)
+		}
 	})
 }
 
@@ -90,32 +89,9 @@ func (a *APIFeature) iAddHeaderEqualTo(arg1, arg2 string) (err error) {
 func (a *APIFeature) iSendARequestTo(method, endpoint string) (err error) {
 	a.Request.Method = method
 	a.Request.URL, err = url.Parse(endpoint)
-	/*	if err != nil {
-			return
-		}
-
-		client := &http.Client{}
-		resp, err := client.Do(a.Request)
-		if err != nil {
-			fmt.Println(err)
-		}
-		// _ = resp.Body.Close()
-		a.Response = resp
-
-		// handle panic
-		defer func() {
-			switch t := recover().(type) {
-			case string:
-				err = fmt.Errorf(t)
-			case error:
-				err = t
-			}
-		}()*/
 
 	recorder := httptest.NewRecorder()
-
-	request := a.Request
-	a.Server.Router.ServeHTTP(recorder, request)
+	a.Server.Router.ServeHTTP(recorder, a.Request)
 	a.Response = recorder.Result()
 
 	return

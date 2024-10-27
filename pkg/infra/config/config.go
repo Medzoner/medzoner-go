@@ -10,8 +10,8 @@ type RootPath string
 
 // Config Config
 type Config struct {
-	Environment        string `env:"ENV" envDefault:"dev"`
-	RootPath           RootPath
+	Environment        string         `env:"ENV" envDefault:"dev"`
+	RootPath           RootPath       `env:"ROOT_PATH"`
 	DebugMode          bool           `env:"DEBUG" envDefault:"false"`
 	Options            []string       `env:"OPTIONS" envDefault:"[]"`
 	APIPort            int            `env:"API_PORT" envDefault:"8002"`
@@ -39,11 +39,13 @@ func NewConfig() (Config, error) {
 	if err != nil {
 		return conf, err
 	}
-	pwd, err := os.Getwd()
-	if err != nil {
-		return conf, err
+	if conf.RootPath == "" {
+		pwd, err := os.Getwd()
+		if err != nil {
+			return conf, err
+		}
+		conf.RootPath = RootPath(pwd + "/")
 	}
-	conf.RootPath = RootPath(pwd + "/")
 
 	return conf, nil
 }

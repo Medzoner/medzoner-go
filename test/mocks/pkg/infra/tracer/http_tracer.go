@@ -6,10 +6,10 @@ package tracerMock
 
 import (
 	context "context"
+	http "net/http"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	metric "go.opentelemetry.io/otel/metric"
 	trace "go.opentelemetry.io/otel/trace"
 )
 
@@ -36,24 +36,18 @@ func (m *MockTracer) EXPECT() *MockTracerMockRecorder {
 	return m.recorder
 }
 
-// Int64Counter mocks base method.
-func (m *MockTracer) Int64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error) {
+// Error mocks base method.
+func (m *MockTracer) Error(span trace.Span, err error) error {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{name}
-	for _, a := range options {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "Int64Counter", varargs...)
-	ret0, _ := ret[0].(metric.Int64Counter)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "Error", span, err)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// Int64Counter indicates an expected call of Int64Counter.
-func (mr *MockTracerMockRecorder) Int64Counter(name interface{}, options ...interface{}) *gomock.Call {
+// Error indicates an expected call of Error.
+func (mr *MockTracerMockRecorder) Error(span, err interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{name}, options...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Int64Counter", reflect.TypeOf((*MockTracer)(nil).Int64Counter), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Error", reflect.TypeOf((*MockTracer)(nil).Error), span, err)
 }
 
 // ShutdownLogger mocks base method.
@@ -118,14 +112,17 @@ func (mr *MockTracerMockRecorder) Start(ctx, spanName interface{}, opts ...inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Start", reflect.TypeOf((*MockTracer)(nil).Start), varargs...)
 }
 
-// WriteLog mocks base method.
-func (m *MockTracer) WriteLog(ctx context.Context, message string) {
+// StartRoot mocks base method.
+func (m *MockTracer) StartRoot(ctx context.Context, request *http.Request, spanName string) (context.Context, trace.Span) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "WriteLog", ctx, message)
+	ret := m.ctrl.Call(m, "StartRoot", ctx, request, spanName)
+	ret0, _ := ret[0].(context.Context)
+	ret1, _ := ret[1].(trace.Span)
+	return ret0, ret1
 }
 
-// WriteLog indicates an expected call of WriteLog.
-func (mr *MockTracerMockRecorder) WriteLog(ctx, message interface{}) *gomock.Call {
+// StartRoot indicates an expected call of StartRoot.
+func (mr *MockTracerMockRecorder) StartRoot(ctx, request, spanName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteLog", reflect.TypeOf((*MockTracer)(nil).WriteLog), ctx, message)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartRoot", reflect.TypeOf((*MockTracer)(nil).StartRoot), ctx, request, spanName)
 }

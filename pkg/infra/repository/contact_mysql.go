@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
@@ -33,22 +34,39 @@ func (m *MysqlContactRepository) Save(ctx context.Context, contact entity.Contac
 		iSpan.End()
 	}()
 
-	conn := m.DbInstance.GetConnection().MustBegin()
+	conn, err := m.DbInstance.GetConnection().Begin()
+	if err != nil {
+		m.Logger.Error(fmt.Sprintln(err))
+		iSpan.RecordError(err)
+		return fmt.Errorf("error during begin transaction: %w", err)
+	}
 	contact.EmailString = contact.Email.String
 
-	query := `INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (:name, :message, :emailstring, :date_add, :uuid)`
-	res, err := conn.NamedExec(query, contact)
+	stmt, err := conn.Prepare(`INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (?,?,?,?,?)`)
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			m.Logger.Error(fmt.Sprintln(err))
+			iSpan.RecordError(err)
+		}
+	}(stmt)
 	if err != nil {
 		m.Logger.Error(fmt.Sprintln(err))
 		iSpan.RecordError(err)
 		return fmt.Errorf("error during commit transaction: %w", err)
 	}
-	if res != nil {
-		if err = conn.Commit(); err != nil {
-			m.Logger.Error(fmt.Sprintln(err))
-			iSpan.RecordError(err)
-			return fmt.Errorf("error during commit transaction: %w", err)
-		}
+
+	_, err = stmt.Exec(contact.Name, contact.Message, contact.EmailString, contact.DateAdd, contact.UUID)
+	if err != nil {
+		m.Logger.Error(fmt.Sprintln(err))
+		iSpan.RecordError(err)
+		return fmt.Errorf("error during exec statement: %w", err)
+	}
+
+	if err = conn.Commit(); err != nil {
+		m.Logger.Error(fmt.Sprintln(err))
+		iSpan.RecordError(err)
+		return fmt.Errorf("error during commit transaction: %w", err)
 	}
 	return nil
 }

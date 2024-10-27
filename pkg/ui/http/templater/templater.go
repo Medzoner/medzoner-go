@@ -30,7 +30,6 @@ func NewTemplateHTML(config config.Config) *TemplateHTML {
 
 // Render renders template
 func (t *TemplateHTML) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
-	// response.WriteHeader(status)
 	_ = status
 
 	htmlTemplate, err := t.parseTemplates(name)
@@ -57,8 +56,6 @@ func (t *TemplateHTML) parseTemplates(name string) (*template.Template, error) {
 		}
 		return err
 	})
-	if err != nil {
-		return nil, err
-	}
-	return tpl, nil
+
+	return tpl, err
 }
