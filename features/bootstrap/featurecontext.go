@@ -38,18 +38,16 @@ func (b BodyRequest) Read(p []byte) (n int, err error) {
 
 // New initialize a new APIFeature
 func New(srv server.Server, mocked mocks.Mocks) *APIFeature {
-	feature := &APIFeature{
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/", recorder.Body)
+
+	srv.Router.ServeHTTP(recorder, request)
+	return &APIFeature{
 		Response: &http.Response{},
+		Request:  request,
 		Server:   srv,
 		Mocks:    mocked,
 	}
-
-	recorder := httptest.NewRecorder()
-	request := httptest.NewRequest(http.MethodGet, "/", recorder.Body)
-	feature.Request = request
-
-	srv.Router.ServeHTTP(recorder, request)
-	return feature
 }
 
 // InitializeTestSuite InitializeTestSuite
@@ -78,7 +76,7 @@ func (a *APIFeature) InitializeScenario(ctx *godog.ScenarioContext) {
 }
 
 func (a *APIFeature) resetResponse() {
-	a.Request, _ = http.NewRequest("GET", "/", BodyRequest{}.Body)
+	a.Request, _ = http.NewRequest(http.MethodGet, "/", BodyRequest{}.Body)
 	a.Response = &http.Response{}
 }
 
@@ -126,17 +124,18 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocStr
 		}
 		a.Request.PostForm = v
 	}
-	a.Request.Method = "POST"
+
 	urlParse, err := url.Parse(arg1)
 	if err != nil {
 		return err
 	}
 	a.Request.URL = urlParse
+	a.Request.Method = http.MethodPost
 
 	recorder := httptest.NewRecorder()
-	request := a.Request
 
-	a.Server.Router.ServeHTTP(recorder, request)
+	a.Server.Router.ServeHTTP(recorder, a.Request)
 	a.Response = recorder.Result()
+
 	return nil
 }

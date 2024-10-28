@@ -37,8 +37,10 @@ type DatabaseConfig struct {
 // NewConfig is a constructor for Config
 func NewConfig() (Config, error) {
 	cfg := Config{}
-	err := env.Parse(&cfg)
-	if err == nil && cfg.RootPath == "" {
+	if err := env.Parse(&cfg); err != nil {
+		return cfg, err
+	}
+	if cfg.RootPath == "" {
 		pwd, err := os.Getwd()
 		if err != nil {
 			return cfg, err
@@ -46,5 +48,5 @@ func NewConfig() (Config, error) {
 		cfg.RootPath = RootPath(pwd + "/")
 	}
 
-	return cfg, err
+	return cfg, nil
 }

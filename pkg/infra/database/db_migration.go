@@ -9,7 +9,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type DbMigration struct {
@@ -32,18 +31,8 @@ const (
 	Down = "down"
 )
 
-// MigrateUp is a function that migrates the database up
-func (d *DbMigration) MigrateUp() error {
-	return d.migrate(Up)
-}
-
-// MigrateDown is a function that migrates down
-func (d *DbMigration) MigrateDown() error {
-	return d.migrate(Down)
-}
-
-// migrate is a function that migrates down
-func (d *DbMigration) migrate(action string) error {
+// Migrate is a function that migrates down
+func (d *DbMigration) Migrate(action string) error {
 	db, err := d.getNewWithDatabaseInstance()
 	if err != nil {
 		return fmt.Errorf("database instantiate failed: %w", err)
