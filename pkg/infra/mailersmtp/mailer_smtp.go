@@ -64,7 +64,7 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 
 	auth := smtp.PlainAuth(m.User, m.User, m.Password, m.Host)
 	req := NewRequest([]string{m.User}, "Message [medzoner.com]", "Hello, World!")
-	if err := req.ParseTemplate(m.RootPath+"/tmpl/contact/contactEmail.html", view); err != nil {
+	if err := req.parseTemplate(m.RootPath+"/tmpl/contact/contactEmail.html", view); err != nil {
 		iSpan.RecordError(err)
 		return false, fmt.Errorf("parse template failed: %w", err)
 	}
@@ -82,15 +82,13 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 	servername := fmt.Sprintf("%s:%s", m.Host, m.Port)
 
 	if err := smtp.SendMail(servername, auth, m.User, req.to, msg); err != nil {
-		iSpan.RecordError(err)
-		return false, fmt.Errorf("sendmail failed: %w", err)
+		return false, m.Tracer.Error(iSpan, fmt.Errorf("send mail failed: %w", err))
 	}
 
 	return true, nil
 }
 
-// ParseTemplate ParseTemplate
-func (r *Request) ParseTemplate(templateFileName string, data interface{}) error {
+func (r *Request) parseTemplate(templateFileName string, data interface{}) error {
 	t, err := template.ParseFiles(templateFileName)
 	if err != nil {
 		return err
