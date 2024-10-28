@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
@@ -15,7 +14,7 @@ type DbSQLInstance struct {
 	DriverName   string
 }
 
-// NewDbSQLInstance NewDbSQLInstance
+// NewDbSQLInstance is a function that returns a new DbSQLInstance
 func NewDbSQLInstance(conf config.Config) *DbSQLInstance {
 	d := &DbSQLInstance{
 		Dsn:          conf.Database.Dsn,
@@ -40,7 +39,7 @@ func (d *DbSQLInstance) GetConnection() (db *sqlx.DB) {
 	return d.Connection
 }
 
-// CreateDatabase CreateDatabase
+// CreateDatabase is a function that creates a database
 func (d *DbSQLInstance) CreateDatabase(databaseName string) {
 	if d.DriverName == "mysql" {
 		dbCreate := d.openDb(d.Dsn + "/" + dsnOptions)
@@ -63,15 +62,7 @@ func (d *DbSQLInstance) GetDatabaseName() string {
 
 // GetDatabaseDriver is a function that returns the database driver
 func (d *DbSQLInstance) GetDatabaseDriver() (database.Driver, error) {
-	driver, err := mysql.WithInstance(d.Connection.DB, &mysql.Config{})
-	if err != nil {
-		return nil, fmt.Errorf("could not start sql migration... %vw", err)
-	}
-
-	if driver == nil {
-		return nil, fmt.Errorf("driver fail %v", d.Connection.DriverName())
-	}
-	return driver, nil
+	return mysql.WithInstance(d.Connection.DB, &mysql.Config{})
 }
 
 func (d *DbSQLInstance) openDb(dsn string) *sqlx.DB {

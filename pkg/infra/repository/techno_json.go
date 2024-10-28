@@ -44,8 +44,7 @@ func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]inter
 }
 
 func (m *TechnoJSONRepository) deferJSONFile(jsonFile *os.File) {
-	err := jsonFile.Close()
-	if err != nil {
+	if err := jsonFile.Close(); err != nil {
 		m.Logger.Error("jsonFile error.")
 	}
 }

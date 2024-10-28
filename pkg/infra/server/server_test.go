@@ -4,14 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"testing"
+
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	"net/http"
-	"testing"
-	"time"
 )
 
 func TestServer(t *testing.T) {
@@ -24,10 +25,8 @@ func TestServer(t *testing.T) {
 		go func() {
 			srv.Start(context.Background())
 		}()
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
 
-		if err := srv.Shutdown(ctx); err != nil {
+		if err := srv.ShutdownWithTimeout(); err != nil {
 			t.Errorf("Server Shutdown Failed:%+v", err)
 		}
 	})
@@ -40,10 +39,8 @@ func TestServer(t *testing.T) {
 		go func() {
 			srv.Start(context.Background())
 		}()
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
 
-		if err := srv.Shutdown(ctx); err != nil {
+		if err := srv.ShutdownWithTimeout(); err != nil {
 			t.Errorf("Server Shutdown Failed:%+v", err)
 		}
 	})
@@ -67,25 +64,31 @@ type RouterMock struct{}
 func (r RouterMock) HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route {
 	_ = path
 	_ = f
+	_ = r
 	return &mux.Route{}
 }
 
 func (r RouterMock) PathPrefix(tpl string) *mux.Route {
 	_ = tpl
+	_ = r
 	return &mux.Route{}
 }
 
 func (r RouterMock) Use(mwf ...mux.MiddlewareFunc) {
+	_ = r
 	_ = mwf
 }
 
 func (r RouterMock) SetNotFoundHandler(handler func(http.ResponseWriter, *http.Request)) {
+	_ = r
 	_ = handler
 }
 
 func (r RouterMock) ServeHTTP(http.ResponseWriter, *http.Request) {
+	_ = r
 }
 
 func (r RouterMock) Handle(path string) {
+	_ = r
 	_ = path
 }

@@ -18,7 +18,7 @@ import (
 
 type IServer interface {
 	Start(ctx context.Context)
-	Shutdown(ctx context.Context) error
+	ShutdownWithTimeout() error
 }
 
 type Server struct {
@@ -30,7 +30,7 @@ type Server struct {
 	Tracer             tracer.Tracer
 }
 
-// NewServer NewServer
+// NewServer initializes a new Server instance with configurations.
 func NewServer(
 	conf config.Config,
 	route router.IRouter,
@@ -51,40 +51,69 @@ func NewServer(
 	}
 }
 
-func (s Server) Start(ctx context.Context) {
+// Start initiates the server and listens for system signals for graceful shutdown.
+func (s *Server) Start(ctx context.Context) {
+	// Capture OS signals for graceful shutdown
 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
 	recaptcha.Init(s.RecaptchaSecretKey)
+	s.Logger.Log(fmt.Sprintf("Server starting on port '%d'", s.APIPort))
 
+	// Run server in a goroutine to handle requests
 	go func() {
-		s.Logger.Log(fmt.Sprintf("Server up on port '%d'", s.APIPort))
 		if err := s.HTTPServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			s.Logger.Error(fmt.Sprintf("listen and serve returned err: %v", err))
+			s.Logger.Error(fmt.Sprintf("HTTP server error: %v", err))
 		}
 	}()
 
-	<-ctx.Done()
-	s.Logger.Log("got interruption signal")
-	if err := s.Shutdown(context.TODO()); err != nil { // Use here context with a required timeout
-		s.Logger.Error(fmt.Sprintf("server shutdown returned an err: %v", err))
+	<-ctx.Done() // Wait for signal
+
+	s.Logger.Log("Interrupt signal received; shutting down server...")
+	if err := s.ShutdownWithTimeout(); err != nil {
+		s.Logger.Error(fmt.Sprintf("Shutdown error: %v", err))
 	}
 
-	s.Logger.Log("server stopped!")
+	s.Logger.Log("Server stopped successfully!")
 }
 
-func (s Server) Shutdown(ctx context.Context) error {
-	defer func() {
-		if err := s.Tracer.ShutdownTracer(ctx); err != nil {
-			s.Logger.Error(fmt.Sprintf("failed to shutdown TracerProvider: %s", err))
-		}
-		if err := s.Tracer.ShutdownMeter(ctx); err != nil {
-			s.Logger.Error(fmt.Sprintf("failed to shutdown MeterProvider: %s", err))
-		}
-		if err := s.Tracer.ShutdownLogger(ctx); err != nil {
-			s.Logger.Error(fmt.Sprintf("failed to shutdown LoggerProvider: %s", err))
-		}
-		s.Logger.Log("Tracer, Meter and Logger providers are shutdown")
-	}()
-	return s.HTTPServer.Shutdown(ctx)
+// ShutdownWithTimeout gracefully shuts down the server with a timeout context.
+func (s *Server) ShutdownWithTimeout() error {
+	// Set a timeout for the shutdown process
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Shutdown HTTP server and then tracer, meter, and logger providers
+	if err := s.HTTPServer.Shutdown(ctx); err != nil {
+		s.Logger.Error(fmt.Sprintf("HTTP server shutdown error: %v", err))
+	}
+
+	// Shutdown tracer components
+	if err := s.shutdownTracerProviders(ctx); err != nil {
+		return fmt.Errorf("tracer providers shutdown error: %w", err)
+	}
+
+	return nil
+}
+
+// shutdownTracerProviders shuts down all tracer-related providers in the context.
+func (s *Server) shutdownTracerProviders(ctx context.Context) error {
+	if err := s.Tracer.ShutdownTracer(ctx); err != nil {
+		s.logProviderShutdownError("TracerProvider", err)
+	}
+	if err := s.Tracer.ShutdownMeter(ctx); err != nil {
+		s.logProviderShutdownError("MeterProvider", err)
+	}
+	if err := s.Tracer.ShutdownLogger(ctx); err != nil {
+		s.logProviderShutdownError("LoggerProvider", err)
+	}
+	s.Logger.Log("Tracer, Meter, and Logger providers have been shut down")
+	return nil
+}
+
+// logProviderShutdownError logs errors for shutdown of specific providers.
+func (s *Server) logProviderShutdownError(provider string, err error) {
+	if err != nil {
+		s.Logger.Error(fmt.Sprintf("Failed to shutdown %s: %v", provider, err))
+	}
 }

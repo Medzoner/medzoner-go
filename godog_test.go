@@ -35,8 +35,8 @@ func TestFeatures(t *testing.T) {
 	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
 	mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
 
-	_ = os.Setenv("APP_ENV", "test")
-	_ = os.Setenv("DEBUG", "true")
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("DEBUG", "true")
 	srv, err := dependency.InitServerTest(&mocked)
 	if err != nil {
 		t.Error(err)

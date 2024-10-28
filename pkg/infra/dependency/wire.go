@@ -18,7 +18,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
-	"github.com/Medzoner/medzoner-go/pkg/infra/session"
 	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
@@ -38,8 +37,6 @@ var (
 		router.NewMuxRouterAdapter,
 		server.NewServer,
 		templater.NewTemplateHTML,
-		session.NewSessionKey,
-		session.NewSessionerAdapter,
 		validation.NewValidatorAdapter,
 		captcha.NewRecaptchaAdapter,
 		middleware.NewAPIMiddleware,
@@ -48,7 +45,6 @@ var (
 		wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)),
 		wire.Bind(new(server.IServer), new(*server.Server)),
 		wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)),
-		wire.Bind(new(session.Sessioner), new(*session.SessionerAdapter)),
 		wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)),
 		wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)),
 	)

@@ -8,7 +8,6 @@ import (
 
 type RootPath string
 
-// Config Config
 type Config struct {
 	Environment        string         `env:"ENV" envDefault:"dev"`
 	RootPath           RootPath       `env:"ROOT_PATH"`
@@ -16,17 +15,19 @@ type Config struct {
 	Options            []string       `env:"OPTIONS" envDefault:"[]"`
 	APIPort            int            `env:"API_PORT" envDefault:"8002"`
 	Database           DatabaseConfig `envPrefix:"DATABASE_"`
-	MailerUser         string         `env:"MAILER_USER" envDefault:"medzoner@xxx.fake"`
-	MailerPassword     string         `env:"MAILER_PASSWORD" envDefault:"xxxxxxxxxxxx"`
-	MailerHost         string         `env:"MAILER_HOST" envDefault:"smtp.gmail.com"`
-	MailerPort         string         `env:"MAILER_PORT" envDefault:"587"`
+	Mailer             MailerConfig   `envPrefix:"MAILER_"`
 	RecaptchaSiteKey   string         `env:"RECAPTCHA_SITE_KEY" envDefault:"xxxxxxxxxxxx"`
 	RecaptchaSecretKey string         `env:"RECAPTCHA_SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
-	TracerFile         string         `env:"TRACER_FILE" envDefault:"trace.out"`
 	OtelHost           string         `env:"OTEL_HOST" envDefault:"localhost:4317"`
 }
 
-// DatabaseConfig DatabaseConfig
+type MailerConfig struct {
+	User     string `env:"USER" envDefault:"medzoner@xxx.fake"`
+	Password string `env:"PASSWORD" envDefault:"xxxxxxxxxxxx"`
+	Host     string `env:"HOST" envDefault:"smtp.gmail.com"`
+	Port     string `env:"PORT" envDefault:"587"`
+}
+
 type DatabaseConfig struct {
 	Dsn    string `env:"DSN" envDefault:"root:changeme@tcp(0.0.0.0:3306)"`
 	Name   string `env:"NAME" envDefault:"dev_medzoner"`

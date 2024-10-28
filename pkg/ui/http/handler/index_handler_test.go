@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"testing"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
@@ -25,18 +24,18 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 	mocked.HttpTracer.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
 	mocked.HttpTracer.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
 	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
-	_ = os.Setenv("APP_ENV", "test")
-	_ = os.Setenv("DEBUG", "true")
-	_ = os.Setenv("ROOT_PATH", "./../../../../")
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("DEBUG", "true")
+	t.Setenv("ROOT_PATH", "./../../../../")
 	srv, err := dependency.InitServerTest(&mocked)
 	if err != nil {
 		t.Error(err)
 	}
-	defer func(srv *server.Server, ctx context.Context) {
-		if err := srv.Shutdown(ctx); err != nil {
+	defer func(srv *server.Server) {
+		if err := srv.ShutdownWithTimeout(); err != nil {
 			t.Error(err)
 		}
-	}(srv, context.Background())
+	}(srv)
 
 	testCase := []struct {
 		name         string
@@ -140,9 +139,9 @@ func TestIntegration_IndexHandler_Failed_Tpl(t *testing.T) {
 	mocked.HttpTracer.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 	mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
-	_ = os.Setenv("APP_ENV", "test")
-	_ = os.Setenv("DEBUG", "true")
-	_ = os.Setenv("ROOT_PATH", "./")
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("DEBUG", "true")
+	t.Setenv("ROOT_PATH", "./")
 	srv, err := dependency.InitServerTest(&mocked)
 	if err != nil {
 		t.Error(err)
@@ -163,9 +162,9 @@ func TestIntegration_IndexHandler_Failed_Captcha(t *testing.T) {
 	mocked.HttpTracer.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 	mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
-	_ = os.Setenv("APP_ENV", "test")
-	_ = os.Setenv("DEBUG", "false") // to avoid error on recaptcha
-	_ = os.Setenv("ROOT_PATH", "./../../../../")
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("DEBUG", "false") // to avoid error on recaptcha
+	t.Setenv("ROOT_PATH", "./../../../../")
 	srv, err := dependency.InitServerTest(&mocked)
 	if err != nil {
 		t.Error(err)

@@ -22,7 +22,6 @@ func TestRender(t *testing.T) {
 			"index",
 			nil,
 			httptest.NewRecorder(),
-			200,
 		)
 		if err != nil {
 			assert.Equal(t, true, false)
@@ -44,7 +43,6 @@ func TestRender(t *testing.T) {
 			"failed.html",
 			nil,
 			httptest.NewRecorder(),
-			200,
 		)
 		if err != nil {
 			assert.Equal(t, true, true)
@@ -65,7 +63,6 @@ func TestRender(t *testing.T) {
 			"fail",
 			nil,
 			httptest.NewRecorder(),
-			200,
 		)
 		if err != nil {
 			assert.Equal(t, true, true)
@@ -82,7 +79,6 @@ func TestRender(t *testing.T) {
 			"index",
 			nil,
 			httptest.NewRecorder(),
-			200,
 		)
 		if err != nil {
 			assert.Equal(t, true, true)
