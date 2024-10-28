@@ -13,8 +13,8 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
-	"github.com/Medzoner/medzoner-go/pkg/infra/mailersmtp"
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
+	"github.com/Medzoner/medzoner-go/pkg/infra/notification"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
@@ -66,8 +66,8 @@ var (
 		wire.Bind(new(tracer.Tracer), new(*tracerMock.MockTracer)),
 	)
 	MailerWiring = wire.NewSet(
-		mailersmtp.NewMailerSMTP,
-		wire.Bind(new(mailer.Mailer), new(*mailersmtp.MailerSMTP)),
+		notification.NewMailerSMTP,
+		wire.Bind(new(mailer.Mailer), new(*notification.MailerSMTP)),
 	)
 	MailerMockWiring = wire.NewSet(
 		wire.FieldsOf(
