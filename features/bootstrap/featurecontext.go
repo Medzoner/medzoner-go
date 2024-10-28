@@ -31,6 +31,7 @@ type BodyRequest struct {
 
 // Read implement io.Reader
 func (b BodyRequest) Read(p []byte) (n int, err error) {
+	_ = b
 	buffer := &bytes.Buffer{}
 	return buffer.Read(p)
 }
@@ -57,7 +58,7 @@ func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 		// a.resetBdd()
 	})
 	ctx.AfterSuite(func() {
-		if err := a.Server.Shutdown(context.Background()); err != nil {
+		if err := a.Server.ShutdownWithTimeout(); err != nil {
 			fmt.Println(err)
 		}
 	})

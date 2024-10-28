@@ -4,13 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
-	"github.com/golang/mock/gomock"
-	"go.opentelemetry.io/otel/trace/noop"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
+
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+	"github.com/golang/mock/gomock"
+	"go.opentelemetry.io/otel/trace/noop"
 )
 
 func TestNotFoundHandler(t *testing.T) {
@@ -42,11 +44,11 @@ type TemplaterTestFailed struct {
 	RootPath string
 }
 
-func (t *TemplaterTestFailed) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
+func (t *TemplaterTestFailed) Render(name string, view interface{}, response http.ResponseWriter) (interface{}, error) {
 	_ = name
 	_ = view
 	_ = response
-	_ = status
+	_ = t
 	return nil, errors.New("panic")
 }
 
@@ -54,10 +56,10 @@ type TemplaterTest struct {
 	RootPath string
 }
 
-func (t *TemplaterTest) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
+func (t *TemplaterTest) Render(name string, view interface{}, response http.ResponseWriter) (interface{}, error) {
 	_ = name
 	_ = response
-	_ = status
+	_ = t
 	fmt.Println(view)
 	return nil, nil
 }

@@ -1,19 +1,21 @@
 package logger
 
 import (
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 // ZapLoggerAdapter ZapLoggerAdapter
 type ZapLoggerAdapter struct {
-	Zap *zap.Logger
+	Zap    *zap.Logger
+	Config config.Config
 }
 
 // NewLoggerAdapter NewLoggerAdapter
-func NewLoggerAdapter() (*ZapLoggerAdapter, error) {
+func NewLoggerAdapter(config config.Config) (*ZapLoggerAdapter, error) {
 	cfg := zap.Config{
-		Level:            zap.NewAtomicLevelAt(zap.DebugLevel),
+		Level:            zap.NewAtomicLevelAt(zap.ErrorLevel),
 		Development:      true,
 		OutputPaths:      []string{"stdout"},
 		ErrorOutputPaths: []string{"stderr"},
@@ -29,14 +31,17 @@ func NewLoggerAdapter() (*ZapLoggerAdapter, error) {
 		},
 	}
 
-	zapLogger, err := cfg.Build()
-
-	zl := ZapLoggerAdapter{
-		Zap: zapLogger,
+	if config.DebugMode {
+		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		cfg.Level.SetLevel(zap.DebugLevel)
 	}
+
+	zapLogger, err := cfg.Build()
 	defer zapLogger.Sync()
 
-	return &zl, err
+	return &ZapLoggerAdapter{
+		Zap: zapLogger,
+	}, err
 }
 
 // Log Log

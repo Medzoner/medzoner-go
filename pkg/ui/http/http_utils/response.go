@@ -2,8 +2,9 @@ package http_utils
 
 import (
 	"fmt"
-	otelTrace "go.opentelemetry.io/otel/trace"
 	"net/http"
+
+	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
 func ResponseError(w http.ResponseWriter, err error, code int, span otelTrace.Span) {

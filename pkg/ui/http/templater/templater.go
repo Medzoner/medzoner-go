@@ -13,7 +13,7 @@ import (
 
 // Templater is an interface for rendering templates
 type Templater interface {
-	Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error)
+	Render(name string, view interface{}, response http.ResponseWriter) (interface{}, error)
 }
 
 // TemplateHTML is a struct that implements Templater interface
@@ -29,12 +29,10 @@ func NewTemplateHTML(config config.Config) *TemplateHTML {
 }
 
 // Render renders template
-func (t *TemplateHTML) Render(name string, view interface{}, response http.ResponseWriter, status int) (interface{}, error) {
-	_ = status
-
+func (t *TemplateHTML) Render(name string, view interface{}, response http.ResponseWriter) (interface{}, error) {
 	htmlTemplate, err := t.parseTemplates(name)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing templates: %v", err)
+		return nil, fmt.Errorf("error parsing templates: %w", err)
 	}
 
 	return nil, htmlTemplate.ExecuteTemplate(response, name, view)
@@ -43,16 +41,13 @@ func (t *TemplateHTML) Render(name string, view interface{}, response http.Respo
 // parseTemplates parses templates
 func (t *TemplateHTML) parseTemplates(name string) (*template.Template, error) {
 	tpl := template.New(name)
-	err := filepath.Walk(t.RootPath+"tmpl/", func(path string, info os.FileInfo, err error) error {
-		_ = info
+	return tpl, filepath.Walk(t.RootPath+"tmpl/", func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(path, ".html") {
 			_, err = tpl.ParseFiles(path)
 			if err != nil {
-				return fmt.Errorf("error parsing files tpl: %v", err)
+				return fmt.Errorf("error parsing files tpl: %w - info: %v", err, info)
 			}
 		}
 		return err
 	})
-
-	return tpl, err
 }
