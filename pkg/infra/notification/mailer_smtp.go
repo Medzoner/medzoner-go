@@ -1,4 +1,4 @@
-package mailersmtp
+package notification
 
 import (
 	"bytes"
@@ -81,14 +81,13 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 func (m *MailerSMTP) message(view entity.Contact) []byte {
 	r, _ := rand.Read(nil)
 	messageID := strconv.FormatInt(int64(r), 10) + "@" + m.Host
-	msg := []byte("From: " + m.User + " <" + m.User + ">" + "\r\n" +
+	return []byte("From: " + m.User + " <" + m.User + ">" + "\r\n" +
 		"To: " + m.User + "\r\n" +
 		"Subject: " + "Message de [www.medzoner.com]" + "\r\n\r\n" +
 		"MIME-version: 1.0;\n" +
 		"Content-Type: text/html; charset=\"UTF-8\";\n" +
 		"Message-ID: <" + messageID + ">\n\n" +
 		view.Message + "\r\n")
-	return msg
 }
 
 func (r *Request) parseTemplate(templateFileName string, data interface{}) error {
