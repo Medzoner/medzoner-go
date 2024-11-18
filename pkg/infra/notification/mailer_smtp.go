@@ -78,6 +78,7 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 	return true, nil
 }
 
+// message is a function that returns a message
 func (m *MailerSMTP) message(view entity.Contact) []byte {
 	r, _ := rand.Read(nil)
 	messageID := strconv.FormatInt(int64(r), 10) + "@" + m.Host
