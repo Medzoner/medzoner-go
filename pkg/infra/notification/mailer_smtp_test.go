@@ -21,12 +21,14 @@ func TestSmtp(t *testing.T) {
 		httpTracerMock.EXPECT().Error(gomock.Any(), gomock.Any()).Return(nil).Times(1)
 		mailer := notification.MailerSMTP{RootPath: "./../../..", Tracer: httpTracerMock}
 		ctx := context.WithValue(context.Background(), middleware.CorrelationContextKey{}, uuid.New().String())
+
 		_, _ = mailer.Send(ctx, entity.Contact{})
 	})
 	t.Run("Unit: test Smtp failed with bad RootPath", func(t *testing.T) {
 		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
 		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		mailer := notification.MailerSMTP{RootPath: "", Tracer: httpTracerMock}
+
 		_, _ = mailer.Send(context.Background(), entity.Contact{})
 	})
 }
