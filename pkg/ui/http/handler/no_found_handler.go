@@ -40,6 +40,8 @@ func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		TorHost:         r.Header.Get("TOR-HOST"),
 		PageDescription: "MedZoner.com - Not Found",
 	}
+
+	w.WriteHeader(http.StatusNotFound)
 	_, err := h.Template.Render("404", view, w)
 	if err != nil {
 		http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
