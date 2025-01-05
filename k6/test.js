@@ -17,7 +17,7 @@ export const options = {
 
 // Simulated user behavior
 export default function () {
-    let res = http.get("http://192.168.1.54:8002/");
+    let res = http.get("https://www.medzoner.com/");
     // Validate response status
     check(res, { "status was 200": (r) => r.status === 200 });
     sleep(1);

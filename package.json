@@ -1,0 +1,18 @@
+{
+  "name": "medzoner-go",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "gateling": "docker run --rm -i grafana/k6 run  --vus 10 --duration 30s  - <k6/test.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Medzoner/medzoner-go.git"
+  },
+  "private": true,
+  "dependencies": {
+    "k6": "^0.0.0"
+  }
+}

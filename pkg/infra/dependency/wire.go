@@ -12,20 +12,19 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/infra/notification"
 	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/router"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
-	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
+	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	domainRepositoryMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
 	mailerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/service/mailer"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
 
 	"github.com/google/wire"
 )
@@ -33,7 +32,6 @@ import (
 var (
 	InfraWiring = wire.NewSet(
 		config.NewConfig,
-		logger.NewLoggerAdapter,
 		router.NewMuxRouterAdapter,
 		server.NewServer,
 		templater.NewTemplateHTML,
@@ -41,7 +39,6 @@ var (
 		captcha.NewRecaptchaAdapter,
 		middleware.NewAPIMiddleware,
 
-		wire.Bind(new(logger.ILogger), new(*logger.ZapLoggerAdapter)),
 		wire.Bind(new(router.IRouter), new(*router.MuxRouterAdapter)),
 		wire.Bind(new(server.IServer), new(*server.Server)),
 		wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)),
@@ -54,16 +51,16 @@ var (
 		wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)),
 	)
 	TracerWiring = wire.NewSet(
-		tracer.NewHttpTracer,
+		telemetry.NewHttpTelemetry,
 
-		wire.Bind(new(tracer.Tracer), new(*tracer.HttpTracer)),
+		wire.Bind(new(telemetry.Telemeter), new(*telemetry.HttpTelemetry)),
 	)
 	TracerMockWiring = wire.NewSet(
 		wire.FieldsOf(
 			new(*mocks.Mocks),
-			"HttpTracer",
+			"HttpTelemetry",
 		),
-		wire.Bind(new(tracer.Tracer), new(*tracerMock.MockTracer)),
+		wire.Bind(new(telemetry.Telemeter), new(*tracerMock.MockTelemeter)),
 	)
 	MailerWiring = wire.NewSet(
 		notification.NewMailerSMTP,

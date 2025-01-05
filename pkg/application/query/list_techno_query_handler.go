@@ -3,8 +3,10 @@ package query
 import (
 	"context"
 	"fmt"
+
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
-	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
+	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
+
 	"go.opentelemetry.io/otel/attribute"
 	otelTrace "go.opentelemetry.io/otel/trace"
 )
@@ -12,20 +14,20 @@ import (
 // ListTechnoQueryHandler ListTechnoQueryHandler
 type ListTechnoQueryHandler struct {
 	TechnoRepository repository.TechnoRepository
-	Tracer           tracer.Tracer
+	Telemetry        telemetry.Telemeter
 }
 
 // NewListTechnoQueryHandler NewListTechnoQueryHandler
-func NewListTechnoQueryHandler(technoRepository repository.TechnoRepository, tracer tracer.Tracer) ListTechnoQueryHandler {
+func NewListTechnoQueryHandler(technoRepository repository.TechnoRepository, tm telemetry.Telemeter) ListTechnoQueryHandler {
 	return ListTechnoQueryHandler{
 		TechnoRepository: technoRepository,
-		Tracer:           tracer,
+		Telemetry:        tm,
 	}
 }
 
 // Handle handles ListTechnoQuery and return map[string]interface{}
 func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQuery) (map[string]interface{}, error) {
-	ctx, iSpan := l.Tracer.Start(ctx, "ListTechnoQueryHandler.Publish",
+	ctx, iSpan := l.Telemetry.Start(ctx, "ListTechnoQueryHandler.Publish",
 		otelTrace.WithAttributes([]attribute.KeyValue{attribute.String("ctx", "request.Host")}...),
 	)
 	defer iSpan.End()
@@ -34,7 +36,7 @@ func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQue
 	if query.Type == "stack" {
 		resp, err := l.TechnoRepository.FetchStack(ctx)
 		if err != nil {
-			return nil, l.Tracer.Error(iSpan, fmt.Errorf("error fetching stack: %w", err))
+			return nil, l.Telemetry.ErrorSpan(iSpan, fmt.Errorf("error fetching stack: %w", err))
 		}
 		return resp, nil
 	}

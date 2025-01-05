@@ -27,11 +27,13 @@ func init() {
 func TestFeatures(t *testing.T) {
 	mocked := mocks.New(t)
 	mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
-	mocked.HttpTracer.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-	mocked.HttpTracer.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
-	mocked.HttpTracer.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
-	mocked.HttpTracer.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Error(gomock.Any(), gomock.Any()).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
 	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
 	mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
 

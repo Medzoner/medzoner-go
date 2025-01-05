@@ -1,17 +1,17 @@
 package middleware
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 )
 
 // APIMiddleware APIMiddleware
 type APIMiddleware struct {
-	Logger logger.ILogger
+	Telemetry telemetry.Telemeter
 }
 
 // NewAPIMiddleware is a factory function to create a new APIMiddleware
-func NewAPIMiddleware(logger logger.ILogger) APIMiddleware {
+func NewAPIMiddleware(tm telemetry.Telemeter) APIMiddleware {
 	return APIMiddleware{
-		Logger: logger,
+		Telemetry: tm,
 	}
 }

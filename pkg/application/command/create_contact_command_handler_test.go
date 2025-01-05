@@ -27,17 +27,17 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		}
 
 		mocked := mocks.New(t)
-		mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().Error(gomock.Any(), gomock.Any()).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
-		loggerTest := &LoggerTest{}
 		handler := command.NewCreateContactCommandHandler(
-			&ContactRepositoryTest{}, event.ContactCreatedEventHandler{Mailer: mocked.Mailer, Tracer: mocked.HttpTracer, Logger: loggerTest}, loggerTest, mocked.HttpTracer,
+			&ContactRepositoryTest{}, event.ContactCreatedEventHandler{Mailer: mocked.Mailer, Telemetry: mocked.HttpTelemetry}, mocked.HttpTelemetry,
 		)
 
 		err := handler.Handle(context.Background(), createContactCommand)
 
 		assert.Equal(t, err, nil)
-		assert.Equal(t, loggerTest.LogMessages[0], "Contact was created.")
 	})
 	t.Run("Unit: test CreateContactCommandHandler error save db", func(t *testing.T) {
 		date := time.Time{}
@@ -49,17 +49,15 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		}
 
 		mocked := mocks.New(t)
-		mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-		mocked.HttpTracer.EXPECT().Error(gomock.Any(), gomock.Any()).Return(errors.New("error")).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(errors.New("error")).AnyTimes()
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
-		loggerTest := &LoggerTest{}
 
 		handler := command.NewCreateContactCommandHandler(
 			mocked.ContactRepository, event.ContactCreatedEventHandler{
-				Mailer: mocked.Mailer, Tracer: mocked.HttpTracer, Logger: loggerTest,
+				Mailer: mocked.Mailer, Telemetry: mocked.HttpTelemetry,
 			},
-			loggerTest,
-			mocked.HttpTracer,
+			mocked.HttpTelemetry,
 		)
 		err := handler.Handle(context.Background(), createContactCommand)
 
@@ -75,13 +73,14 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		}
 
 		mocked := mocks.New(t)
-		mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-		mocked.HttpTracer.EXPECT().Error(gomock.Any(), gomock.Any()).Return(errors.New("error")).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(errors.New("error")).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().Error(gomock.Any(), gomock.Any()).AnyTimes()
+		mocked.HttpTelemetry.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(false, errors.New("error")).Times(1)
-		loggerTest := &LoggerTest{}
 
 		handler := command.NewCreateContactCommandHandler(
-			&ContactRepositoryTest{}, event.ContactCreatedEventHandler{Mailer: mocked.Mailer, Tracer: mocked.HttpTracer, Logger: loggerTest}, loggerTest, mocked.HttpTracer,
+			&ContactRepositoryTest{}, event.ContactCreatedEventHandler{Mailer: mocked.Mailer, Telemetry: mocked.HttpTelemetry}, mocked.HttpTelemetry,
 		)
 		err := handler.Handle(context.Background(), createContactCommand)
 

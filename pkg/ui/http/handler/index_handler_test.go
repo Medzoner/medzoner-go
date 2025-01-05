@@ -18,11 +18,13 @@ import (
 
 func TestIntegration_IndexHandler_Success(t *testing.T) {
 	mocked := mocks.New(t)
-	mocked.HttpTracer.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-	mocked.HttpTracer.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
-	mocked.HttpTracer.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
-	mocked.HttpTracer.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Error(gomock.Any(), gomock.Any()).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
 	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("DEBUG", "true")
@@ -102,7 +104,7 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 			mocks: func() {
 				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
 				mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
-				mocked.HttpTracer.EXPECT().Error(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
+				mocked.HttpTelemetry.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
 			},
 			expectedCode: http.StatusInternalServerError,
 		},
@@ -113,7 +115,7 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 			body:   url.Values{},
 			mocks: func() {
 				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(nil, errors.New("error")).Times(1)
-				mocked.HttpTracer.EXPECT().Error(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
+				mocked.HttpTelemetry.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
 			},
 			expectedCode: http.StatusInternalServerError,
 		},
@@ -136,8 +138,10 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 
 func TestIntegration_IndexHandler_Failed_Tpl(t *testing.T) {
 	mocked := mocks.New(t)
-	mocked.HttpTracer.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Error(gomock.Any(), gomock.Any()).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
 	mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("DEBUG", "true")
@@ -159,8 +163,8 @@ func TestIntegration_IndexHandler_Failed_Tpl(t *testing.T) {
 
 func TestIntegration_IndexHandler_Failed_Captcha(t *testing.T) {
 	mocked := mocks.New(t)
-	mocked.HttpTracer.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-	mocked.HttpTracer.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	mocked.HttpTelemetry.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 	mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).AnyTimes()
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("DEBUG", "false") // to avoid error on recaptcha
