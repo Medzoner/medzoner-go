@@ -9,7 +9,7 @@ import (
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
 
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
@@ -17,11 +17,12 @@ import (
 
 func TestServer(t *testing.T) {
 	t.Run("Unit: test Server success", func(t *testing.T) {
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
-		httpTracerMock.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
-		srv := server.NewServer(config.Config{APIPort: 8123}, RouterMock{}, &LoggerTest{}, httpTracerMock)
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().ShutdownMeter(gomock.Any()).Return(nil).AnyTimes()
+		httpTelemetryMock.EXPECT().ShutdownTracer(gomock.Any()).Return(nil).AnyTimes()
+		httpTelemetryMock.EXPECT().ShutdownLogger(gomock.Any()).Return(nil).AnyTimes()
+		httpTelemetryMock.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
+		srv := server.NewServer(config.Config{APIPort: 8123}, RouterMock{}, httpTelemetryMock)
 		go func() {
 			srv.Start(context.Background())
 		}()
@@ -31,11 +32,13 @@ func TestServer(t *testing.T) {
 		}
 	})
 	t.Run("Unit: test Server error", func(t *testing.T) {
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().ShutdownMeter(gomock.Any()).Return(errors.New("error")).AnyTimes()
-		httpTracerMock.EXPECT().ShutdownTracer(gomock.Any()).Return(errors.New("error")).AnyTimes()
-		httpTracerMock.EXPECT().ShutdownLogger(gomock.Any()).Return(errors.New("error")).AnyTimes()
-		srv := server.NewServer(config.Config{APIPort: 8123}, RouterMock{}, &LoggerTest{}, httpTracerMock)
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().ShutdownMeter(gomock.Any()).Return(errors.New("error")).AnyTimes()
+		httpTelemetryMock.EXPECT().ShutdownTracer(gomock.Any()).Return(errors.New("error")).AnyTimes()
+		httpTelemetryMock.EXPECT().ShutdownLogger(gomock.Any()).Return(errors.New("error")).AnyTimes()
+		httpTelemetryMock.EXPECT().Error(gomock.Any(), gomock.Any()).AnyTimes()
+		httpTelemetryMock.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
+		srv := server.NewServer(config.Config{APIPort: 8123}, RouterMock{}, httpTelemetryMock)
 		go func() {
 			srv.Start(context.Background())
 		}()

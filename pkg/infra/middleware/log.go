@@ -12,7 +12,7 @@ func (m APIMiddleware) LogMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(lrw, r.WithContext(r.Context()))
 
 		if lrw.statusCode == http.StatusInternalServerError {
-			m.Logger.Error(fmt.Sprintf("Internal server error : %s", string(lrw.body)))
+			m.Telemetry.Error(r.Context(), fmt.Sprintf("Internal server error : %s", string(lrw.body)))
 
 			http.Error(lrw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
 	"testing"
@@ -16,14 +16,14 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "stack",
 		}
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 
-		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
-			t.Errorf("Error: %v", err)
+			t.Errorf("ErrorSpan: %v", err)
 		}
 	})
 
@@ -31,13 +31,13 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "experience",
 		}
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
-			t.Errorf("Error: %v", err)
+			t.Errorf("ErrorSpan: %v", err)
 		}
 	})
 
@@ -45,13 +45,13 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "formation",
 		}
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
-			t.Errorf("Error: %v", err)
+			t.Errorf("ErrorSpan: %v", err)
 		}
 	})
 
@@ -59,13 +59,13 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "lang",
 		}
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
-			t.Errorf("Error: %v", err)
+			t.Errorf("ErrorSpan: %v", err)
 		}
 	})
 
@@ -73,13 +73,13 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "other",
 		}
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
-			t.Errorf("Error: %v", err)
+			t.Errorf("ErrorSpan: %v", err)
 		}
 	})
 
@@ -87,13 +87,13 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "fake",
 		}
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTracerMock)
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		handler := query.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
-			t.Errorf("Error: %v", err)
+			t.Errorf("ErrorSpan: %v", err)
 		}
 	})
 
@@ -103,15 +103,15 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query.ListTechnoQuery{
 			Type: "stack",
 		}
-		httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-		httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		httpTracerMock.EXPECT().Error(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
+		httpTelemetryMock.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
-		handler := query.NewListTechnoQueryHandler(mocked.TechnoRepository, httpTracerMock)
+		handler := query.NewListTechnoQueryHandler(mocked.TechnoRepository, httpTelemetryMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
-			t.Errorf("Error: %v", err)
+			t.Errorf("ErrorSpan: %v", err)
 		}
 	})
 }

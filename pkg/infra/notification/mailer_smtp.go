@@ -12,30 +12,30 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
-	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
+	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 
 	"go.opentelemetry.io/otel/attribute"
 )
 
 // MailerSMTP MailerSMTP
 type MailerSMTP struct {
-	RootPath string
-	User     string
-	Password string
-	Host     string
-	Port     string
-	Tracer   tracer.Tracer
+	RootPath  string
+	User      string
+	Password  string
+	Host      string
+	Port      string
+	Telemetry telemetry.Telemeter
 }
 
 // NewMailerSMTP NewMailerSMTP
-func NewMailerSMTP(config config.Config, tracer tracer.Tracer) *MailerSMTP {
+func NewMailerSMTP(config config.Config, tm telemetry.Telemeter) *MailerSMTP {
 	return &MailerSMTP{
-		RootPath: string(config.RootPath),
-		User:     config.Mailer.User,
-		Password: config.Mailer.Password,
-		Host:     config.Mailer.Host,
-		Port:     config.Mailer.Port,
-		Tracer:   tracer,
+		RootPath:  string(config.RootPath),
+		User:      config.Mailer.User,
+		Password:  config.Mailer.Password,
+		Host:      config.Mailer.Host,
+		Port:      config.Mailer.Port,
+		Telemetry: tm,
 	}
 }
 
@@ -57,12 +57,12 @@ func NewRequest(to []string, subject, body string) *Request {
 
 // Send is a function that sends an email
 func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error) {
-	_, iSpan := m.Tracer.Start(ctx, "MailerSMTP.Send")
+	_, iSpan := m.Telemetry.Start(ctx, "MailerSMTP.Send")
 	defer func() {
 		iSpan.End()
 	}()
 	correlationID := middleware.GetCorrelationID(ctx)
-	iSpan.SetAttributes(attribute.String("correlation_id", correlationID))
+	iSpan.SetAttributes(attribute.String("correlation.id", correlationID))
 
 	req := NewRequest([]string{m.User}, "Message [medzoner.com]", "Hello, World!")
 	if err := req.parseTemplate(m.RootPath+"/tmpl/contact/contactEmail.html", view); err != nil {
@@ -72,7 +72,7 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 
 	auth := smtp.PlainAuth(m.User, m.User, m.Password, m.Host)
 	if err := smtp.SendMail(fmt.Sprintf("%s:%s", m.Host, m.Port), auth, m.User, req.to, m.message(view)); err != nil {
-		return false, m.Tracer.Error(iSpan, fmt.Errorf("send mail failed: %w", err))
+		return false, m.Telemetry.ErrorSpan(iSpan, fmt.Errorf("send mail failed: %w", err))
 	}
 
 	return true, nil

@@ -9,21 +9,21 @@ import (
 	"testing"
 
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
 
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
 )
 
 func TestNotFoundHandler(t *testing.T) {
-	httpTracerMock := tracerMock.NewMockTracer(gomock.NewController(t))
-	httpTracerMock.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
-	httpTracerMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
+	httpTelemetryMock.EXPECT().StartRoot(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
+	httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).AnyTimes()
 	t.Run("Unit: test NotFoundHandler success", func(t *testing.T) {
 		_ = t
 		notFoundHandler := handler.NotFoundHandler{
 			Template: &TemplaterTest{},
-			Tracer:   httpTracerMock,
+			Tracer:   httpTelemetryMock,
 		}
 		request := httptest.NewRequest("GET", "/not-found", nil)
 		notFoundHandler.Handle(httptest.NewRecorder(), request)
@@ -32,7 +32,7 @@ func TestNotFoundHandler(t *testing.T) {
 		_ = t
 		notFoundHandler := handler.NotFoundHandler{
 			Template: &TemplaterTestFailed{},
-			Tracer:   httpTracerMock,
+			Tracer:   httpTelemetryMock,
 		}
 		request := httptest.NewRequest("GET", "/not-found", nil)
 

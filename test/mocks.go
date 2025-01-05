@@ -5,7 +5,7 @@ import (
 
 	domainRepository "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
 	mailerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/service/mailer"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/tracer"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
 
 	"github.com/golang/mock/gomock"
 )
@@ -13,7 +13,7 @@ import (
 type Mocks struct {
 	ContactRepository *domainRepository.MockContactRepository
 	TechnoRepository  *domainRepository.MockTechnoRepository
-	HttpTracer        *tracerMock.MockTracer
+	HttpTelemetry     *tracerMock.MockTelemeter
 	Mailer            *mailerMock.MockMailer
 }
 
@@ -22,7 +22,7 @@ func New(reporter gomock.TestReporter) Mocks {
 	fmt.Println(controller)
 	return Mocks{
 		ContactRepository: domainRepository.NewMockContactRepository(controller),
-		HttpTracer:        tracerMock.NewMockTracer(controller),
+		HttpTelemetry:     tracerMock.NewMockTelemeter(controller),
 		Mailer:            mailerMock.NewMockMailer(controller),
 		TechnoRepository:  domainRepository.NewMockTechnoRepository(controller),
 	}

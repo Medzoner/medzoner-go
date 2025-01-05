@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
+	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"net/http"
@@ -18,11 +18,11 @@ type NotFoundView struct {
 // NotFoundHandler NotFoundHandler
 type NotFoundHandler struct {
 	Template templater.Templater
-	Tracer   tracer.Tracer
+	Tracer   telemetry.Telemeter
 }
 
 // NewNotFoundHandler NewNotFoundHandler
-func NewNotFoundHandler(template templater.Templater, tracer tracer.Tracer) *NotFoundHandler {
+func NewNotFoundHandler(template templater.Templater, tracer telemetry.Telemeter) *NotFoundHandler {
 	return &NotFoundHandler{
 		Template: template,
 		Tracer:   tracer,

@@ -44,7 +44,7 @@ func TestValidateValidator(t *testing.T) {
 }
 
 func TestErrorValidator(t *testing.T) {
-	t.Run("Unit: test Error success", func(t *testing.T) {
+	t.Run("Unit: test ErrorSpan success", func(t *testing.T) {
 		var testFieldErrors = []validator.FieldError{FieldErrorTest{}}
 		validatorAdapter := validation.ValidatorAdapter{
 			ValidationErrors: testFieldErrors,

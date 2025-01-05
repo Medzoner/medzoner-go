@@ -2,8 +2,10 @@ package middleware
 
 import (
 	"context"
-	"github.com/google/uuid"
 	"net/http"
+
+	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type CorrelationContextKey struct{}
@@ -28,4 +30,13 @@ func (m APIMiddleware) CorrelationMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func GetTraceID(ctx context.Context) string {
+	spanCtx := trace.SpanContextFromContext(ctx)
+	if spanCtx.HasTraceID() {
+		traceID := spanCtx.TraceID()
+		return traceID.String()
+	}
+	return ""
 }

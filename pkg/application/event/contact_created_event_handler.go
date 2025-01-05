@@ -3,31 +3,29 @@ package event
 import (
 	"context"
 	"fmt"
+
 	"github.com/Medzoner/medzoner-go/pkg/application/service/mailer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
-	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
+	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 )
 
 // ContactCreatedEventHandler is a struct that implements EventHandler interface and handle ContactCreatedEvent
 type ContactCreatedEventHandler struct {
-	Mailer mailer.Mailer
-	Logger logger.ILogger
-	Tracer tracer.Tracer
+	Mailer    mailer.Mailer
+	Telemetry telemetry.Telemeter
 }
 
 // NewContactCreatedEventHandler is a function that returns a new ContactCreatedEventHandler
-func NewContactCreatedEventHandler(mailer mailer.Mailer, logger logger.ILogger, tracer tracer.Tracer) *ContactCreatedEventHandler {
+func NewContactCreatedEventHandler(mailer mailer.Mailer, tm telemetry.Telemeter) *ContactCreatedEventHandler {
 	return &ContactCreatedEventHandler{
-		Mailer: mailer,
-		Logger: logger,
-		Tracer: tracer,
+		Mailer:    mailer,
+		Telemetry: tm,
 	}
 }
 
 // Publish handles event ContactCreatedEvent and send mail to admin
 func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) error {
-	ctx, iSpan := c.Tracer.Start(ctx, "ContactCreatedEventHandler.Publish")
+	ctx, iSpan := c.Telemetry.Start(ctx, "ContactCreatedEventHandler.Publish")
 	defer iSpan.End()
 
 	switch event.(type) {
@@ -35,11 +33,11 @@ func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) er
 		contactCreated := event.GetModel().(entity.Contact)
 		_, err := c.Mailer.Send(ctx, contactCreated)
 		if err != nil {
-			return c.Tracer.Error(iSpan, fmt.Errorf("error during send mail: %w", err))
+			return c.Telemetry.ErrorSpan(iSpan, fmt.Errorf("error during send mail: %w", err))
 		}
-		c.Logger.Log("Mail was send.")
+		c.Telemetry.Log(ctx, "Mail was send.")
 	default:
-		c.Logger.Error("Error bad event type.")
+		c.Telemetry.Error(ctx, "ErrorSpan bad event type.")
 	}
 
 	return nil

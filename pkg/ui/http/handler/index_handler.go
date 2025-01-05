@@ -11,7 +11,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"github.com/Medzoner/medzoner-go/pkg/infra/tracer"
+	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 )
@@ -48,7 +48,7 @@ type IndexHandler struct {
 	CreateContactCommandHandler command.CreateContactCommandHandler
 	Validation                  validation.MzValidator
 	Recaptcha                   captcha.Captcher
-	Tracer                      tracer.Tracer
+	Tracer                      telemetry.Telemeter
 	Debug                       bool
 }
 
@@ -60,7 +60,7 @@ func NewIndexHandler(
 	createContactCommandHandler command.CreateContactCommandHandler,
 	validation validation.MzValidator,
 	recaptcha captcha.Captcher,
-	tracer tracer.Tracer,
+	tracer telemetry.Telemeter,
 ) *IndexHandler {
 	return &IndexHandler{
 		Template:                    template,
@@ -114,10 +114,10 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		validationError := h.Validation.Struct(createContactCommand)
 		if validationError == nil {
 			if err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
-				// newSession.SetValue("message", "Error during send message")
+				// newSession.SetValue("message", "ErrorSpan during send message")
 				// if err = newSession.Save(request, response); err != nil {
 				//	span.RecordError(err)
-				//	http_utils.ResponseError(response, err.Error(), http.StatusInternalServerError)
+				//	http_utils.ResponseError(response, err.ErrorSpan(), http.StatusInternalServerError)
 				//	return
 				// }
 				// http.Redirect(response, request, "/#contact", http.StatusSeeOther)

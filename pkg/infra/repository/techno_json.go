@@ -8,20 +8,20 @@ import (
 	"os"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"github.com/Medzoner/medzoner-go/pkg/infra/logger"
+	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 )
 
 // TechnoJSONRepository is implementation of TechnoRepository
 type TechnoJSONRepository struct {
-	Logger   logger.ILogger
-	RootPath string
+	Telemetry telemetry.Telemeter
+	RootPath  string
 }
 
 // NewTechnoJSONRepository is a constructor
-func NewTechnoJSONRepository(logger logger.ILogger, config config.Config) *TechnoJSONRepository {
+func NewTechnoJSONRepository(tm telemetry.Telemeter, config config.Config) *TechnoJSONRepository {
 	return &TechnoJSONRepository{
-		Logger:   logger,
-		RootPath: string(config.RootPath),
+		Telemetry: tm,
+		RootPath:  string(config.RootPath),
 	}
 }
 
@@ -32,7 +32,7 @@ func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]inter
 	if err != nil {
 		return nil, fmt.Errorf("error during open json file: %w", err)
 	}
-	defer m.deferJSONFile(jsonFile)
+	defer m.deferJSONFile(ctx, jsonFile)
 
 	byteValue, _ := io.ReadAll(jsonFile)
 	c := make(map[string]interface{})
@@ -43,8 +43,8 @@ func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]inter
 	return c, nil
 }
 
-func (m *TechnoJSONRepository) deferJSONFile(jsonFile *os.File) {
+func (m *TechnoJSONRepository) deferJSONFile(ctx context.Context, jsonFile *os.File) {
 	if err := jsonFile.Close(); err != nil {
-		m.Logger.Error("jsonFile error.")
+		m.Telemetry.Error(ctx, "jsonFile error.")
 	}
 }
