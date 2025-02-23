@@ -36,7 +36,7 @@ jobs:
       - run: cp .env.github .env
       - run: make test_all
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: code-coverage-report
           path: coverage.out
