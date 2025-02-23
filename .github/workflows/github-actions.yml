@@ -11,7 +11,7 @@ on:
 
 jobs:
   ci-lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go
@@ -28,7 +28,7 @@ jobs:
 #      - run: make run-qa
 
   ci-test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go
@@ -45,7 +45,7 @@ jobs:
       GOPATH: /home/runner/work/medzoner-go/go
 
   cd-release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         go-version: [ '1.23.x' ]
@@ -101,7 +101,7 @@ jobs:
       GIT_COMMIT: ${{ github.sha }}
 
   cd-coverage-report:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [ cd-release ]
     steps:
       - uses: actions/checkout@v4
