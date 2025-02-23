@@ -9,8 +9,7 @@ import (
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
-
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 )
@@ -27,7 +26,7 @@ func TestServer(t *testing.T) {
 			srv.Start(context.Background())
 		}()
 
-		if err := srv.ShutdownWithTimeout(); err != nil {
+		if err := srv.Shutdown(context.Background()); err != nil {
 			t.Errorf("Server Shutdown Failed:%+v", err)
 		}
 	})
@@ -43,7 +42,7 @@ func TestServer(t *testing.T) {
 			srv.Start(context.Background())
 		}()
 
-		if err := srv.ShutdownWithTimeout(); err != nil {
+		if err := srv.Shutdown(context.Background()); err != nil {
 			t.Errorf("Server Shutdown Failed:%+v", err)
 		}
 	})
@@ -57,6 +56,7 @@ func (l *LoggerTest) Log(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
 }
+
 func (l *LoggerTest) Error(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)

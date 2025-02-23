@@ -1,10 +1,11 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-	"net/http"
 )
 
 // NotFoundView NotFoundView
@@ -42,8 +43,8 @@ func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNotFound)
-	_, err := h.Template.Render("404", view, w)
-	if err != nil {
+
+	if err := h.Template.Render("404", view, w); err != nil {
 		http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
 		return
 	}

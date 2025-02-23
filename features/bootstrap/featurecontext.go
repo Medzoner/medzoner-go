@@ -12,16 +12,15 @@ import (
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	mocks "github.com/Medzoner/medzoner-go/test"
-
 	"github.com/cucumber/godog"
 )
 
 // APIFeature APIFeature
 type APIFeature struct {
+	Mocks    mocks.Mocks
 	Response *http.Response
 	Request  *http.Request
 	Server   server.Server
-	Mocks    mocks.Mocks
 }
 
 // BodyRequest BodyRequest
@@ -33,7 +32,11 @@ type BodyRequest struct {
 func (b BodyRequest) Read(p []byte) (n int, err error) {
 	_ = b
 	buffer := &bytes.Buffer{}
-	return buffer.Read(p)
+	i, err := buffer.Read(p)
+	if err != nil {
+		return 0, fmt.Errorf("error reading body: %w", err)
+	}
+	return i, nil
 }
 
 // New initialize a new APIFeature
@@ -56,7 +59,7 @@ func (a *APIFeature) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 		// a.resetBdd()
 	})
 	ctx.AfterSuite(func() {
-		if err := a.Server.ShutdownWithTimeout(); err != nil {
+		if err := a.Server.Shutdown(context.Background()); err != nil {
 			fmt.Println(err)
 		}
 	})
@@ -127,7 +130,7 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocStr
 
 	urlParse, err := url.Parse(arg1)
 	if err != nil {
-		return err
+		return fmt.Errorf("error: %w", err)
 	}
 	a.Request.URL = urlParse
 	a.Request.Method = http.MethodPost

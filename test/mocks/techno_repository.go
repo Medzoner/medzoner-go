@@ -2,7 +2,7 @@
 // Source: ./techno_repository.go
 
 // Package domainRepositoryMock is a generated GoMock package.
-package domainRepositoryMock
+package mocks
 
 import (
 	context "context"

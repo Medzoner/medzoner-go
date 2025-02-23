@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go.opentelemetry.io/otel/log/global"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
+	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
@@ -37,7 +37,7 @@ func initLogger(ctx context.Context, conn *grpc.ClientConn) (func(context.Contex
 func newExporter(ctx context.Context, conn *grpc.ClientConn) (*otlploggrpc.Exporter, error) {
 	exporter, err := otlploggrpc.New(ctx, otlploggrpc.WithGRPCConn(conn))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("log exporter creation failed: %w", err)
 	}
 	return exporter, nil
 }

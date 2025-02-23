@@ -1,14 +1,15 @@
 package validation_test
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/application/command"
-	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
-	"github.com/go-playground/universal-translator"
-	"github.com/go-playground/validator/v10"
-	"gotest.tools/assert"
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/Medzoner/medzoner-go/pkg/application/command"
+	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
+	"gotest.tools/assert"
 )
 
 func TestValidateValidator(t *testing.T) {
@@ -45,7 +46,7 @@ func TestValidateValidator(t *testing.T) {
 
 func TestErrorValidator(t *testing.T) {
 	t.Run("Unit: test ErrorSpan success", func(t *testing.T) {
-		var testFieldErrors = []validator.FieldError{FieldErrorTest{}}
+		testFieldErrors := []validator.FieldError{FieldErrorTest{}}
 		validatorAdapter := validation.ValidatorAdapter{
 			ValidationErrors: testFieldErrors,
 		}.New()
@@ -94,9 +95,9 @@ func (f FieldErrorTest) Type() reflect.Type {
 	panic("implement me")
 }
 
-func (f FieldErrorTest) Translate(ut ut.Translator) string {
-	_ = ut
-	return "ut"
+func (f FieldErrorTest) Translate(t ut.Translator) string {
+	_ = t
+	return "t"
 }
 
 func (f FieldErrorTest) Error() string {

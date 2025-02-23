@@ -10,7 +10,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
-
 	"github.com/docker/distribution/uuid"
 )
 
@@ -47,12 +46,12 @@ func (c *CreateContactCommandHandler) Handle(ctx context.Context, command Create
 		UUID:    uuid.UUID{}.String(),
 	}
 	if err := c.ContactRepository.Save(ctx, contact); err != nil {
-		return c.Telemetry.ErrorSpan(iSpan, fmt.Errorf("error during save contact: %w", err))
+		return fmt.Errorf("error during save contact: %w", c.Telemetry.ErrorSpan(iSpan, err))
 	}
 	c.Telemetry.Log(ctx, "Contact was created.")
 
 	if err := c.ContactCreatedEventHandler.Publish(ctx, event.ContactCreatedEvent{Contact: contact}); err != nil {
-		return c.Telemetry.ErrorSpan(iSpan, fmt.Errorf("error during handle event: %w", err))
+		return fmt.Errorf("error during handle event: %w", c.Telemetry.ErrorSpan(iSpan, err))
 	}
 
 	return nil

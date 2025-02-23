@@ -3,14 +3,13 @@ package telemetry
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-
+	"github.com/rs/zerolog"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
@@ -26,7 +25,7 @@ const (
 	serviceName = "medzoner-service"
 )
 
-//go:generate mockgen -destination=../../../test/mocks/pkg/infra/telemetry/telmeter.go -package=tracerMock -source=./telemetry.go
+//go:generate mockgen -destination=../../../test/mocks/telmeter.go -package=tracerMock -source=./telemetry.go
 type Telemeter interface {
 	StartRoot(ctx context.Context, request *http.Request, spanName string) (context.Context, otelTrace.Span)
 	Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span)
@@ -97,8 +96,13 @@ func NewHttpTelemetry(cfg config.Config) (*HttpTelemetry, error) {
 }
 
 func initConn(host string) (*grpc.ClientConn, error) {
-	return grpc.NewClient(host,
+	cli, err := grpc.NewClient(host,
 		// Note the use of insecure transport here. TLS is recommended in production.
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create gRPC client: %w", err)
+	}
+
+	return cli, nil
 }

@@ -2,7 +2,7 @@
 // Source: ./telemetry.go
 
 // Package tracerMock is a generated GoMock package.
-package tracerMock
+package mocks
 
 import (
 	context "context"

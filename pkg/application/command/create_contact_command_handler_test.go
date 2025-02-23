@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	mocks "github.com/Medzoner/medzoner-go/test"
 	"testing"
 	"time"
 
 	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
+	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/assert"
@@ -61,7 +61,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		)
 		err := handler.Handle(context.Background(), createContactCommand)
 
-		assert.Equal(t, err.Error(), "error")
+		assert.Error(t, err, "error during save contact: error")
 	})
 	t.Run("Unit: test CreateContactCommandHandler error send mail", func(t *testing.T) {
 		date := time.Time{}
@@ -84,7 +84,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		)
 		err := handler.Handle(context.Background(), createContactCommand)
 
-		assert.Equal(t, err.Error(), "error")
+		assert.Error(t, err, "error during handle event: error")
 	})
 }
 
@@ -96,6 +96,7 @@ func (l *LoggerTest) Log(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)
 }
+
 func (l *LoggerTest) Error(msg string) {
 	l.LogMessages = append(l.LogMessages, msg)
 	fmt.Println(msg)

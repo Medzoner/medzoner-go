@@ -3,19 +3,19 @@ package event_test
 import (
 	"context"
 	"fmt"
+	"reflect"
+	"testing"
+	"time"
 
 	"github.com/Medzoner/medzoner-go/pkg/application/event"
 	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/assert"
-	"reflect"
-	"testing"
-	"time"
 )
 
 func TestContactCreatedEventHandler(t *testing.T) {
@@ -25,10 +25,10 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		Message: "the message",
 		DateAdd: time.Time{},
 		ID:      1,
+		UUID:    "a uuid",
 	}
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
-
 		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
 		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 		httpTelemetryMock.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
@@ -37,7 +37,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		}
 
 		mailer := &MailerTest{
-			isSend: false,
+			isSend: true,
 		}
 		handler := event.ContactCreatedEventHandler{
 			Mailer:    mailer,
@@ -70,13 +70,13 @@ func TestContactCreatedEventHandler(t *testing.T) {
 
 		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
 		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		httpTelemetryMock.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+		httpTelemetryMock.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(fmt.Errorf("error")).AnyTimes()
 		handler := event.NewContactCreatedEventHandler(mailer, httpTelemetryMock)
 		contactCreatedEvent := event.ContactCreatedEvent{
 			Contact: contact,
 		}
 		err := handler.Publish(context.Background(), contactCreatedEvent)
-		assert.Equal(t, err, nil)
+		assert.Error(t, err, "error during send mail: error")
 	})
 }
 
@@ -90,12 +90,10 @@ type MailerTest struct {
 
 func (m *MailerTest) Send(ctx context.Context, view entity.Contact) (bool, error) {
 	_ = ctx
-	m.isSend = true
-	_, err := fmt.Println(reflect.TypeOf(view))
-	if err != nil {
-		m.isSend = false
+	if _, err := fmt.Println(reflect.TypeOf(view)); err != nil {
+		return false, fmt.Errorf("error: %w", err)
 	}
-	return m.isSend, err
+	return true, nil
 }
 
 type BadEvent struct{}
@@ -103,6 +101,7 @@ type BadEvent struct{}
 func (b BadEvent) GetName() string {
 	return "BadEvent"
 }
+
 func (b BadEvent) GetModel() interface{} {
 	return BadEvent{}
 }

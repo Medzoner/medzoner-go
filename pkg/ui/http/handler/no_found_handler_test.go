@@ -9,8 +9,7 @@ import (
 	"testing"
 
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
-
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
 )
@@ -44,22 +43,22 @@ type TemplaterTestFailed struct {
 	RootPath string
 }
 
-func (t *TemplaterTestFailed) Render(name string, view interface{}, response http.ResponseWriter) (interface{}, error) {
+func (t *TemplaterTestFailed) Render(name string, view interface{}, response http.ResponseWriter) error {
 	_ = name
 	_ = view
 	_ = response
 	_ = t
-	return nil, errors.New("panic")
+	return errors.New("panic")
 }
 
 type TemplaterTest struct {
 	RootPath string
 }
 
-func (t *TemplaterTest) Render(name string, view interface{}, response http.ResponseWriter) (interface{}, error) {
+func (t *TemplaterTest) Render(name string, view interface{}, response http.ResponseWriter) error {
 	_ = name
 	_ = response
 	_ = t
 	fmt.Println(view)
-	return nil, nil
+	return nil
 }

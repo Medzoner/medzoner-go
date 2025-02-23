@@ -8,7 +8,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
-
 	otelTrace "go.opentelemetry.io/otel/trace"
 )
 

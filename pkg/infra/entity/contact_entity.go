@@ -1,17 +1,18 @@
 package entity
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 	"time"
+
+	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 )
 
 // Contact Contact
 type Contact struct {
-	ID          int                   `json:"id" db:"id"`
-	UUID        string                `json:"uuid" db:"uuid"`
-	Name        string                `db:"name"`
-	Message     string                `db:"message"`
-	Email       customtype.NullString `db:"email"`
-	DateAdd     time.Time             `db:"date_add"`
+	DateAdd     time.Time `db:"date_add"`
+	UUID        string    `db:"uuid"     json:"uuid"`
+	Name        string    `db:"name"`
+	Message     string    `db:"message"`
 	EmailString string
+	Email       customtype.NullString `db:"email"`
+	ID          int                   `db:"id"    json:"id"`
 }
