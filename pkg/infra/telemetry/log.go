@@ -108,7 +108,10 @@ func newResource() *resource.Resource {
 func (t *HttpTelemetry) Log(ctx context.Context, msg string) {
 	t.logger.Info(msg)
 
-	t.zerolog.Info().Timestamp().Ctx(ctx).Msgf(msg)
+	t.zerolog.Info().
+		Timestamp().
+		Ctx(ctx).
+		Msg(msg)
 }
 
 func (t *HttpTelemetry) Error(ctx context.Context, msg string, args ...any) {
