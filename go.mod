@@ -2,7 +2,7 @@ module github.com/Medzoner/medzoner-go
 
 go 1.23.0
 
-toolchain go1.23.3
+toolchain go1.24.0
 
 require (
 	github.com/caarlos0/env/v10 v10.0.0
