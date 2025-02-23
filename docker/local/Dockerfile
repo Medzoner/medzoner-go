@@ -1,4 +1,4 @@
-FROM golang:1.21.9
+FROM golang:1.24.0
 
 RUN groupadd -g 1000 app && \
     useradd -g 1000 -u 1000 app && \
