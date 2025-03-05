@@ -3,8 +3,8 @@ module github.com/Medzoner/medzoner-go
 go 1.24.0
 
 require (
-	github.com/caarlos0/env/v11 v11.3.1
 	github.com/caarlos0/env/v10 v10.0.0
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/cucumber/godog v0.15.0
 	github.com/docker/distribution v2.8.3+incompatible
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
@@ -20,17 +20,17 @@ require (
 	github.com/rs/zerolog v1.33.0
 	github.com/tdewolff/minify/v2 v2.21.3
 	go.opentelemetry.io/contrib/bridges/otelslog v0.9.0
-	go.opentelemetry.io/otel v1.34.0
+	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.10.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.34.0
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.34.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.35.0
 	go.opentelemetry.io/otel/log v0.10.0
-	go.opentelemetry.io/otel/metric v1.34.0
-	go.opentelemetry.io/otel/sdk v1.34.0
+	go.opentelemetry.io/otel/metric v1.35.0
+	go.opentelemetry.io/otel/sdk v1.35.0
 	go.opentelemetry.io/otel/sdk/log v0.10.0
 	go.opentelemetry.io/otel/sdk/metric v1.34.0
-	go.opentelemetry.io/otel/trace v1.34.0
-	google.golang.org/grpc v1.70.0
+	go.opentelemetry.io/otel/trace v1.35.0
+	google.golang.org/grpc v1.71.0
 	gotest.tools v2.2.0+incompatible
 )
 
@@ -44,7 +44,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
@@ -58,7 +58,7 @@ require (
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/tdewolff/parse/v2 v2.7.20 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.34.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.35.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/crypto v0.34.0 // indirect
