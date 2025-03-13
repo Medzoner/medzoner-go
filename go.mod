@@ -3,7 +3,6 @@ module github.com/Medzoner/medzoner-go
 go 1.24.0
 
 require (
-	github.com/caarlos0/env/v11 v11.3.1
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/cucumber/godog v0.15.0
 	github.com/docker/distribution v2.8.3+incompatible
@@ -61,8 +60,8 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.34.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/crypto v0.34.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250219182151-9fdb1cabc7b2 // indirect
