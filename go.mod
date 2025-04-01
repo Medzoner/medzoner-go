@@ -30,7 +30,7 @@ require (
 	go.opentelemetry.io/otel/sdk/log v0.10.0
 	go.opentelemetry.io/otel/sdk/metric v1.34.0
 	go.opentelemetry.io/otel/trace v1.34.0
-	google.golang.org/grpc v1.70.0
+	google.golang.org/grpc v1.71.1
 	gotest.tools v2.2.0+incompatible
 )
 
