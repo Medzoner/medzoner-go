@@ -3,6 +3,7 @@ package templater_test
 import (
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
@@ -16,7 +17,7 @@ func TestRender(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	rootPath := currentPath + "/../../../../"
+	rootPath := filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(currentPath)))) + "/"
 	t.Run("Unit: test Render success", func(t *testing.T) {
 		cfg := config.Config{
 			RootPath: config.RootPath(rootPath),
@@ -37,7 +38,7 @@ func TestRender(t *testing.T) {
 		tpl := templater.TemplateHTML{
 			RootPath: rootPath + ".var/test/",
 		}
-		err := os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0o000)
+		err := os.Chmod(tpl.RootPath+"tmpl/failed.html", 0o000)
 		if err != nil {
 			t.Error(err)
 		}
@@ -48,7 +49,7 @@ func TestRender(t *testing.T) {
 			httptest.NewRecorder(),
 		)
 
-		assert.ErrorContains(t, err, "error parsing templates: error parsing files tpl: open /media/medzoner/storage/www/medzoner-go/.var/test/tmpl/failed.html: permission denied - info: ")
+		assert.ErrorContains(t, err, "error parsing templates: error parsing files tpl: open "+rootPath+".var/test/tmpl/failed.html: permission denied - info: ")
 
 		err = os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0o600)
 		if err != nil {
