@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
@@ -62,7 +64,11 @@ func (d *DbSQLInstance) GetDatabaseName() string {
 
 // GetDatabaseDriver is a function that returns the database driver
 func (d *DbSQLInstance) GetDatabaseDriver() (database.Driver, error) {
-	return mysql.WithInstance(d.Connection.DB, &mysql.Config{})
+	db, err := mysql.WithInstance(d.Connection.DB, &mysql.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("error getting database driver: %w", err)
+	}
+	return db, nil
 }
 
 func (d *DbSQLInstance) openDb(dsn string) *sqlx.DB {

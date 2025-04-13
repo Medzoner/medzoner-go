@@ -45,7 +45,7 @@ func (t *TemplateHTML) Render(name string, view interface{}, response http.Respo
 // parseTemplates parses templates
 func (t *TemplateHTML) parseTemplates(name string) (*template.Template, error) {
 	tpl := template.New(name)
-	return tpl, filepath.Walk(t.RootPath+"tmpl/", func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(t.RootPath+"tmpl/", func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(path, ".html") {
 			_, err = tpl.ParseFiles(path)
 			if err != nil {
@@ -57,4 +57,9 @@ func (t *TemplateHTML) parseTemplates(name string) (*template.Template, error) {
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, fmt.Errorf("error walking the path %s: %w", t.RootPath+"tmpl/", err)
+	}
+
+	return tpl, nil
 }

@@ -17,6 +17,7 @@ import (
 )
 
 func (t *HttpTelemetry) Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span) {
+	// nolint:spancheck // Spans will be ended outside of this function
 	return t.Tracer.Start(ctx, spanName, opts...)
 }
 

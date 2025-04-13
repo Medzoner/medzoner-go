@@ -114,13 +114,6 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 		validationError := h.Validation.Struct(createContactCommand)
 		if validationError == nil {
 			if err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
-				// newSession.SetValue("message", "ErrorSpan during send message")
-				// if err = newSession.Save(request, response); err != nil {
-				//	span.RecordError(err)
-				//	http_utils.ResponseError(response, err.ErrorSpan(), http.StatusInternalServerError)
-				//	return
-				// }
-				// http.Redirect(response, request, "/#contact", http.StatusSeeOther)
 				http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
 				return
 			}

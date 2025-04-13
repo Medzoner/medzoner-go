@@ -71,5 +71,10 @@ func (d *DbMigration) getNewWithDatabaseInstance() (*migrate.Migrate, error) {
 	if err != nil {
 		return nil, fmt.Errorf("database driver failed... %w", err)
 	}
-	return migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", d.MigrationDir), d.DbInstance.GetDatabaseName(), driver)
+
+	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", d.MigrationDir), d.DbInstance.GetDatabaseName(), driver)
+	if err != nil {
+		return nil, fmt.Errorf("database new instance failed... %w", err)
+	}
+	return m, nil
 }
