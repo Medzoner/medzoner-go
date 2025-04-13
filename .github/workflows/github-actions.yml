@@ -25,8 +25,11 @@ jobs:
           args: ./...
       - run: cp .env.github .env
 #      - run: go install honnef.co/go/tools/cmd/staticcheck@master
-      - run: go version
-      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.7
+      - run: |
+          git clone https://github.com/golangci/golangci-lint.git
+          cd golangci-lint
+          git checkout v1.64.8
+          go build -o /usr/local/bin/golangci-lint ./cmd/golangci-lint
       - run: golangci-lint --version
 #      - run: go install github.com/gordonklaus/ineffassign@latest
 #      - run: go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
