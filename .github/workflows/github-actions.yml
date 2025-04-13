@@ -28,6 +28,8 @@ jobs:
       - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8
 #      - run: go install github.com/gordonklaus/ineffassign@latest
 #      - run: go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+      - run: go version
+      - run: golangci-lint --version
       - run: make lint
 
   ci-test:
