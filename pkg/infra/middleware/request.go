@@ -13,7 +13,9 @@ type CorrelationContextKey struct{}
 // GetCorrelationID retrieves the correlation ID from the context.
 func GetCorrelationID(ctx context.Context) string {
 	if val := ctx.Value(CorrelationContextKey{}); val != nil {
-		return val.(string)
+		if correlationID, ok := val.(string); ok {
+			return correlationID
+		}
 	}
 	return ""
 }
