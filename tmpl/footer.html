@@ -40,12 +40,6 @@
             </div>
         </div>
     </footer>
-    <!--   Core JS Files   -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js" type="text/javascript"></script>
-    <script src="/public/js/core/bootstrap-material-design.min.js" type="text/javascript"></script>
-    <!-- Control Center for Material Kit: parallax effects, scripts for the example pages etc -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/material-kit/2.0.7/js/material-kit.min.js" type="text/javascript"></script>
     <script>
         function initRecaptcha(){
             var recaptchaScript = document.createElement('script');
@@ -57,11 +51,22 @@
         window.addEventListener('scroll', function (){
             initRecaptcha();
         }, {once:true});
+
         function scrollToDownload() {
-            if ($('.section-download').length != 0) {
-                $("html, body").animate({
-                    scrollTop: $('.section-contacts').offset().top
-                }, 1000);
+            let itemBtn = document.querySelector('.dropdown.nav-item.contact');
+            let menuBtn = itemBtn.querySelector('.dropdown-menu.dropdown-with-icons');
+            if (itemBtn.attributes.getNamedItem("closed") || !itemBtn.attributes.getNamedItem("open")) {
+                itemBtn.setAttribute("open", "true");
+                itemBtn.removeAttribute("closed");
+                menuBtn.style.display = "block";
+                menuBtn.style.opacity = "1";
+                menuBtn.style.transform = "scale(1)";
+            } else {
+                itemBtn.setAttribute("closed", "true");
+                itemBtn.removeAttribute("open");
+                menuBtn.style.display = "none";
+                menuBtn.style.opacity = "0";
+                menuBtn.style.transform = "scale(0)";
             }
         }
     </script>
