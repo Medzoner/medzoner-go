@@ -8,7 +8,6 @@ import (
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
-
 	"gotest.tools/assert"
 )
 

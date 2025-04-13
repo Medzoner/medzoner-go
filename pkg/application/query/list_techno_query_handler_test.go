@@ -3,7 +3,6 @@ package query_test
 import (
 	"context"
 	"errors"
-	"gotest.tools/assert"
 	"testing"
 
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
@@ -11,6 +10,7 @@ import (
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
+	"gotest.tools/assert"
 )
 
 func TestListTechnoQueryHandler(t *testing.T) {

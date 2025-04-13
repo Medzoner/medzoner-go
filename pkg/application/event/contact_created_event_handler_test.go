@@ -12,7 +12,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
-
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/assert"
