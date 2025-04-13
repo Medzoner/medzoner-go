@@ -30,10 +30,10 @@ jobs:
           cd golangci-lint
           git checkout v1.64.8
           go build -o /usr/local/bin/golangci-lint ./cmd/golangci-lint
-      - run: golangci-lint --version
+      - run: /usr/local/bin/golangci-lint --version
 #      - run: go install github.com/gordonklaus/ineffassign@latest
 #      - run: go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
-      - run: make lint
+      - run: /usr/local/bin/golangci-lint -v --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
   ci-test:
     runs-on: ubuntu-24.04
