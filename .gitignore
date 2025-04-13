@@ -39,3 +39,4 @@ skaffold
 !.gitkeep
 .aider*
 /var/
+/test/profiler/main.go
