@@ -48,7 +48,7 @@ func TestRender(t *testing.T) {
 			httptest.NewRecorder(),
 		)
 
-		assert.ErrorContains(t, err, "error parsing templates: error parsing files tpl: open "+rootPath+".var/test/tmpl/failed.html: permission denied - info: ")
+		assert.ErrorContains(t, err, "error parsing templates: error getting template "+rootPath+".var/test/tmpl/: error parsing files tpl: open "+rootPath+".var/test/tmpl/failed.html: permission denied - info: ")
 
 		err = os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0o600)
 		if err != nil {
@@ -65,7 +65,7 @@ func TestRender(t *testing.T) {
 			httptest.NewRecorder(),
 		)
 
-		assert.Error(t, err, "error parsing templates: error walking the path ../../../..tmpl/: lstat ../../../..tmpl/: no such file or directory")
+		assert.Error(t, err, "error parsing templates: error getting template ../../../..tmpl/: error walking the path ../../../..tmpl/: lstat ../../../..tmpl/: no such file or directory")
 	})
 	t.Run("Unit: test Render failed with bad rootPath", func(t *testing.T) {
 		tpl := templater.TemplateHTML{
@@ -77,6 +77,6 @@ func TestRender(t *testing.T) {
 			httptest.NewRecorder(),
 		)
 
-		assert.Error(t, err, "error parsing templates: error walking the path ../../..tmpl/: lstat ../../..tmpl/: no such file or directory")
+		assert.Error(t, err, "error parsing templates: error getting template ../../..tmpl/: error walking the path ../../..tmpl/: lstat ../../..tmpl/: no such file or directory")
 	})
 }
