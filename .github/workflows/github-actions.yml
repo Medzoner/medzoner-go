@@ -33,7 +33,7 @@ jobs:
 #      - run: /usr/local/bin/golangci-lint --version
 #      - run: go install github.com/gordonklaus/ineffassign@latest
 #      - run: go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
-      - run: docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v2.0.1 golangci-lint -v --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+      - run: docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v2.0.1 golangci-lint -v --issues-exit-code 1 run ./...
 #      - run: /usr/local/bin/golangci-lint -v --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
   ci-test:

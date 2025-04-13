@@ -64,7 +64,7 @@ func GetTraceID(ctx context.Context) string {
 		return traceID.String()
 	}
 
-	var traceID [16]byte = [16]byte{
+	var traceID = [16]byte{
 		0x00, 0x00, 0x00, 0x00,
 	}
 	spanCtx.WithTraceID(traceID)
