@@ -166,9 +166,7 @@ run:
 issues:
   exclude-dirs:
     - .cache
-    - test/e2e
-    - api/v1
-    - test/mocks/core/repositories
+    - var
   exclude-rules:
     - path: _test\.go
       linters:
