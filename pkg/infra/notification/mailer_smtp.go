@@ -13,18 +13,17 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
-
 	"go.opentelemetry.io/otel/attribute"
 )
 
 // MailerSMTP MailerSMTP
 type MailerSMTP struct {
+	Telemetry telemetry.Telemeter
 	RootPath  string
 	User      string
 	Password  string
 	Host      string
 	Port      string
-	Telemetry telemetry.Telemeter
 }
 
 // NewMailerSMTP NewMailerSMTP
@@ -41,9 +40,9 @@ func NewMailerSMTP(config config.Config, tm telemetry.Telemeter) *MailerSMTP {
 
 // Request Request
 type Request struct {
-	to      []string
 	subject string
 	body    string
+	to      []string
 }
 
 // NewRequest NewRequest
@@ -72,7 +71,7 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 
 	auth := smtp.PlainAuth(m.User, m.User, m.Password, m.Host)
 	if err := smtp.SendMail(fmt.Sprintf("%s:%s", m.Host, m.Port), auth, m.User, req.to, m.message(view)); err != nil {
-		return false, m.Telemetry.ErrorSpan(iSpan, fmt.Errorf("send mail failed: %w", err))
+		return false, fmt.Errorf("send mail failed: %w", m.Telemetry.ErrorSpan(iSpan, err))
 	}
 
 	return true, nil
@@ -94,12 +93,12 @@ func (m *MailerSMTP) message(view entity.Contact) []byte {
 func (r *Request) parseTemplate(templateFileName string, data interface{}) error {
 	t, err := template.ParseFiles(templateFileName)
 	if err != nil {
-		return err
+		return fmt.Errorf("error: %w", err)
 	}
 
 	buf := new(bytes.Buffer)
 	if err = t.Execute(buf, data); err != nil {
-		return err
+		return fmt.Errorf("error: %w", err)
 	}
 	r.body = buf.String()
 

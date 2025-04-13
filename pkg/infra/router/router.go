@@ -6,9 +6,8 @@ import (
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
-
 	"github.com/gorilla/mux"
-	"github.com/tdewolff/minify/v2"
+	minify "github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"github.com/tdewolff/minify/v2/js"
 )

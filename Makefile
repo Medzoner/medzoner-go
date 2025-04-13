@@ -25,7 +25,7 @@ migrate:
 	go run ./cmd/migrate/migrate.go
 
 skaffold-run:
-	skaffold dev --port-forward
+	skaffold dev --port-forward --platform=linux/arm64,linux/amd64 --insecure-registry=registry.medzoner.lan:5000
 
 trace:
 	go tool trace trace.out
@@ -37,6 +37,10 @@ lint:
 	#curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
 	#golangci-lint --version
 	golangci-lint --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+
+lint-fix:
+	#fieldalignment -fix -test=false ./...
+	golangci-lint -v --issues-exit-code=1 run --fix $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 govet:
 	go vet $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')

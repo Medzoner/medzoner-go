@@ -31,9 +31,12 @@ func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) er
 	switch event.(type) {
 	case ContactCreatedEvent:
 		contactCreated := event.GetModel().(entity.Contact)
+		if contactCreated.UUID == "" {
+			return fmt.Errorf("error during get contact from event: %w", c.Telemetry.ErrorSpan(iSpan, fmt.Errorf("contact UUID is empty")))
+		}
 		_, err := c.Mailer.Send(ctx, contactCreated)
 		if err != nil {
-			return c.Telemetry.ErrorSpan(iSpan, fmt.Errorf("error during send mail: %w", err))
+			return fmt.Errorf("error during send mail: %w", c.Telemetry.ErrorSpan(iSpan, err))
 		}
 		c.Telemetry.Log(ctx, "Mail was send.")
 	default:

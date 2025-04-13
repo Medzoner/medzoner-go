@@ -2,7 +2,7 @@
 // Source: ./mailer.go
 
 // Package mailerMock is a generated GoMock package.
-package mailerMock
+package mocks
 
 import (
 	context "context"

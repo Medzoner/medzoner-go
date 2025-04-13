@@ -17,8 +17,7 @@ import (
 )
 
 func (t *HttpTelemetry) Start(ctx context.Context, spanName string, opts ...otelTrace.SpanStartOption) (context.Context, otelTrace.Span) {
-	ctx, span := t.Tracer.Start(ctx, spanName, opts...)
-	return ctx, span
+	return t.Tracer.Start(ctx, spanName, opts...)
 }
 
 func (t *HttpTelemetry) StartRoot(ctx context.Context, request *http.Request, spanName string) (context.Context, otelTrace.Span) {
@@ -64,8 +63,7 @@ func GetTraceID(ctx context.Context) string {
 		return traceID.String()
 	}
 
-	var traceID [16]byte
-	traceID = [16]byte{
+	var traceID [16]byte = [16]byte{
 		0x00, 0x00, 0x00, 0x00,
 	}
 	spanCtx.WithTraceID(traceID)

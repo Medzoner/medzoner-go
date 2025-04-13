@@ -1,6 +1,183 @@
 linters-settings:
   exclude:
     - "var/mysql/"
+    - "pkg/infra/dependency/wire_gen.go"
 
   exclude-dirs:
     - "var"
+
+  asasalint:  # will prevent any function for having "...any" variadic parameter except log funcs
+    exclude:
+      - \.Debugf
+      - \.Infof
+      - \.Warnf
+      - \.Errorf
+      - \.Fatalf
+    ignore-test: true
+
+  errcheck:
+    check-type-assertions: true
+
+  gocyclo:
+    min-complexity: 10
+
+  dupl:
+    threshold: 200
+
+  goconst:
+    min-len: 2
+    min-occurrences: 3
+    ignore-tests: true
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+
+    disabled-checks:
+      - hugeParam # gets crazy for absolutely nothing, let's help him stfu
+
+  gomnd:
+    checks:
+      - argument
+      - case
+      - condition
+      - operation
+      - return
+      - assign
+    ignored-numbers:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - '0666'  # will ignore hard coded numbers which are permission codes, but a better approach is using octal number e.g: 0o666 and remove this section
+      - '0755'
+    ignored-functions:
+      - '^math\.'  # will ignore hard coded numbers which are used alongside math, e.g: math.rand() * 2
+      - '^context\.'  # will ignore hard coded numbers which are used alongside context, e.g: context.WithTimeout(context.Background(), 3*time.Second)
+
+  govet:
+    shadow: true
+    enable:
+      - fieldalignment
+      - nilfunc
+      - nilness
+
+  revive:
+    severity: error
+    enable-all-rules: true
+    confidence: 0.8
+    rules:
+      - name: unused-parameter
+        severity: warning
+        disabled: false
+        # arguments:
+        #  - allowRegex: "."  # use regex to allow an unused-parameter when you need, e.g: (tx *gorm.DB) in gorm hooks
+      - name: unused-receiver
+        severity: warning
+        disabled: false
+        # arguments:
+        #  - allowRegex: "."  # use regex to allow an unused-receiver when you need
+      - name: line-length-limit  # will check for line length but you have to enable it
+        severity: warning
+        disabled: true
+        arguments: [80]  # pass a desired number for each line length restriction
+      - name: unchecked-type-assertion
+        severity: warning
+        disabled: true
+      - name: add-constant
+        severity: warning
+        disabled: false
+        arguments:
+          - maxLitCount: "10"
+            allowStrs: '""'
+            allowInts: "0,1,2,3,4"
+      - name: cognitive-complexity  # will check for code complexity and every if, else, ||, & and ! charactars will add to complexity score
+        severity: warning
+        disabled: true
+        arguments: [10]  # pass a desired number for complexity score, smaller numbers means more restrictions for using if, else, ||, & and ! chars
+      - name: max-public-structs # set a max number for restricting max public struct count in a file
+        severity: warning
+        disabled: true
+        arguments: [10]
+
+  nolintlint:
+    require-explanation: true
+    require-specific: false
+
+  depguard: # will check dependencies and imported packages with defined rules
+    rules:
+      main:
+        files:
+          - "!**/*_a _file.go"
+        allow:
+          - $gostd
+          - github.com/rezakhdemix
+          - github.com/redis
+        deny:
+          - pkg: "github.com/pkg/example"
+            desc: should be replaced by blah blah package
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - asasalint
+    - bidichk
+    - bodyclose
+    - contextcheck
+    - cyclop
+    - durationcheck
+    - errchkjson
+    - errorlint
+    - exhaustive
+    - fatcontext
+    - funlen
+    - gci
+    - gocognit
+    - gocritic
+    - gofmt
+    - gofumpt
+    - gosec
+    - maintidx
+    - makezero
+    - musttag
+    - nestif
+    - nilerr
+    - noctx
+    - nosprintfhostport
+    - prealloc
+    - spancheck
+    - tagalign
+    - wrapcheck
+    - zerologlint
+
+run:
+  issues-exit-code: 1
+
+issues:
+  exclude-dirs:
+    - .cache
+    - test/e2e
+    - api/v1
+    - test/mocks/core/repositories
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - cyclop
+        - gosec
+        - dupl
+        - funlen
+        - errchkjson
+        - depguard
+        - govet
+        - prealloc
+        - gocritic

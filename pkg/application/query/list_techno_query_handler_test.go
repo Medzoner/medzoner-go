@@ -3,12 +3,14 @@ package query_test
 import (
 	"context"
 	"errors"
+	"gotest.tools/assert"
+	"testing"
+
 	"github.com/Medzoner/medzoner-go/pkg/application/query"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
-	"testing"
 )
 
 func TestListTechnoQueryHandler(t *testing.T) {
@@ -105,14 +107,13 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		}
 		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
 		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		httpTelemetryMock.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+		httpTelemetryMock.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(errors.New("error")).AnyTimes()
 
 		handler := query.NewListTechnoQueryHandler(mocked.TechnoRepository, httpTelemetryMock)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
-		if err != nil {
-			t.Errorf("ErrorSpan: %v", err)
-		}
+
+		assert.Error(t, err, "error fetching stack: error")
 	})
 }
 

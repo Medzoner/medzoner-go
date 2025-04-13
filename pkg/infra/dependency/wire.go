@@ -22,9 +22,9 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	domainRepositoryMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
-	mailerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/service/mailer"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
+	domainRepositoryMock "github.com/Medzoner/medzoner-go/test/mocks"
+	mailerMock "github.com/Medzoner/medzoner-go/test/mocks"
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 
 	"github.com/google/wire"
 )

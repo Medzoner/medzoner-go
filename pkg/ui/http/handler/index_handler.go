@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"fmt"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
 	"net/http"
 	"time"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
+	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 )
 
@@ -42,13 +42,13 @@ type TechnoView struct {
 
 // IndexHandler IndexHandler
 type IndexHandler struct {
-	Template                    templater.Templater
-	ListTechnoQueryHandler      query.ListTechnoQueryHandler
-	RecaptchaSiteKey            string
 	CreateContactCommandHandler command.CreateContactCommandHandler
+	ListTechnoQueryHandler      query.ListTechnoQueryHandler
+	Template                    templater.Templater
 	Validation                  validation.MzValidator
 	Recaptcha                   captcha.Captcher
 	Tracer                      telemetry.Telemeter
+	RecaptchaSiteKey            string
 	Debug                       bool
 }
 
@@ -132,8 +132,8 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 	if view.FormMessage != "" {
 		response.WriteHeader(statusCode)
 	}
-	_, err = h.Template.Render("index", view, response)
-	if err != nil {
+
+	if err = h.Template.Render("index", view, response); err != nil {
 		http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
 		return
 	}

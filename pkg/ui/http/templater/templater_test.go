@@ -1,90 +1,82 @@
 package templater_test
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"net/http/httptest"
 	"os"
 	"testing"
 
+	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 
 	"gotest.tools/assert"
 )
 
 func TestRender(t *testing.T) {
-	rootPath := "../../../../"
+	currentPath, err := os.Getwd()
+	if err != nil {
+		t.Error(err)
+	}
+	rootPath := currentPath + "/../../../../"
 	t.Run("Unit: test Render success", func(t *testing.T) {
 		cfg := config.Config{
 			RootPath: config.RootPath(rootPath),
 		}
-		var tpl = templater.NewTemplateHTML(cfg)
-		_, err := tpl.Render(
+		tpl := templater.NewTemplateHTML(cfg)
+		err := tpl.Render(
 			"index",
 			nil,
 			httptest.NewRecorder(),
 		)
 		if err != nil {
-			assert.Equal(t, true, false)
+			t.Errorf("Error: %v", err)
+			return
 		}
-		if err == nil {
-			assert.Equal(t, true, true)
-		}
+		assert.Equal(t, true, true)
 	})
 	t.Run("Unit: test Render failed when parse tpl", func(t *testing.T) {
-		var tpl = templater.TemplateHTML{
-			RootPath: "../../../../.var/test",
+		tpl := templater.TemplateHTML{
+			RootPath: rootPath + ".var/test/",
 		}
-		err := os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0000)
+		err := os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0o000)
 		if err != nil {
 			t.Error(err)
 		}
 
-		_, err = tpl.Render(
+		err = tpl.Render(
 			"failed.html",
 			nil,
 			httptest.NewRecorder(),
 		)
-		if err != nil {
-			assert.Equal(t, true, true)
-		}
-		if err == nil {
-			assert.Equal(t, true, false)
-		}
-		err = os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0600)
+
+		assert.ErrorContains(t, err, "error parsing templates: error parsing files tpl: open /media/medzoner/storage/www/medzoner-go/.var/test/tmpl/failed.html: permission denied - info: ")
+
+		err = os.Chmod(tpl.RootPath+"/tmpl/failed.html", 0o600)
 		if err != nil {
 			t.Error(err)
 		}
 	})
 	t.Run("Unit: test Render failed with bad tpl name", func(t *testing.T) {
-		var tpl = templater.TemplateHTML{
+		tpl := templater.TemplateHTML{
 			RootPath: "../../../..",
 		}
-		_, err := tpl.Render(
+		err := tpl.Render(
 			"fail",
 			nil,
 			httptest.NewRecorder(),
 		)
-		if err != nil {
-			assert.Equal(t, true, true)
-		}
-		if err == nil {
-			assert.Equal(t, true, false)
-		}
+
+		assert.Error(t, err, "error parsing templates: error walking the path ../../../..tmpl/: lstat ../../../..tmpl/: no such file or directory")
 	})
 	t.Run("Unit: test Render failed with bad rootPath", func(t *testing.T) {
-		var tpl = templater.TemplateHTML{
+		tpl := templater.TemplateHTML{
 			RootPath: "../../..",
 		}
-		_, err := tpl.Render(
+		err := tpl.Render(
 			"index",
 			nil,
 			httptest.NewRecorder(),
 		)
-		if err != nil {
-			assert.Equal(t, true, true)
-		}
-		if err == nil {
-			assert.Equal(t, true, false)
-		}
+
+		assert.Error(t, err, "error parsing templates: error walking the path ../../..tmpl/: lstat ../../..tmpl/: no such file or directory")
 	})
 }

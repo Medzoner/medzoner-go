@@ -3,13 +3,13 @@ package handler_test
 import (
 	"context"
 	"errors"
-	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
+	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
@@ -34,7 +34,7 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 		t.Error(err)
 	}
 	defer func(srv *server.Server) {
-		if err := srv.ShutdownWithTimeout(); err != nil {
+		if err := srv.Shutdown(context.Background()); err != nil {
 			t.Error(err)
 		}
 	}(srv)
@@ -62,11 +62,11 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 			method: http.MethodPost,
 			url:    "/",
 			body: url.Values{
-				"name":               {"a name"},
-				"email":              {"fake@fake.fake"},
-				"message":            {"a message"},
-				"g-captcha-response": {"captcha"},
-				"submit":             {""},
+				"name":               []string{"a name"},
+				"email":              []string{"fake@fake.fake"},
+				"message":            []string{"a message"},
+				"g-captcha-response": []string{"captcha"},
+				"submit":             []string{""},
 			},
 			mocks: func() {
 				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
@@ -79,11 +79,11 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 			method: http.MethodPost,
 			url:    "/",
 			body: url.Values{
-				"name":               {"a name"},
-				"email":              {""},
-				"message":            {"a message"},
-				"g-captcha-response": {"captcha"},
-				"submit":             {""},
+				"name":               []string{"a name"},
+				"email":              []string{""},
+				"message":            []string{"a message"},
+				"g-captcha-response": []string{"captcha"},
+				"submit":             []string{""},
 			},
 			mocks: func() {
 				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
@@ -95,11 +95,11 @@ func TestIntegration_IndexHandler_Success(t *testing.T) {
 			method: http.MethodPost,
 			url:    "/",
 			body: url.Values{
-				"name":               {"a name"},
-				"email":              {"fake@fakem.lan"},
-				"message":            {"a message"},
-				"g-captcha-response": {"captcha"},
-				"submit":             {""},
+				"name":               []string{"a name"},
+				"email":              []string{"fake@fakem.lan"},
+				"message":            []string{"a message"},
+				"g-captcha-response": []string{"captcha"},
+				"submit":             []string{""},
 			},
 			mocks: func() {
 				mocked.TechnoRepository.EXPECT().FetchStack(context.Background()).Return(map[string]interface{}{}, nil).Times(1)
@@ -178,7 +178,7 @@ func TestIntegration_IndexHandler_Failed_Captcha(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodPost, "/", nil)
 		request.Form = url.Values{
-			"g-captcha-response": {"captcha"},
+			"g-captcha-response": []string{"captcha"},
 		}
 		srv.Router.ServeHTTP(recorder, request)
 

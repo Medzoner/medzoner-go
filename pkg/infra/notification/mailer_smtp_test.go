@@ -7,8 +7,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/infra/notification"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
-
+	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/trace/noop"

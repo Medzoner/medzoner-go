@@ -6,7 +6,6 @@ import (
 
 	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
-
 	"go.opentelemetry.io/otel/attribute"
 	otelTrace "go.opentelemetry.io/otel/trace"
 )
@@ -36,7 +35,7 @@ func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQue
 	if query.Type == "stack" {
 		resp, err := l.TechnoRepository.FetchStack(ctx)
 		if err != nil {
-			return nil, l.Telemetry.ErrorSpan(iSpan, fmt.Errorf("error fetching stack: %w", err))
+			return nil, fmt.Errorf("error fetching stack: %w", l.Telemetry.ErrorSpan(iSpan, err))
 		}
 		return resp, nil
 	}

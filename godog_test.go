@@ -8,7 +8,6 @@ import (
 	"github.com/Medzoner/medzoner-go/features/bootstrap"
 	"github.com/Medzoner/medzoner-go/pkg/infra/dependency"
 	mocks "github.com/Medzoner/medzoner-go/test"
-
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/golang/mock/gomock"

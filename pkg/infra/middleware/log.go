@@ -22,8 +22,8 @@ func (m APIMiddleware) LogMiddleware(next http.Handler) http.Handler {
 
 type LoggingResponseWriter struct {
 	http.ResponseWriter
-	statusCode int
 	body       []byte
+	statusCode int
 }
 
 func (lrw *LoggingResponseWriter) WriteHeader(code int) {
@@ -36,9 +36,13 @@ func (lrw *LoggingResponseWriter) Write(body []byte) (int, error) {
 		lrw.body = body
 		return 1, nil
 	}
-	return lrw.ResponseWriter.Write(body)
+	i, err := lrw.ResponseWriter.Write(body)
+	if err != nil {
+		return 0, fmt.Errorf("error writing response: %w", err)
+	}
+	return i, nil
 }
 
 func NewLoggingResponseWriter(w http.ResponseWriter) *LoggingResponseWriter {
-	return &LoggingResponseWriter{w, http.StatusOK, make([]byte, 0)}
+	return &LoggingResponseWriter{w, make([]byte, 0), http.StatusOK}
 }

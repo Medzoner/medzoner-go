@@ -25,9 +25,7 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/test"
-	"github.com/Medzoner/medzoner-go/test/mocks/pkg/domain/repository"
-	"github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/service/mailer"
-	"github.com/Medzoner/medzoner-go/test/mocks/pkg/infra/telemetry"
+	mocks2 "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
 )
 
@@ -102,22 +100,22 @@ var (
 	TracerMockWiring = wire.NewSet(wire.FieldsOf(
 		new(*mocks.Mocks),
 		"HttpTelemetry",
-	), wire.Bind(new(telemetry.Telemeter), new(*tracerMock.MockTelemeter)),
+	), wire.Bind(new(telemetry.Telemeter), new(*mocks2.MockTelemeter)),
 	)
 	MailerWiring     = wire.NewSet(notification.NewMailerSMTP, wire.Bind(new(mailer.Mailer), new(*notification.MailerSMTP)))
 	MailerMockWiring = wire.NewSet(wire.FieldsOf(
 		new(*mocks.Mocks),
 		"Mailer",
-	), wire.Bind(new(mailer.Mailer), new(*mailerMock.MockMailer)),
+	), wire.Bind(new(mailer.Mailer), new(*mocks2.MockMailer)),
 	)
 	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)))
 	RepositoryMockWiring = wire.NewSet(wire.FieldsOf(
 		new(*mocks.Mocks),
 		"TechnoRepository",
-	), wire.Bind(new(repository2.TechnoRepository), new(*domainRepositoryMock.MockTechnoRepository)), wire.FieldsOf(
+	), wire.Bind(new(repository2.TechnoRepository), new(*mocks2.MockTechnoRepository)), wire.FieldsOf(
 		new(*mocks.Mocks),
 		"ContactRepository",
-	), wire.Bind(new(repository2.ContactRepository), new(*domainRepositoryMock.MockContactRepository)),
+	), wire.Bind(new(repository2.ContactRepository), new(*mocks2.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
 	UiWiring  = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)

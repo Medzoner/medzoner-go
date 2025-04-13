@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -13,8 +15,8 @@ type MzValidator interface {
 
 // ValidatorAdapter ValidatorAdapter
 type ValidatorAdapter struct {
-	ValidationErrors []validator.FieldError
 	validatorLib     *validator.Validate
+	ValidationErrors []validator.FieldError
 }
 
 // NewValidatorAdapter NewValidatorAdapter
@@ -38,7 +40,7 @@ func (v ValidatorAdapter) New() *ValidatorAdapter {
 
 // GetErrors GetErrors
 func (v ValidatorAdapter) GetErrors() []CustomError {
-	var customErrors []CustomError
+	customErrors := make([]CustomError, 0)
 	for _, itemError := range v.ValidationErrors {
 		customErrors = append(customErrors, CustomError{Tag: itemError.ActualTag()})
 	}
@@ -47,11 +49,13 @@ func (v ValidatorAdapter) GetErrors() []CustomError {
 
 // Struct Struct
 func (v ValidatorAdapter) Struct(str interface{}) error {
-	return v.validatorLib.Struct(str)
+	if err := v.validatorLib.Struct(str); err != nil {
+		return fmt.Errorf("error validating struct: %w", err)
+	}
+	return nil
 }
 
 // Error Error
 func (c *CustomError) Error() string {
-	var resp = validator.ValidationErrors.Error(nil)
-	return resp
+	return validator.ValidationErrors.Error(nil)
 }
