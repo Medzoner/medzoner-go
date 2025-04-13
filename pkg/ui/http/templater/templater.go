@@ -58,7 +58,7 @@ func (t *TemplateHTML) parseTemplates(name string) (*template.Template, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("error walking the path %s: %w", t.RootPath+"tmpl/", err)
+		return nil, fmt.Errorf("error getting template %s: %w", t.RootPath+"tmpl/", err)
 	}
 
 	return tpl, nil

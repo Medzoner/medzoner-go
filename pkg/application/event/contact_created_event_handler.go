@@ -39,6 +39,7 @@ func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) er
 				return fmt.Errorf("error during send mail: %w", c.Telemetry.ErrorSpan(iSpan, err))
 			}
 			c.Telemetry.Log(ctx, "Mail was send.")
+			return nil
 		}
 		return fmt.Errorf("error during get contact from event: %w", c.Telemetry.ErrorSpan(iSpan, fmt.Errorf("contact is not of type entity.Contact")))
 	default:
