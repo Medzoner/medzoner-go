@@ -57,92 +57,92 @@
 <!--                        </div>-->
 <!--                    </div>-->
 <!--                </div>-->
-                <div class="tab-content tab-space">
-                    <div class="tab-pane active text-center gallery" id="code">
-                        <div class="row">
-                            <div>
-                                {{range $i, $stack := .Stacks}}
-                                    {{ if eq $i "Application" }}
-                                        {{ range $item := $stack }}
-                                            {{ if $item.title }}
-                                                <img class="noprint" style="width: 100px; margin: 15px;"
-                                                     src="/public/images/technos/{{ $item.img }}"
-                                                     alt="{{ $item.title }}"
-                                                     title="{{ $item.title }}" />
-                                            {{end}}
-                                            {{ if not $item.title }}
-                                                {{range $k, $substack := $item}}
-                                                    {{ range $subitem := $substack }}
-                                                        <img class="noprint" style="width: 100px; margin: 15px;"
-                                                             src="/public/images/technos/{{ $subitem.img }}"
-                                                             alt="{{ $subitem.title }}"
-                                                             title="{{ $subitem.title }}" />
-                                                    {{end}}
-                                                {{end}}
-                                            {{end}}
-                                        {{end}}
-                                    {{end}}
-                                {{end}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane text-center gallery" id="data">
-                        <div class="row">
-                            <div>
-                                {{range $i, $stack := .Stacks}}
-                                    {{ if eq $i "Data, Message Broker" }}
-                                        {{ range $item := $stack }}
-                                            {{ if $item.title }}
-                                                <img class="noprint" style="width: 150px; margin: 15px;"
-                                                     src="/public/images/technos/{{ $item.img }}"
-                                                     alt="{{ $item.title }}"
-                                                     title="{{ $item.title }}" />
-                                            {{end}}
-                                            {{ if not $item.title }}
-                                                {{range $k, $substack := $item}}
-                                                    {{ range $subitem := $substack }}
-                                                        <img class="noprint" style="width: 150px; margin: 15px;"
-                                                             src="/public/images/technos/{{ $subitem.img }}"
-                                                             alt="{{ $subitem.title }}"
-                                                             title="{{ $subitem.title }}" />
-                                                    {{end}}
-                                                {{end}}
-                                            {{end}}
-                                        {{end}}
-                                    {{end}}
-                                {{end}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane text-center gallery" id="infrastructure">
-                        <div class="row">
-                            <div>
-                                {{range $i, $stack := .Stacks}}
-                                    {{ if or (eq "Déploiement" $i) (eq "Intégration continue" $i) (eq "Webserver" $i) (eq "Orchestration" $i) (eq "Containers" $i) (eq "Virtualization" $i) (eq "OS" $i) (eq "Infrastructure" $i) }}
-                                        {{ range $item := $stack }}
-                                            {{ if $item.title }}
-                                                <img class="noprint" style="width: 100px; margin: 15px;"
-                                                     src="/public/images/technos/{{ $item.img }}"
-                                                     alt="{{ $item.title }}"
-                                                     title="{{ $item.title }}" />
-                                            {{end}}
-                                            {{ if not $item.title }}
-                                                {{range $k, $substack := $item}}
-                                                    {{ range $subitem := $substack }}
-                                                        <img class="noprint" style="width: 100px; margin: 15px;"
-                                                             src="/public/images/technos/{{ $subitem.img }}"
-                                                             alt="{{ $subitem.title }}"
-                                                             title="{{ $subitem.title }}" />
-                                                    {{end}}
-                                                {{end}}
-                                            {{end}}
-                                        {{end}}
-                                    {{end}}
-                                {{end}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!--                <div class="tab-content tab-space">-->
+<!--                    <div class="tab-pane active text-center gallery" id="code">-->
+<!--                        <div class="row">-->
+<!--                            <div>-->
+<!--                                {{range $i, $stack := .Stacks}}-->
+<!--                                    {{ if eq $i "Application" }}-->
+<!--                                        {{ range $item := $stack }}-->
+<!--                                            {{ if $item.title }}-->
+<!--                                                <img class="noprint" style="width: 100px; margin: 15px;"-->
+<!--                                                     src="/public/images/technos/{{ $item.img }}"-->
+<!--                                                     alt="{{ $item.title }}"-->
+<!--                                                     title="{{ $item.title }}" />-->
+<!--                                            {{end}}-->
+<!--                                            {{ if not $item.title }}-->
+<!--                                                {{range $k, $substack := $item}}-->
+<!--                                                    {{ range $subitem := $substack }}-->
+<!--                                                        <img class="noprint" style="width: 100px; margin: 15px;"-->
+<!--                                                             src="/public/images/technos/{{ $subitem.img }}"-->
+<!--                                                             alt="{{ $subitem.title }}"-->
+<!--                                                             title="{{ $subitem.title }}" />-->
+<!--                                                    {{end}}-->
+<!--                                                {{end}}-->
+<!--                                            {{end}}-->
+<!--                                        {{end}}-->
+<!--                                    {{end}}-->
+<!--                                {{end}}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="tab-pane text-center gallery" id="data">-->
+<!--                        <div class="row">-->
+<!--                            <div>-->
+<!--                                {{range $i, $stack := .Stacks}}-->
+<!--                                    {{ if eq $i "Data, Message Broker" }}-->
+<!--                                        {{ range $item := $stack }}-->
+<!--                                            {{ if $item.title }}-->
+<!--                                                <img class="noprint" style="width: 150px; margin: 15px;"-->
+<!--                                                     src="/public/images/technos/{{ $item.img }}"-->
+<!--                                                     alt="{{ $item.title }}"-->
+<!--                                                     title="{{ $item.title }}" />-->
+<!--                                            {{end}}-->
+<!--                                            {{ if not $item.title }}-->
+<!--                                                {{range $k, $substack := $item}}-->
+<!--                                                    {{ range $subitem := $substack }}-->
+<!--                                                        <img class="noprint" style="width: 150px; margin: 15px;"-->
+<!--                                                             src="/public/images/technos/{{ $subitem.img }}"-->
+<!--                                                             alt="{{ $subitem.title }}"-->
+<!--                                                             title="{{ $subitem.title }}" />-->
+<!--                                                    {{end}}-->
+<!--                                                {{end}}-->
+<!--                                            {{end}}-->
+<!--                                        {{end}}-->
+<!--                                    {{end}}-->
+<!--                                {{end}}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="tab-pane text-center gallery" id="infrastructure">-->
+<!--                        <div class="row">-->
+<!--                            <div>-->
+<!--                                {{range $i, $stack := .Stacks}}-->
+<!--                                    {{ if or (eq "Déploiement" $i) (eq "Intégration continue" $i) (eq "Webserver" $i) (eq "Orchestration" $i) (eq "Containers" $i) (eq "Virtualization" $i) (eq "OS" $i) (eq "Infrastructure" $i) }}-->
+<!--                                        {{ range $item := $stack }}-->
+<!--                                            {{ if $item.title }}-->
+<!--                                                <img class="noprint" style="width: 100px; margin: 15px;"-->
+<!--                                                     src="/public/images/technos/{{ $item.img }}"-->
+<!--                                                     alt="{{ $item.title }}"-->
+<!--                                                     title="{{ $item.title }}" />-->
+<!--                                            {{end}}-->
+<!--                                            {{ if not $item.title }}-->
+<!--                                                {{range $k, $substack := $item}}-->
+<!--                                                    {{ range $subitem := $substack }}-->
+<!--                                                        <img class="noprint" style="width: 100px; margin: 15px;"-->
+<!--                                                             src="/public/images/technos/{{ $subitem.img }}"-->
+<!--                                                             alt="{{ $subitem.title }}"-->
+<!--                                                             title="{{ $subitem.title }}" />-->
+<!--                                                    {{end}}-->
+<!--                                                {{end}}-->
+<!--                                            {{end}}-->
+<!--                                        {{end}}-->
+<!--                                    {{end}}-->
+<!--                                {{end}}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
         </div>
         <section class="section-image" id="contact" data-parallax="true" style="background-image: url('/public/images/background.jpg'); background-size: cover;">
