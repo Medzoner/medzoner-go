@@ -77,8 +77,13 @@ func (s *Server) Start(ctx context.Context) {
 func (s *Server) profile(ctx context.Context) {
 	if os.Getenv("DEBUG") == "true" {
 		s.Telemetry.Log(ctx, "Starting pprof server on :6060")
+		server := &http.Server{
+			Addr:              ":1234",
+			ReadHeaderTimeout: 3 * time.Second,
+		}
+
 		go func() {
-			s.Telemetry.Log(ctx, fmt.Sprintf("error : %f", http.ListenAndServe("localhost:6060", nil)))
+			s.Telemetry.Log(ctx, fmt.Sprintf("error : %f", server.ListenAndServe()))
 		}()
 	}
 }
