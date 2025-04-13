@@ -1,42 +1,52 @@
-version: "2.0"
+version: 2
 
-linters:
-  enable:
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
-    - asasalint
-    - bidichk
-    - bodyclose
-    - contextcheck
-    - cyclop
-    - durationcheck
-    - errchkjson
-    - errorlint
-    - exhaustive
-    - fatcontext
-    - funlen
-    - gci
-    - gocognit
-    - gocritic
-    - gofmt
-    - gofumpt
-    - gosec
-    - maintidx
-    - makezero
-    - musttag
-    - nestif
-    - nilerr
-    - noctx
-    - nosprintfhostport
-    - prealloc
-    - spancheck
-    - tagalign
-    - wrapcheck
-    - zerologlint
+lint:
+  linters:
+    enable:
+      - errcheck
+      - gosimple
+      - govet
+      - ineffassign
+      - staticcheck
+      - unused
+      - asasalint
+      - bidichk
+      - bodyclose
+      - contextcheck
+      - cyclop
+      - durationcheck
+      - errchkjson
+      - errorlint
+      - exhaustive
+      - fatcontext
+      - funlen
+      - gocognit
+      - gocritic
+      - gosec
+      - maintidx
+      - makezero
+      - musttag
+      - nestif
+      - nilerr
+      - noctx
+      - nosprintfhostport
+      - prealloc
+      - spancheck
+      - tagalign
+      - wrapcheck
+      - zerologlint
+
+format:
+  formatters:
+    - name: gofmt
+    - name: gofumpt
+    - name: gci
+      config:
+        section-separator: "\n"
+        custom-order:
+          - std
+          - default
+          - prefix(github.com/your-org)
 
 run:
   issues-exit-code: 1

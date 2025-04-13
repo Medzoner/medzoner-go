@@ -36,11 +36,11 @@ wire:
 lint:
 	#curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
 	#golangci-lint --version
-	golangci-lint -v --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+	golangci-lint -v --config .golangci.v1.yml --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 lint-fix:
 	#fieldalignment -fix -test=false ./...
-	golangci-lint -v --issues-exit-code=1 run --fix $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+	golangci-lint -v --config .golangci.v1.yml --issues-exit-code=1 run --fix $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 govet:
 	go vet $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
