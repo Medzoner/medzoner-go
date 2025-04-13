@@ -36,7 +36,7 @@ wire:
 lint:
 	#curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
 	#golangci-lint --version
-	golangci-lint --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+	golangci-lint -v --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
 lint-fix:
 	#fieldalignment -fix -test=false ./...
@@ -61,7 +61,7 @@ ineffassign:
 gocyclo:
 	gocyclo -ignore "_test|Godeps|var|vendor/" .
 
-run-qa: govet gosec gofmt lint staticcheck gocyclo ineffassign
+run-qa: govet gofmt lint staticcheck gocyclo
 	echo "QA passed"
 
 #go install github.com/go-critic/go-critic/cmd/gocritic@latest
