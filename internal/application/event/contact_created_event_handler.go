@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Medzoner/medzoner-go/pkg/application/service/mailer"
+	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 )

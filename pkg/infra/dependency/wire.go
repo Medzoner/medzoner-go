@@ -4,11 +4,13 @@
 package dependency
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/application/command"
-	"github.com/Medzoner/medzoner-go/pkg/application/event"
-	"github.com/Medzoner/medzoner-go/pkg/application/query"
-	"github.com/Medzoner/medzoner-go/pkg/application/service/mailer"
-	domainRepository "github.com/Medzoner/medzoner-go/pkg/domain/repository"
+	"github.com/Medzoner/medzoner-go/internal/application/command"
+	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
+	"github.com/Medzoner/medzoner-go/internal/application/query"
+	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
+	repository2 "github.com/Medzoner/medzoner-go/internal/domain/repository"
+	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/handler"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
@@ -19,8 +21,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	domainRepositoryMock "github.com/Medzoner/medzoner-go/test/mocks"
 	mailerMock "github.com/Medzoner/medzoner-go/test/mocks"
@@ -77,31 +77,31 @@ var (
 		repository.NewTechnoJSONRepository,
 		repository.NewMysqlContactRepository,
 
-		wire.Bind(new(domainRepository.TechnoRepository), new(*repository.TechnoJSONRepository)),
-		wire.Bind(new(domainRepository.ContactRepository), new(*repository.MysqlContactRepository)),
+		wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)),
+		wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)),
 	)
 	RepositoryMockWiring = wire.NewSet(
 		wire.FieldsOf(
 			new(*mocks.Mocks),
 			"TechnoRepository",
 		),
-		wire.Bind(new(domainRepository.TechnoRepository), new(*domainRepositoryMock.MockTechnoRepository)),
+		wire.Bind(new(repository2.TechnoRepository), new(*domainRepositoryMock.MockTechnoRepository)),
 		wire.FieldsOf(
 			new(*mocks.Mocks),
 			"ContactRepository",
 		),
-		wire.Bind(new(domainRepository.ContactRepository), new(*domainRepositoryMock.MockContactRepository)),
+		wire.Bind(new(repository2.ContactRepository), new(*domainRepositoryMock.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(
-		event.NewContactCreatedEventHandler,
+		event2.NewContactCreatedEventHandler,
 		command.NewCreateContactCommandHandler,
 		query.NewListTechnoQueryHandler,
 
-		wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)),
+		wire.Bind(new(event2.IEventHandler), new(*event2.ContactCreatedEventHandler)),
 	)
 	UiWiring = wire.NewSet(
-		handler.NewIndexHandler,
-		handler.NewNotFoundHandler,
+		handler2.NewIndexHandler,
+		handler2.NewNotFoundHandler,
 	)
 )
 

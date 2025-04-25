@@ -1,11 +1,11 @@
 package router
 
 import (
+	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	"net/http"
 	"regexp"
 
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
 	"github.com/gorilla/mux"
 	minify "github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
@@ -22,14 +22,14 @@ type IRouter interface {
 
 type MuxRouterAdapter struct {
 	MuxRouter       *mux.Router
-	NotFoundHandler *handler.NotFoundHandler
-	IndexHandler    *handler.IndexHandler
+	NotFoundHandler *handler2.NotFoundHandler
+	IndexHandler    *handler2.IndexHandler
 	Middlewares     middleware.APIMiddleware
 }
 
 func NewMuxRouterAdapter(
-	notFoundHandler *handler.NotFoundHandler,
-	indexHandler *handler.IndexHandler,
+	notFoundHandler *handler2.NotFoundHandler,
+	indexHandler *handler2.IndexHandler,
 	middlewares middleware.APIMiddleware,
 ) *MuxRouterAdapter {
 	rt := &MuxRouterAdapter{

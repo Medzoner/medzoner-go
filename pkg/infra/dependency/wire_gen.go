@@ -7,11 +7,13 @@
 package dependency
 
 import (
-	"github.com/Medzoner/medzoner-go/pkg/application/command"
-	"github.com/Medzoner/medzoner-go/pkg/application/event"
-	"github.com/Medzoner/medzoner-go/pkg/application/query"
-	"github.com/Medzoner/medzoner-go/pkg/application/service/mailer"
-	repository2 "github.com/Medzoner/medzoner-go/pkg/domain/repository"
+	"github.com/Medzoner/medzoner-go/internal/application/command"
+	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
+	"github.com/Medzoner/medzoner-go/internal/application/query"
+	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
+	repository3 "github.com/Medzoner/medzoner-go/internal/domain/repository"
+	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/handler"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/database"
@@ -22,8 +24,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/infra/server"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/test"
 	mocks2 "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
@@ -51,17 +51,17 @@ func InitServer() (*server.Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	notFoundHandler := handler.NewNotFoundHandler(templateHTML, httpTelemetry)
+	notFoundHandler := handler2.NewNotFoundHandler(templateHTML, httpTelemetry)
 	technoJSONRepository := repository.NewTechnoJSONRepository(httpTelemetry, configConfig)
 	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository, httpTelemetry)
 	dbSQLInstance := database.NewDbSQLInstance(configConfig)
 	mysqlContactRepository := repository.NewMysqlContactRepository(dbSQLInstance, httpTelemetry)
 	mailerSMTP := notification.NewMailerSMTP(configConfig, httpTelemetry)
-	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP, httpTelemetry)
+	contactCreatedEventHandler := event2.NewContactCreatedEventHandler(mailerSMTP, httpTelemetry)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mysqlContactRepository, contactCreatedEventHandler, httpTelemetry)
 	validatorAdapter := validation.NewValidatorAdapter()
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
-	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, validatorAdapter, recaptchaAdapter, httpTelemetry)
+	indexHandler := handler2.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, validatorAdapter, recaptchaAdapter, httpTelemetry)
 	apiMiddleware := middleware.NewAPIMiddleware(httpTelemetry)
 	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler, apiMiddleware)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, httpTelemetry)
@@ -75,16 +75,16 @@ func InitServerTest(mocks2 *mocks.Mocks) (*server.Server, error) {
 	}
 	templateHTML := templater.NewTemplateHTML(configConfig)
 	mockTelemeter := mocks2.HttpTelemetry
-	notFoundHandler := handler.NewNotFoundHandler(templateHTML, mockTelemeter)
+	notFoundHandler := handler2.NewNotFoundHandler(templateHTML, mockTelemeter)
 	mockTechnoRepository := mocks2.TechnoRepository
 	listTechnoQueryHandler := query.NewListTechnoQueryHandler(mockTechnoRepository, mockTelemeter)
 	mockContactRepository := mocks2.ContactRepository
 	mockMailer := mocks2.Mailer
-	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mockMailer, mockTelemeter)
+	contactCreatedEventHandler := event2.NewContactCreatedEventHandler(mockMailer, mockTelemeter)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler, mockTelemeter)
 	validatorAdapter := validation.NewValidatorAdapter()
 	recaptchaAdapter := captcha.NewRecaptchaAdapter()
-	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, validatorAdapter, recaptchaAdapter, mockTelemeter)
+	indexHandler := handler2.NewIndexHandler(templateHTML, listTechnoQueryHandler, configConfig, createContactCommandHandler, validatorAdapter, recaptchaAdapter, mockTelemeter)
 	apiMiddleware := middleware.NewAPIMiddleware(mockTelemeter)
 	muxRouterAdapter := router.NewMuxRouterAdapter(notFoundHandler, indexHandler, apiMiddleware)
 	serverServer := server.NewServer(configConfig, muxRouterAdapter, mockTelemeter)
@@ -108,15 +108,15 @@ var (
 		"Mailer",
 	), wire.Bind(new(mailer.Mailer), new(*mocks2.MockMailer)),
 	)
-	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)))
+	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository3.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository3.ContactRepository), new(*repository.MysqlContactRepository)))
 	RepositoryMockWiring = wire.NewSet(wire.FieldsOf(
 		new(*mocks.Mocks),
 		"TechnoRepository",
-	), wire.Bind(new(repository2.TechnoRepository), new(*mocks2.MockTechnoRepository)), wire.FieldsOf(
+	), wire.Bind(new(repository3.TechnoRepository), new(*mocks2.MockTechnoRepository)), wire.FieldsOf(
 		new(*mocks.Mocks),
 		"ContactRepository",
-	), wire.Bind(new(repository2.ContactRepository), new(*mocks2.MockContactRepository)),
+	), wire.Bind(new(repository3.ContactRepository), new(*mocks2.MockContactRepository)),
 	)
-	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
-	UiWiring  = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)
+	AppWiring = wire.NewSet(event2.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event2.IEventHandler), new(*event2.ContactCreatedEventHandler)))
+	UiWiring  = wire.NewSet(handler2.NewIndexHandler, handler2.NewNotFoundHandler)
 )
