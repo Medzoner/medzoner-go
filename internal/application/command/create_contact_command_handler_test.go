@@ -7,8 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Medzoner/medzoner-go/pkg/application/command"
-	"github.com/Medzoner/medzoner-go/pkg/application/event"
+	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
+	"github.com/Medzoner/medzoner-go/internal/application/event"
+
 	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/golang/mock/gomock"
@@ -19,7 +20,7 @@ import (
 func TestCreateContactCommandHandler(t *testing.T) {
 	t.Run("Unit: test CreateContactCommandHandler success", func(t *testing.T) {
 		date := time.Time{}
-		createContactCommand := command.CreateContactCommand{
+		createContactCommand := command2.CreateContactCommand{
 			Name:    "a name",
 			Email:   "an email",
 			Message: "the message",
@@ -31,7 +32,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		mocked.HttpTelemetry.EXPECT().Error(gomock.Any(), gomock.Any()).AnyTimes()
 		mocked.HttpTelemetry.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
-		handler := command.NewCreateContactCommandHandler(
+		handler := command2.NewCreateContactCommandHandler(
 			&ContactRepositoryTest{}, event.ContactCreatedEventHandler{Mailer: mocked.Mailer, Telemetry: mocked.HttpTelemetry}, mocked.HttpTelemetry,
 		)
 
@@ -41,7 +42,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 	})
 	t.Run("Unit: test CreateContactCommandHandler error save db", func(t *testing.T) {
 		date := time.Time{}
-		createContactCommand := command.CreateContactCommand{
+		createContactCommand := command2.CreateContactCommand{
 			Name:    "a name",
 			Email:   "email@example.com",
 			Message: "the message",
@@ -53,7 +54,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		mocked.HttpTelemetry.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(errors.New("error")).AnyTimes()
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
 
-		handler := command.NewCreateContactCommandHandler(
+		handler := command2.NewCreateContactCommandHandler(
 			mocked.ContactRepository, event.ContactCreatedEventHandler{
 				Mailer: mocked.Mailer, Telemetry: mocked.HttpTelemetry,
 			},
@@ -65,7 +66,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 	})
 	t.Run("Unit: test CreateContactCommandHandler error send mail", func(t *testing.T) {
 		date := time.Time{}
-		createContactCommand := command.CreateContactCommand{
+		createContactCommand := command2.CreateContactCommand{
 			Name:    "a name",
 			Email:   "email@example.com",
 			Message: "the message",
@@ -79,7 +80,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		mocked.HttpTelemetry.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(false, errors.New("error")).Times(1)
 
-		handler := command.NewCreateContactCommandHandler(
+		handler := command2.NewCreateContactCommandHandler(
 			&ContactRepositoryTest{}, event.ContactCreatedEventHandler{Mailer: mocked.Mailer, Telemetry: mocked.HttpTelemetry}, mocked.HttpTelemetry,
 		)
 		err := handler.Handle(context.Background(), createContactCommand)

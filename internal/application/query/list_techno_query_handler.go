@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Medzoner/medzoner-go/pkg/domain/repository"
+	"github.com/Medzoner/medzoner-go/internal/domain/repository"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
+
 	"go.opentelemetry.io/otel/attribute"
 	otelTrace "go.opentelemetry.io/otel/trace"
 )

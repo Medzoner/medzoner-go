@@ -8,8 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/handler"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
+	
 	"github.com/golang/mock/gomock"
 	"go.opentelemetry.io/otel/trace/noop"
 )

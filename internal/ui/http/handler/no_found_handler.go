@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
+	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 )
 
 // NotFoundView NotFoundView

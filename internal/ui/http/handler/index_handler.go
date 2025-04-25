@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Medzoner/medzoner-go/pkg/application/command"
-	"github.com/Medzoner/medzoner-go/pkg/application/query"
+	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
+	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/http_utils"
-	"github.com/Medzoner/medzoner-go/pkg/ui/http/templater"
 )
 
 // IndexView IndexView
@@ -42,8 +42,8 @@ type TechnoView struct {
 
 // IndexHandler IndexHandler
 type IndexHandler struct {
-	CreateContactCommandHandler command.CreateContactCommandHandler
-	ListTechnoQueryHandler      query.ListTechnoQueryHandler
+	CreateContactCommandHandler command2.CreateContactCommandHandler
+	ListTechnoQueryHandler      query2.ListTechnoQueryHandler
 	Template                    templater.Templater
 	Validation                  validation.MzValidator
 	Recaptcha                   captcha.Captcher
@@ -55,9 +55,9 @@ type IndexHandler struct {
 // NewIndexHandler NewIndexHandler
 func NewIndexHandler(
 	template templater.Templater,
-	listTechnoQueryHandler query.ListTechnoQueryHandler,
+	listTechnoQueryHandler query2.ListTechnoQueryHandler,
 	conf config.Config,
-	createContactCommandHandler command.CreateContactCommandHandler,
+	createContactCommandHandler command2.CreateContactCommandHandler,
 	validation validation.MzValidator,
 	recaptcha captcha.Captcher,
 	tracer telemetry.Telemeter,
@@ -104,7 +104,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 			http.Redirect(response, request, "/#contact?msg=\"Recaptcha was incorrect; try again.\"", http.StatusSeeOther)
 			return
 		}
-		createContactCommand := command.CreateContactCommand{
+		createContactCommand := command2.CreateContactCommand{
 			DateAdd: time.Now(),
 			Name:    request.FormValue("name"),
 			Email:   request.FormValue("email"),
@@ -133,7 +133,7 @@ func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.R
 }
 
 func (h *IndexHandler) initView(ctx context.Context, request *http.Request) (IndexView, error) {
-	stacks, err := h.ListTechnoQueryHandler.Handle(ctx, query.ListTechnoQuery{Type: "stack"})
+	stacks, err := h.ListTechnoQueryHandler.Handle(ctx, query2.ListTechnoQuery{Type: "stack"})
 	if err != nil {
 		return IndexView{}, fmt.Errorf("error during fetch stack: %w", err)
 	}

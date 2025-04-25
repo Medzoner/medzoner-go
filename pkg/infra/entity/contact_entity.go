@@ -1,9 +1,8 @@
 package entity
 
 import (
+	"github.com/Medzoner/medzoner-go/internal/domain/customtype"
 	"time"
-
-	"github.com/Medzoner/medzoner-go/pkg/domain/customtype"
 )
 
 // Contact Contact

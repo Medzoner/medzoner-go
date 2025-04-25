@@ -1,11 +1,11 @@
 package validation_test
 
 import (
+	"github.com/Medzoner/medzoner-go/internal/application/command"
 	"reflect"
 	"testing"
 	"time"
 
-	"github.com/Medzoner/medzoner-go/pkg/application/command"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
