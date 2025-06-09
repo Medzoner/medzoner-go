@@ -11,7 +11,7 @@ RUN useradd -u 1000 medzoner
 #############################################
 ### Run the Go Binary
 #############################################
-FROM alpine:3.21.3 AS runner
+FROM alpine:3.22.0 AS runner
 
 COPY ./bin /opt/bin
 COPY ./tmpl /opt/tmpl
