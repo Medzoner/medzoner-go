@@ -14,7 +14,7 @@ export const options = {
     ],
 };
 
-// Test - Home page (GET 200)
+// Test: Home page (GET 200)
 export default function () {
     let res = http.get("http://localhost:8080");
     check(res, { "status was 200": (r) => r.status === 200 });
