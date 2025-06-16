@@ -18,5 +18,6 @@ export const options = {
 export default function () {
     let res = http.get("http://localhost:8080");
     check(res, { "status was 200": (r) => r.status === 200 });
+
     sleep(1);
 }
