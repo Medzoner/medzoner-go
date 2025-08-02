@@ -40,3 +40,4 @@ skaffold
 .aider*
 /var/
 /test/profiler/main.go
+skaffold.env
