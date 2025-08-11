@@ -16,7 +16,7 @@ jobs:
       matrix:
         go-version: [ '1.24.x' ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Go
         uses: actions/setup-go@v5
       - name: Run Gosec Security Scanner
@@ -39,7 +39,7 @@ jobs:
   ci-test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Go
         uses: actions/setup-go@v5
       - run: cp .env.github .env
@@ -60,7 +60,7 @@ jobs:
         go-version: [ '1.24.x' ]
     needs: [ ci-lint, ci-test ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
         with:
@@ -81,7 +81,7 @@ jobs:
     needs: [ cd-release ]
     steps:
 #      - run: argocd app set medzoner-master  --helm-set image.tag=${{ github.ref_name }}-${{ github.sha }} --revision ${{ github.ref_name }}-${{ github.sha }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         name: GitOps - Checkout
         with:
           repository: Medzoner/medzoner-gitops
@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [ cd-release ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Go
         uses: actions/setup-go@v5
       - name: Download a single artifact
