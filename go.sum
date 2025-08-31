@@ -172,10 +172,14 @@ github.com/tdewolff/minify/v2 v2.23.8 h1:tvjHzRer46kwOfpdCBCWsDblCw3QtnLJRd61pTV
 github.com/tdewolff/minify/v2 v2.23.8/go.mod h1:VW3ISUd3gDOZuQ/jwZr4sCzsuX+Qvsx87FDMjk6Rvno=
 github.com/tdewolff/minify/v2 v2.23.10 h1:puzRCH00Im+KDf+PxuuSmJykMTVd8Pp1HzTCxVutNmI=
 github.com/tdewolff/minify/v2 v2.23.10/go.mod h1:VW3ISUd3gDOZuQ/jwZr4sCzsuX+Qvsx87FDMjk6Rvno=
+github.com/tdewolff/minify/v2 v2.24.2 h1:vnY3nTulEAbCAAlxTxPPDkzG24rsq31SOzp63yT+7mo=
+github.com/tdewolff/minify/v2 v2.24.2/go.mod h1:1JrCtoZXaDbqioQZfk3Jdmr0GPJKiU7c1Apmb+7tCeE=
 github.com/tdewolff/parse/v2 v2.7.23 h1:sCW2PNTCM1yVldh5YK/8wrpRI9rSbloUZWjAydlN2IA=
 github.com/tdewolff/parse/v2 v2.7.23/go.mod h1:I7TXO37t3aSG9SlPUBefAhgIF8nt7yYUwVGgETIoBcA=
 github.com/tdewolff/parse/v2 v2.8.1 h1:J5GSHru6o3jF1uLlEKVXkDxxcVx6yzOlIVIotK4w2po=
 github.com/tdewolff/parse/v2 v2.8.1/go.mod h1:Hwlni2tiVNKyzR1o6nUs4FOF07URA+JLBLd6dlIXYqo=
+github.com/tdewolff/parse/v2 v2.8.3 h1:5VbvtJ83cfb289A1HzRA9sf02iT8YyUwN84ezjkdY1I=
+github.com/tdewolff/parse/v2 v2.8.3/go.mod h1:Hwlni2tiVNKyzR1o6nUs4FOF07URA+JLBLd6dlIXYqo=
 github.com/tdewolff/test v1.0.11 h1:FdLbwQVHxqG16SlkGveC0JVyrJN62COWTRyUFzfbtBE=
 github.com/tdewolff/test v1.0.11/go.mod h1:XPuWBzvdUzhCuxWO1ojpXsyzsA5bFoS3tO/Q3kFuTG8=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
