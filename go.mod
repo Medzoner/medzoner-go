@@ -19,16 +19,16 @@ require (
 	github.com/rs/zerolog v1.34.0
 	github.com/tdewolff/minify/v2 v2.24.2
 	go.opentelemetry.io/contrib/bridges/otelslog v0.12.0
-	go.opentelemetry.io/otel v1.37.0
+	go.opentelemetry.io/otel v1.38.0
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.13.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.37.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.37.0
 	go.opentelemetry.io/otel/log v0.13.0
-	go.opentelemetry.io/otel/metric v1.37.0
+	go.opentelemetry.io/otel/metric v1.38.0
 	go.opentelemetry.io/otel/sdk v1.37.0
 	go.opentelemetry.io/otel/sdk/log v0.13.0
 	go.opentelemetry.io/otel/sdk/metric v1.37.0
-	go.opentelemetry.io/otel/trace v1.37.0
+	go.opentelemetry.io/otel/trace v1.38.0
 	google.golang.org/grpc v1.75.0
 	gotest.tools v2.2.0+incompatible
 )
