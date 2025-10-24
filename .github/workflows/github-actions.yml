@@ -117,7 +117,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
       - name: Download a single artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: code-coverage-report
       - run: go install github.com/modocache/gover@latest
