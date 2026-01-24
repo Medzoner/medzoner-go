@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/internal/config"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 )

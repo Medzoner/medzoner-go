@@ -42,6 +42,10 @@ lint-fix:
 	#fieldalignment -fix -test=false ./...
 	golangci-lint -v --config .golangci.v1.yml --issues-exit-code=1 run --fix $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 
+lint-fix2:
+	#fieldalignment -fix -test=false ./...
+	golangci-lint -v --config .golangci.yml --issues-exit-code=1 run --fix $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+
 govet:
 	go vet $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
 

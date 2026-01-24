@@ -7,9 +7,8 @@ import (
 	"testing"
 
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-
 	"gotest.tools/assert"
+	"github.com/Medzoner/medzoner-go/internal/config"
 )
 
 func TestRender(t *testing.T) {

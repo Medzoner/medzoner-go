@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/server"
+	"github.com/Medzoner/gomedz/pkg/http/server"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/cucumber/godog"
 )
@@ -44,7 +44,11 @@ func New(srv server.Server, mocked mocks.Mocks) *APIFeature {
 	recorder := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodGet, "/", recorder.Body)
 
-	srv.Router.ServeHTTP(recorder, request)
+	err := srv.Serve(context.Background())
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return &APIFeature{
 		Response: &http.Response{},
 		Request:  request,
@@ -91,9 +95,16 @@ func (a *APIFeature) iAddHeaderEqualTo(arg1, arg2 string) (err error) {
 func (a *APIFeature) iSendARequestTo(method, endpoint string) (err error) {
 	a.Request.Method = method
 	a.Request.URL, err = url.Parse(endpoint)
+	if err != nil {
+		return fmt.Errorf("error parsing url: %w", err)
+	}
 
 	recorder := httptest.NewRecorder()
-	a.Server.Router.ServeHTTP(recorder, a.Request)
+	err = a.Server.Serve(context.Background())
+	if err != nil {
+		return fmt.Errorf("error serving request: %w", err)
+	}
+
 	a.Response = recorder.Result()
 
 	return
@@ -137,7 +148,11 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocStr
 
 	recorder := httptest.NewRecorder()
 
-	a.Server.Router.ServeHTTP(recorder, a.Request)
+	err = a.Server.Serve(context.Background())
+	if err != nil {
+		return fmt.Errorf("error serving request: %w", err)
+	}
+
 	a.Response = recorder.Result()
 
 	return nil

@@ -7,28 +7,26 @@ import (
 	"io"
 	"os"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
+	"github.com/Medzoner/gomedz/pkg/logger"
+	"github.com/Medzoner/medzoner-go/internal/config"
 )
 
 // TechnoJSONRepository is implementation of TechnoRepository
 type TechnoJSONRepository struct {
-	Telemetry telemetry.Telemeter
-	RootPath  string
+	RootPath string
 }
 
 // NewTechnoJSONRepository is a constructor
-func NewTechnoJSONRepository(tm telemetry.Telemeter, config config.Config) *TechnoJSONRepository {
+func NewTechnoJSONRepository(config config.Config) *TechnoJSONRepository {
 	return &TechnoJSONRepository{
-		Telemetry: tm,
-		RootPath:  string(config.RootPath),
+		RootPath: string(config.RootPath),
 	}
 }
 
 // FetchStack FetchStack
 func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]interface{}, error) {
 	_ = ctx
-	jsonFile, err := os.Open(m.RootPath + "pkg/infra/resources/data/jobs/stacks.json")
+	jsonFile, err := os.Open(m.RootPath + "internal/resources/data/jobs/stacks.json")
 	if err != nil {
 		return nil, fmt.Errorf("error during open json file: %w", err)
 	}
@@ -45,6 +43,6 @@ func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]inter
 
 func (m *TechnoJSONRepository) deferJSONFile(ctx context.Context, jsonFile *os.File) {
 	if err := jsonFile.Close(); err != nil {
-		m.Telemetry.Error(ctx, "jsonFile error.")
+		logger.Error(ctx, "jsonFile error.", err)
 	}
 }

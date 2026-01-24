@@ -5,7 +5,7 @@ import (
 
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
+	"github.com/Medzoner/gomedz/pkg/observability"
 )
 
 // NotFoundView NotFoundView
@@ -19,20 +19,18 @@ type NotFoundView struct {
 // NotFoundHandler NotFoundHandler
 type NotFoundHandler struct {
 	Template templater.Templater
-	Tracer   telemetry.Telemeter
 }
 
 // NewNotFoundHandler NewNotFoundHandler
-func NewNotFoundHandler(template templater.Templater, tracer telemetry.Telemeter) *NotFoundHandler {
+func NewNotFoundHandler(template templater.Templater) *NotFoundHandler {
 	return &NotFoundHandler{
 		Template: template,
-		Tracer:   tracer,
 	}
 }
 
 // Handle handles NotFoundHandler
 func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	_, span := h.Tracer.StartRoot(r.Context(), r, "NotFoundHandler.Handle")
+	_, span := observability.StartSpan(r.Context(), "NotFoundHandler.Handle")
 	defer span.End()
 
 	view := &NotFoundView{

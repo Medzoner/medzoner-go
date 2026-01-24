@@ -3,16 +3,19 @@ package main
 import (
 	"context"
 
-	wiring "github.com/Medzoner/medzoner-go/pkg/infra/dependency"
+	"github.com/Medzoner/gomedz/pkg/logger"
+	wire "github.com/Medzoner/medzoner-go/pkg/dependency"
 )
 
 func main() {
 	ctx := context.Background()
-
-	server, err := wiring.InitServer()
+	srv, err := wire.InitServer(ctx)
 	if err != nil {
-		panic(err)
+		logger.Fatal(ctx, "Failed to initialize server", err)
+		return
 	}
 
-	server.Start(ctx)
+	if err := srv.Serve(ctx); err != nil {
+		logger.Fatal(ctx, "Server encountered an error", err)
+	}
 }

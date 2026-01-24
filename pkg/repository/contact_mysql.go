@@ -5,29 +5,28 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/database"
-	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
-	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
+	"github.com/Medzoner/gomedz/pkg/logger"
+	"github.com/Medzoner/gomedz/pkg/observability"
+	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/medzoner-go/pkg/database"
 	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
 // MysqlContactRepository MysqlContactRepository
 type MysqlContactRepository struct {
 	DbInstance database.DbInstantiator
-	Telemetry  telemetry.Telemeter
 }
 
 // NewMysqlContactRepository is a function that returns a new MysqlContactRepository
-func NewMysqlContactRepository(dbInstance database.DbInstantiator, tm telemetry.Telemeter) *MysqlContactRepository {
+func NewMysqlContactRepository(dbInstance database.DbInstantiator) *MysqlContactRepository {
 	return &MysqlContactRepository{
 		DbInstance: dbInstance,
-		Telemetry:  tm,
 	}
 }
 
 // Save is a function that saves a contact
 func (m *MysqlContactRepository) Save(ctx context.Context, contact entity.Contact) error {
-	_, iSpan := m.Telemetry.Start(ctx, "MysqlContactRepository.Save")
+	_, iSpan := observability.StartSpan(ctx, "MysqlContactRepository.Save")
 	defer iSpan.End()
 
 	conn, err := m.DbInstance.GetConnection().Begin()
@@ -38,8 +37,12 @@ func (m *MysqlContactRepository) Save(ctx context.Context, contact entity.Contac
 
 	stmt, err := conn.Prepare(`INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (?,?,?,?,?)`)
 	defer func(stmt *sql.Stmt) {
+		if stmt == nil {
+			return
+		}
 		if err := stmt.Close(); err != nil {
-			_ = m.Telemetry.ErrorSpan(iSpan, err)
+			iSpan.RecordError(err)
+			logger.Error(ctx, "stmt close error.", err)
 		}
 	}(stmt)
 	if err != nil {

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
+	"github.com/Medzoner/medzoner-go/pkg/validation"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"gotest.tools/assert"
