@@ -3,10 +3,10 @@ package database
 import (
 	"fmt"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/jmoiron/sqlx"
+	"github.com/Medzoner/medzoner-go/internal/config"
 )
 
 type DbSQLInstance struct {

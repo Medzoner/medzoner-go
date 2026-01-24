@@ -9,32 +9,29 @@ import (
 	"net/smtp"
 	"strconv"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
-	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
-	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"go.opentelemetry.io/otel/attribute"
+	"github.com/Medzoner/gomedz/pkg/observability"
+	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/medzoner-go/internal/config"
 )
 
 // MailerSMTP MailerSMTP
 type MailerSMTP struct {
-	Telemetry telemetry.Telemeter
-	RootPath  string
-	User      string
-	Password  string
-	Host      string
-	Port      string
+	RootPath string
+	User     string
+	Password string
+	Host     string
+	Port     string
 }
 
 // NewMailerSMTP NewMailerSMTP
-func NewMailerSMTP(config config.Config, tm telemetry.Telemeter) *MailerSMTP {
+func NewMailerSMTP(config config.Config) *MailerSMTP {
 	return &MailerSMTP{
-		RootPath:  string(config.RootPath),
-		User:      config.Mailer.User,
-		Password:  config.Mailer.Password,
-		Host:      config.Mailer.Host,
-		Port:      config.Mailer.Port,
-		Telemetry: tm,
+		RootPath: string(config.RootPath),
+		User:     config.Mailer.User,
+		Password: config.Mailer.Password,
+		Host:     config.Mailer.Host,
+		Port:     config.Mailer.Port,
 	}
 }
 
@@ -56,11 +53,11 @@ func NewRequest(to []string, subject, body string) *Request {
 
 // Send is a function that sends an email
 func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error) {
-	_, iSpan := m.Telemetry.Start(ctx, "MailerSMTP.Send")
+	_, iSpan := observability.StartSpan(ctx, "MailerSMTP.Send")
 	defer func() {
 		iSpan.End()
 	}()
-	correlationID := middleware.GetCorrelationID(ctx)
+	correlationID := GetCorrelationID(ctx)
 	iSpan.SetAttributes(attribute.String("correlation.id", correlationID))
 
 	req := NewRequest([]string{m.User}, "Message [medzoner.com]", "Hello, World!")
@@ -71,7 +68,8 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 
 	auth := smtp.PlainAuth(m.User, m.User, m.Password, m.Host)
 	if err := smtp.SendMail(fmt.Sprintf("%s:%s", m.Host, m.Port), auth, m.User, req.to, m.message(view)); err != nil {
-		return false, fmt.Errorf("send mail failed: %w", m.Telemetry.ErrorSpan(iSpan, err))
+		//return false, fmt.Errorf("send mail failed: %w", m.Telemetry.ErrorSpan(iSpan, err))
+		return false, fmt.Errorf("send mail failed: %w", err)
 	}
 
 	return true, nil
@@ -103,4 +101,15 @@ func (r *Request) parseTemplate(templateFileName string, data interface{}) error
 	r.body = buf.String()
 
 	return nil
+}
+
+type CorrelationContextKey struct{}
+
+func GetCorrelationID(ctx context.Context) string {
+	if val := ctx.Value(CorrelationContextKey{}); val != nil {
+		if correlationID, ok := val.(string); ok {
+			return correlationID
+		}
+	}
+	return ""
 }

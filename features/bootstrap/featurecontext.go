@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/server"
+	"github.com/Medzoner/gomedz/pkg/http/server"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/cucumber/godog"
 )
@@ -44,7 +44,11 @@ func New(srv server.Server, mocked mocks.Mocks) *APIFeature {
 	recorder := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodGet, "/", recorder.Body)
 
-	srv.Router.ServeHTTP(recorder, request)
+	err := srv.Serve(context.Background())
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return &APIFeature{
 		Response: &http.Response{},
 		Request:  request,
@@ -93,7 +97,7 @@ func (a *APIFeature) iSendARequestTo(method, endpoint string) (err error) {
 	a.Request.URL, err = url.Parse(endpoint)
 
 	recorder := httptest.NewRecorder()
-	a.Server.Router.ServeHTTP(recorder, a.Request)
+	a.Server.Serve(context.Background())
 	a.Response = recorder.Result()
 
 	return
@@ -137,7 +141,7 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocStr
 
 	recorder := httptest.NewRecorder()
 
-	a.Server.Router.ServeHTTP(recorder, a.Request)
+	a.Server.Serve(context.Background())
 	a.Response = recorder.Result()
 
 	return nil

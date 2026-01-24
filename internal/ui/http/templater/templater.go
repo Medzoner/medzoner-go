@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
+	"github.com/Medzoner/medzoner-go/internal/config"
 )
 
 // Templater is an interface for rendering templates

@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"time"
 
+	http2 "github.com/Medzoner/gomedz/pkg/http"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
-	"github.com/Medzoner/medzoner-go/pkg/infra/telemetry"
 	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
+	"github.com/Medzoner/gomedz/pkg/observability"
 )
 
 // IndexView IndexView
@@ -47,92 +47,101 @@ type IndexHandler struct {
 	Template                    templater.Templater
 	Validation                  validation.MzValidator
 	Recaptcha                   captcha.Captcher
-	Tracer                      telemetry.Telemeter
 	RecaptchaSiteKey            string
-	Debug                       bool
 }
 
 // NewIndexHandler NewIndexHandler
 func NewIndexHandler(
 	template templater.Templater,
 	listTechnoQueryHandler query2.ListTechnoQueryHandler,
-	conf config.Config,
 	createContactCommandHandler command2.CreateContactCommandHandler,
 	validation validation.MzValidator,
 	recaptcha captcha.Captcher,
-	tracer telemetry.Telemeter,
-) *IndexHandler {
-	return &IndexHandler{
+) IndexHandler {
+	return IndexHandler{
 		Template:                    template,
 		ListTechnoQueryHandler:      listTechnoQueryHandler,
-		RecaptchaSiteKey:            conf.RecaptchaSiteKey,
 		CreateContactCommandHandler: createContactCommandHandler,
 		Validation:                  validation,
 		Recaptcha:                   recaptcha,
-		Tracer:                      tracer,
-		Debug:                       conf.DebugMode,
 	}
 }
 
-func (h *IndexHandler) processRequest(request *http.Request) (err error) {
+func (h IndexHandler) Prefix() string {
+	return "/"
+}
+
+func (h IndexHandler) Register(r http2.Router) {
+	r.Get("/", h.Index, http2.Options{})
+	r.Post("/", h.Index, http2.Options{})
+
+	r.StaticFS("/public", http.Dir("./public"), http2.Options{})
+}
+
+func (h IndexHandler) processRequest(request *http.Request) (err error) {
 	recaptchaResponse, responseFound := request.Form["g-captcha-response"]
 	if responseFound {
 		result, err := h.Recaptcha.Confirm(request.RemoteAddr, recaptchaResponse[0])
 		if err != nil {
 			return fmt.Errorf("captcha server error: %w", err)
 		}
-		if !result && !h.Debug {
+		if !result {
 			return fmt.Errorf("captcha was incorrect; try again")
 		}
 	}
 	return nil
 }
 
-// IndexHandle IndexHandle
-func (h *IndexHandler) IndexHandle(response http.ResponseWriter, request *http.Request) {
-	ctx, span := h.Tracer.StartRoot(request.Context(), request, "IndexHandler.IndexHandle")
+// Index Index
+func (h IndexHandler) Index(c *http2.Context) error {
+	w := c.Writer()
+	r := c.Request()
+
+	ctx, span := observability.StartSpan(c.Context(), "IndexHandler.IndexHandle")
 	defer span.End()
 
-	view, err := h.initView(ctx, request)
+	view, err := h.initView(ctx, r)
 	if err != nil {
-		http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
-		return
+		http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
+		return nil
 	}
 	statusCode := http.StatusOK
-	if request.Method == "POST" && request.FormValue("submit") == "" {
-		if err = h.processRequest(request); err != nil {
-			http.Redirect(response, request, "/#contact?msg=\"Recaptcha was incorrect; try again.\"", http.StatusSeeOther)
-			return
+	if r.Method == "POST" && r.FormValue("submit") == "" {
+		if err = h.processRequest(r); err != nil {
+			http.Redirect(w, r, "/#contact?msg=\"Recaptcha was incorrect; try again.\"", http.StatusSeeOther)
+			return nil
 		}
 		createContactCommand := command2.CreateContactCommand{
 			DateAdd: time.Now(),
-			Name:    request.FormValue("name"),
-			Email:   request.FormValue("email"),
-			Message: request.FormValue("message"),
+			Name:    r.FormValue("name"),
+			Email:   r.FormValue("email"),
+			Message: r.FormValue("message"),
 		}
 
 		validationError := h.Validation.Struct(createContactCommand)
 		if validationError == nil {
 			if err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
-				http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
-				return
+				http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
+				return nil
 			}
-			http.Redirect(response, request, "/#contact", http.StatusSeeOther)
-			return
+			http.Redirect(w, r, "/#contact", http.StatusSeeOther)
+			return nil
 		}
 		statusCode = http.StatusBadRequest
 	}
 	if view.FormMessage != "" {
-		response.WriteHeader(statusCode)
+		w.WriteHeader(statusCode)
 	}
 
-	if err = h.Template.Render("index", view, response); err != nil {
-		http_utils.ResponseError(response, err, http.StatusInternalServerError, span)
-		return
+	if err = h.Template.Render("index", view, w); err != nil {
+		http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
+		return nil
 	}
+
+	return nil
 }
 
-func (h *IndexHandler) initView(ctx context.Context, request *http.Request) (IndexView, error) {
+func (h IndexHandler) initView(ctx context.Context, request *http.Request) (IndexView, error) {
 	stacks, err := h.ListTechnoQueryHandler.Handle(ctx, query2.ListTechnoQuery{Type: "stack"})
 	if err != nil {
 		return IndexView{}, fmt.Errorf("error during fetch stack: %w", err)

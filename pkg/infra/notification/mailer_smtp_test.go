@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	"github.com/Medzoner/medzoner-go/pkg/infra/middleware"
 	"github.com/Medzoner/medzoner-go/pkg/infra/notification"
 	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/trace/noop"
+	"github.com/Medzoner/medzoner-go/internal/entity"
 )
 
 func TestSmtp(t *testing.T) {

@@ -9,14 +9,22 @@ import (
 
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
 	"github.com/Medzoner/medzoner-go/internal/domain/customtype"
-	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/golang/mock/gomock"
-	
-	"go.opentelemetry.io/otel/trace/noop"
+
 	"gotest.tools/assert"
+	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/gomedz/pkg/logger"
+	"github.com/Medzoner/gomedz/pkg/observability"
 )
+
+func init() {
+	l, err := logger.NewLogger(logger.Config{Level: "debug"})
+	if err != nil {
+		panic(err)
+	}
+	_, _ = observability.NewTelemetry(context.Background(), &observability.Config{}, l)
+}
 
 func TestContactCreatedEventHandler(t *testing.T) {
 	contact := entity.Contact{
@@ -29,9 +37,6 @@ func TestContactCreatedEventHandler(t *testing.T) {
 	}
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		httpTelemetryMock.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
 		contactCreatedEvent := event2.ContactCreatedEvent{
 			Contact: contact,
 		}
@@ -40,8 +45,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 			isSend: true,
 		}
 		handler := event2.ContactCreatedEventHandler{
-			Mailer:    mailer,
-			Telemetry: httpTelemetryMock,
+			Mailer: mailer,
 		}
 
 		err := handler.Publish(context.Background(), contactCreatedEvent)
@@ -53,11 +57,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 			isSend: false,
 		}
 
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		httpTelemetryMock.EXPECT().Error(gomock.Any(), gomock.Any()).AnyTimes()
-		httpTelemetryMock.EXPECT().Log(gomock.Any(), gomock.Any()).AnyTimes()
-		handler := event2.NewContactCreatedEventHandler(mailer, httpTelemetryMock)
+		handler := event2.NewContactCreatedEventHandler(mailer)
 
 		err := handler.Publish(context.Background(), BadEvent{})
 		assert.Equal(t, err, nil)
@@ -68,10 +68,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		mailer := mocked.Mailer
 		mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(false, fmt.Errorf("error")).AnyTimes()
 
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		httpTelemetryMock.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(fmt.Errorf("error")).AnyTimes()
-		handler := event2.NewContactCreatedEventHandler(mailer, httpTelemetryMock)
+		handler := event2.NewContactCreatedEventHandler(mailer)
 		contactCreatedEvent := event2.ContactCreatedEvent{
 			Contact: contact,
 		}

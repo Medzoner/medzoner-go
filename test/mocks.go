@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Medzoner/medzoner-go/test/mocks"
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 )
 
 type Mocks struct {

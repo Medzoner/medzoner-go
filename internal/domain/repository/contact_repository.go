@@ -1,10 +1,10 @@
-//go:generate mockgen -destination=../../../test/mocks/contact_repository.go -package=domainRepositoryMock -source=./contact_repository.go
+//go:generate mockgen -destination=../../../test/mocks/contact_repository.go -package=mocks -source=./contact_repository.go
 package repository
 
 import (
 	"context"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/entity"
+	"github.com/Medzoner/medzoner-go/internal/entity"
 )
 
 // ContactRepository ContactRepository

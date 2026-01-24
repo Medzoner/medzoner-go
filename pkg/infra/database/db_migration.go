@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/config"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/Medzoner/medzoner-go/internal/config"
 )
 
 type DbMigration struct {

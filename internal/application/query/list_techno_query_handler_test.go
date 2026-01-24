@@ -7,22 +7,28 @@ import (
 
 	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	tracerMock "github.com/Medzoner/medzoner-go/test/mocks"
 
 	"github.com/golang/mock/gomock"
-	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/assert"
+	"github.com/Medzoner/gomedz/pkg/logger"
+	"github.com/Medzoner/gomedz/pkg/observability"
 )
+
+func init() {
+	l, err := logger.NewLogger(logger.Config{Level: "debug"})
+	if err != nil {
+		panic(err)
+	}
+	_, _ = observability.NewTelemetry(context.Background(), &observability.Config{}, l)
+}
 
 func TestListTechnoQueryHandler(t *testing.T) {
 	t.Run("Unit: test ListTechnoQueryHandler \"stack\" success", func(t *testing.T) {
 		listTechnoQuery := query2.ListTechnoQuery{
 			Type: "stack",
 		}
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
 
-		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
+		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
@@ -34,9 +40,8 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query2.ListTechnoQuery{
 			Type: "experience",
 		}
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
+
+		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
@@ -48,9 +53,8 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query2.ListTechnoQuery{
 			Type: "formation",
 		}
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
+
+		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
@@ -62,9 +66,8 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query2.ListTechnoQuery{
 			Type: "lang",
 		}
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
+
+		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
@@ -76,9 +79,8 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query2.ListTechnoQuery{
 			Type: "other",
 		}
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
+
+		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
@@ -90,9 +92,8 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query2.ListTechnoQuery{
 			Type: "fake",
 		}
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{}, httpTelemetryMock)
+
+		handler := query2.NewListTechnoQueryHandler(&TechnoRepositoryTest{})
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 		if err != nil {
@@ -106,11 +107,8 @@ func TestListTechnoQueryHandler(t *testing.T) {
 		listTechnoQuery := query2.ListTechnoQuery{
 			Type: "stack",
 		}
-		httpTelemetryMock := tracerMock.NewMockTelemeter(gomock.NewController(t))
-		httpTelemetryMock.EXPECT().Start(gomock.Any(), gomock.Any(), gomock.Any()).Return(context.Background(), noop.Span{}).Times(1)
-		httpTelemetryMock.EXPECT().ErrorSpan(gomock.Any(), gomock.Any()).Return(errors.New("error")).AnyTimes()
 
-		handler := query2.NewListTechnoQueryHandler(mocked.TechnoRepository, httpTelemetryMock)
+		handler := query2.NewListTechnoQueryHandler(mocked.TechnoRepository)
 
 		_, err := handler.Handle(context.Background(), listTechnoQuery)
 
