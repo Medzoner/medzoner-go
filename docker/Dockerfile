@@ -18,7 +18,7 @@ COPY ./tmpl /opt/tmpl
 COPY ./.var /opt/.var
 COPY ./public /opt/public
 COPY ./migrations /opt/migrations
-COPY ./pkg/infra/resources/data /opt/pkg/infra/resources/data
+COPY ./internal/resources/data /opt/internal/resources/data
 
 #COPY --from=build /etc/passwd /etc/passwd
 #COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
