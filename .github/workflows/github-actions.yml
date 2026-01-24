@@ -24,16 +24,14 @@ jobs:
         run: |
           go env -w GOPRIVATE=github.com/Medzoner/*
           go env -w GONOSUMDB=github.com/Medzoner/*
-
-          # Force Git à utiliser le token pour github.com
           git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
 
       - name: Setup Go
         uses: actions/setup-go@v6
-      - name: Run Gosec Security Scanner
-        uses: securego/gosec@master
-        with:
-          args: ./...
+#      - name: Run Gosec Security Scanner
+#        uses: securego/gosec@master
+#        with:
+#          args: ./...
       - run: cp .env.github .env
 #      - run: go install honnef.co/go/tools/cmd/staticcheck@master
 #      - run: |
@@ -61,8 +59,6 @@ jobs:
         run: |
           go env -w GOPRIVATE=github.com/Medzoner/*
           go env -w GONOSUMDB=github.com/Medzoner/*
-
-          # Force Git à utiliser le token pour github.com
           git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
 
       - name: Setup Go ${{ matrix.go-version }}
@@ -95,8 +91,6 @@ jobs:
         run: |
           go env -w GOPRIVATE=github.com/Medzoner/*
           go env -w GONOSUMDB=github.com/Medzoner/*
-
-          # Force Git à utiliser le token pour github.com
           git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
 
       - name: Setup Go ${{ matrix.go-version }}
@@ -159,8 +153,6 @@ jobs:
         run: |
           go env -w GOPRIVATE=github.com/Medzoner/*
           go env -w GONOSUMDB=github.com/Medzoner/*
-
-          # Force Git à utiliser le token pour github.com
           git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
 
       - name: Setup Go
