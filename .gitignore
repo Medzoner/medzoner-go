@@ -41,3 +41,5 @@ skaffold
 /var/
 /test/profiler/main.go
 skaffold.env
+/github-actions
+/github-actions.pub
