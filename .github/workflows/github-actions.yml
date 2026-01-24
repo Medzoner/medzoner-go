@@ -16,7 +16,7 @@ jobs:
       matrix:
         go-version: [ '1.24.x' ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Add SSH Go Module Private Key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -48,7 +48,7 @@ jobs:
   ci-test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Add SSH Go Module Private Key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -78,7 +78,7 @@ jobs:
         go-version: [ '1.24.x' ]
     needs: [ ci-lint, ci-test ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Add SSH Go Module Private Key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -108,7 +108,7 @@ jobs:
     needs: [ cd-release ]
     steps:
 #      - run: argocd app set medzoner-master  --helm-set image.tag=${{ github.ref_name }}-${{ github.sha }} --revision ${{ github.ref_name }}-${{ github.sha }}
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: GitOps - Checkout
         with:
           repository: Medzoner/medzoner-gitops
@@ -140,7 +140,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [ cd-release ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Add SSH Go Module Private Key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
