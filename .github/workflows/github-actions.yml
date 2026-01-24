@@ -17,9 +17,17 @@ jobs:
         go-version: [ '1.25.x' ]
     steps:
       - uses: actions/checkout@v6
-      - name: Setup .netrc
+
+      - name: Configure private modules access
+        env:
+          GH_TOKEN: ${{ secrets.CI_JOB_TOKEN }}
         run: |
-          echo -e "machine github.com\nlogin Medzoner\npassword ${{ secrets.CI_JOB_TOKEN }}" > ~/.netrc
+          go env -w GOPRIVATE=github.com/Medzoner/*
+          go env -w GONOSUMDB=github.com/Medzoner/*
+
+          # Force Git à utiliser le token pour github.com
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+
       - name: Setup Go
         uses: actions/setup-go@v6
       - name: Run Gosec Security Scanner
@@ -46,9 +54,17 @@ jobs:
         go-version: [ '1.25.x' ]
     steps:
       - uses: actions/checkout@v6
-      - name: Setup .netrc
+
+      - name: Configure private modules access
+        env:
+          GH_TOKEN: ${{ secrets.CI_JOB_TOKEN }}
         run: |
-          echo -e "machine github.com\nlogin Medzoner\npassword ${{ secrets.CI_JOB_TOKEN }}" > ~/.netrc
+          go env -w GOPRIVATE=github.com/Medzoner/*
+          go env -w GONOSUMDB=github.com/Medzoner/*
+
+          # Force Git à utiliser le token pour github.com
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v6
         with:
@@ -72,9 +88,17 @@ jobs:
     needs: [ ci-lint, ci-test ]
     steps:
       - uses: actions/checkout@v6
-      - name: Setup .netrc
+
+      - name: Configure private modules access
+        env:
+          GH_TOKEN: ${{ secrets.CI_JOB_TOKEN }}
         run: |
-          echo -e "machine github.com\nlogin Medzoner\npassword ${{ secrets.CI_JOB_TOKEN }}" > ~/.netrc
+          go env -w GOPRIVATE=github.com/Medzoner/*
+          go env -w GONOSUMDB=github.com/Medzoner/*
+
+          # Force Git à utiliser le token pour github.com
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v6
         with:
@@ -128,9 +152,17 @@ jobs:
     needs: [ cd-release ]
     steps:
       - uses: actions/checkout@v6
-      - name: Setup .netrc
+
+      - name: Configure private modules access
+        env:
+          GH_TOKEN: ${{ secrets.CI_JOB_TOKEN }}
         run: |
-          echo -e "machine github.com\nlogin Medzoner\npassword ${{ secrets.CI_JOB_TOKEN }}" > ~/.netrc
+          go env -w GOPRIVATE=github.com/Medzoner/*
+          go env -w GONOSUMDB=github.com/Medzoner/*
+
+          # Force Git à utiliser le token pour github.com
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+
       - name: Setup Go
         uses: actions/setup-go@v6
       - name: Download a single artifact
