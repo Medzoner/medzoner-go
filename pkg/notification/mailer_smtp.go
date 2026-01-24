@@ -9,10 +9,10 @@ import (
 	"net/smtp"
 	"strconv"
 
-	"go.opentelemetry.io/otel/attribute"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/internal/entity"
 	"github.com/Medzoner/medzoner-go/internal/config"
+	"github.com/Medzoner/medzoner-go/internal/entity"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 // MailerSMTP MailerSMTP

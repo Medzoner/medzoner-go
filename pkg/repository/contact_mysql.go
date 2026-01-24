@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/Medzoner/medzoner-go/pkg/infra/database"
-	otelTrace "go.opentelemetry.io/otel/trace"
+	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/medzoner-go/pkg/database"
+	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
 // MysqlContactRepository MysqlContactRepository
@@ -36,8 +37,12 @@ func (m *MysqlContactRepository) Save(ctx context.Context, contact entity.Contac
 
 	stmt, err := conn.Prepare(`INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (?,?,?,?,?)`)
 	defer func(stmt *sql.Stmt) {
+		if stmt == nil {
+			return
+		}
 		if err := stmt.Close(); err != nil {
-			//_ = observability.RecordError(iSpan, err)
+			iSpan.RecordError(err)
+			logger.Error(ctx, "stmt close error.", err)
 		}
 	}(stmt)
 	if err != nil {

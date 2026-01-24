@@ -22,11 +22,11 @@ import (
 	repository2 "github.com/Medzoner/medzoner-go/internal/domain/repository"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
-	"github.com/Medzoner/medzoner-go/pkg/infra/database"
-	"github.com/Medzoner/medzoner-go/pkg/infra/notification"
-	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
-	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
+	"github.com/Medzoner/medzoner-go/pkg/captcha"
+	"github.com/Medzoner/medzoner-go/pkg/database"
+	"github.com/Medzoner/medzoner-go/pkg/notification"
+	"github.com/Medzoner/medzoner-go/pkg/repository"
+	"github.com/Medzoner/medzoner-go/pkg/validation"
 	"github.com/Medzoner/medzoner-go/test"
 	mocks2 "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
@@ -42,6 +42,47 @@ func InitDbMigration() (database.DbMigration, error) {
 	dbSQLInstance := database.NewDbSQLInstance(configConfig)
 	dbMigration := database.NewDbMigration(dbSQLInstance, configConfig)
 	return dbMigration, nil
+}
+
+func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) {
+	config2, err := config.NewConfig2()
+	if err != nil {
+		return server.Server{}, err
+	}
+	loggerConfig := config2.Logger
+	loggerInterface, err := logger.NewLogger(loggerConfig)
+	if err != nil {
+		return server.Server{}, err
+	}
+	observabilityConfig := &config2.Obs
+	telemetry, err := observability.NewTelemetry(ctx, observabilityConfig, loggerInterface)
+	if err != nil {
+		return server.Server{}, err
+	}
+	serverConfig := config2.Server
+	ginadapterConfig := config2.Engine
+	authConfig := config2.Auth
+	engine := ginadapter.New(ginadapterConfig, authConfig)
+	v := closers(telemetry)
+	probesPingers := pingers()
+	probesHandler := probes.New(serverConfig, probesPingers)
+	configConfig, err := config.NewConfig()
+	if err != nil {
+		return server.Server{}, err
+	}
+	templateHTML := templater.NewTemplateHTML(configConfig)
+	mockTechnoRepository := m.TechnoRepository
+	listTechnoQueryHandler := query.NewListTechnoQueryHandler(mockTechnoRepository)
+	mockContactRepository := m.ContactRepository
+	mockMailer := m.Mailer
+	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mockMailer)
+	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler)
+	validatorAdapter := validation.NewValidatorAdapter()
+	recaptchaAdapter := captcha.NewRecaptchaAdapter()
+	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
+	v2 := controllers(probesHandler, indexHandler)
+	serverServer := server.NewServer(loggerInterface, telemetry, serverConfig, engine, v, v2...)
+	return serverServer, nil
 }
 
 func InitServer(ctx context.Context) (server.Server, error) {
@@ -120,7 +161,7 @@ var (
 	)
 	ObsWiring     = wire.NewSet(logger.NewLogger, observability.NewTelemetry)
 	UsecaseWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
-	App2Wiring    = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)), handler.NewIndexHandler, handler.NewNotFoundHandler)
+	HandlerWiring = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)
 
 	InfraWiring      = wire.NewSet(config.NewConfig, templater.NewTemplateHTML, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
 	DbWiring         = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)))

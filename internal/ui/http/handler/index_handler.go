@@ -11,9 +11,9 @@ import (
 	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
-	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	"github.com/Medzoner/gomedz/pkg/observability"
+	"github.com/Medzoner/medzoner-go/pkg/captcha"
+	"github.com/Medzoner/medzoner-go/pkg/validation"
 )
 
 // IndexView IndexView
@@ -121,8 +121,7 @@ func (h IndexHandler) Index(c *http2.Context) error {
 		validationError := h.Validation.Struct(createContactCommand)
 		if validationError == nil {
 			if err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
-				http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
-				return nil
+				return fmt.Errorf("error during create contact command handling: %w", err)
 			}
 			http.Redirect(w, r, "/#contact", http.StatusSeeOther)
 			return nil
@@ -134,8 +133,7 @@ func (h IndexHandler) Index(c *http2.Context) error {
 	}
 
 	if err = h.Template.Render("index", view, w); err != nil {
-		http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
-		return nil
+		return fmt.Errorf("error during render template: %w", err)
 	}
 
 	return nil

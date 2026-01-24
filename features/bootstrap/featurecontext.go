@@ -95,9 +95,16 @@ func (a *APIFeature) iAddHeaderEqualTo(arg1, arg2 string) (err error) {
 func (a *APIFeature) iSendARequestTo(method, endpoint string) (err error) {
 	a.Request.Method = method
 	a.Request.URL, err = url.Parse(endpoint)
+	if err != nil {
+		return fmt.Errorf("error parsing url: %w", err)
+	}
 
 	recorder := httptest.NewRecorder()
-	a.Server.Serve(context.Background())
+	err = a.Server.Serve(context.Background())
+	if err != nil {
+		return fmt.Errorf("error serving request: %w", err)
+	}
+
 	a.Response = recorder.Result()
 
 	return
@@ -141,7 +148,11 @@ func (a *APIFeature) iSendAPOSTRequestToWithBody(arg1 string, arg2 *godog.DocStr
 
 	recorder := httptest.NewRecorder()
 
-	a.Server.Serve(context.Background())
+	err = a.Server.Serve(context.Background())
+	if err != nil {
+		return fmt.Errorf("error serving request: %w", err)
+	}
+
 	a.Response = recorder.Result()
 
 	return nil

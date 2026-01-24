@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/medzoner-go/internal/config"
 )
 
@@ -42,6 +43,6 @@ func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]inter
 
 func (m *TechnoJSONRepository) deferJSONFile(ctx context.Context, jsonFile *os.File) {
 	if err := jsonFile.Close(); err != nil {
-		//m.Telemetry.Error(ctx, "jsonFile error.")
+		logger.Error(ctx, "jsonFile error.", err)
 	}
 }

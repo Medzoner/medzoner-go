@@ -1,5 +1,4 @@
 //go:build wireinject
-// +build wireinject
 
 package dependency
 
@@ -11,24 +10,24 @@ import (
 	repository2 "github.com/Medzoner/medzoner-go/internal/domain/repository"
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/infra/captcha"
-	"github.com/Medzoner/medzoner-go/pkg/infra/database"
-	"github.com/Medzoner/medzoner-go/pkg/infra/notification"
-	"github.com/Medzoner/medzoner-go/pkg/infra/repository"
-	"github.com/Medzoner/medzoner-go/pkg/infra/validation"
 	mockBase "github.com/Medzoner/medzoner-go/test"
 
 	"github.com/Medzoner/gomedz/pkg/http"
-	srv "github.com/Medzoner/gomedz/pkg/http/server"
 	ginadpt "github.com/Medzoner/gomedz/pkg/http/adapter/gin"
+	srv "github.com/Medzoner/gomedz/pkg/http/server"
 
-	"github.com/google/wire"
-	"github.com/Medzoner/gomedz/pkg/http/probes"
-	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/gomedz/pkg/logger"
 	"context"
-	"github.com/Medzoner/medzoner-go/test/mocks"
+	"github.com/Medzoner/gomedz/pkg/http/probes"
+	"github.com/Medzoner/gomedz/pkg/logger"
+	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/config"
+	"github.com/Medzoner/medzoner-go/pkg/captcha"
+	database2 "github.com/Medzoner/medzoner-go/pkg/database"
+	"github.com/Medzoner/medzoner-go/pkg/notification"
+	repository3 "github.com/Medzoner/medzoner-go/pkg/repository"
+	"github.com/Medzoner/medzoner-go/pkg/validation"
+	"github.com/Medzoner/medzoner-go/test/mocks"
+	"github.com/google/wire"
 )
 
 func controllers(p *probes.Handler, a handler2.IndexHandler) []http.Controller {
@@ -97,9 +96,9 @@ var (
 		wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)),
 	)
 	DbWiring = wire.NewSet(
-		database.NewDbSQLInstance,
+		database2.NewDbSQLInstance,
 
-		wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)),
+		wire.Bind(new(database2.DbInstantiator), new(*database2.DbSQLInstance)),
 	)
 	MailerWiring = wire.NewSet(
 		notification.NewMailerSMTP,
@@ -113,11 +112,11 @@ var (
 		wire.Bind(new(mailer.Mailer), new(*mocks.MockMailer)),
 	)
 	RepositoryWiring = wire.NewSet(
-		repository.NewTechnoJSONRepository,
-		repository.NewMysqlContactRepository,
+		repository3.NewTechnoJSONRepository,
+		repository3.NewMysqlContactRepository,
 
-		wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)),
-		wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)),
+		wire.Bind(new(repository2.TechnoRepository), new(*repository3.TechnoJSONRepository)),
+		wire.Bind(new(repository2.ContactRepository), new(*repository3.MysqlContactRepository)),
 	)
 	RepositoryMockWiring = wire.NewSet(
 		wire.FieldsOf(
@@ -144,13 +143,12 @@ var (
 	)
 )
 
-func InitDbMigration() (database.DbMigration, error) {
-	panic(wire.Build(database.NewDbMigration, DbWiring, InfraWiring))
+func InitDbMigration() (database2.DbMigration, error) {
+	panic(wire.Build(database2.NewDbMigration, DbWiring, InfraWiring))
 }
 
-func InitServerTest(ctx context.Context) (srv.Server, error) {
+func InitServerTest(ctx context.Context, m *mockBase.Mocks) (srv.Server, error) {
 	panic(wire.Build(
-		DbWiring,
 		InfraWiring,
 		MailerMockWiring,
 		UsecaseWiring,

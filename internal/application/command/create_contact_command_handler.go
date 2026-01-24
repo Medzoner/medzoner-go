@@ -46,7 +46,6 @@ func (c *CreateContactCommandHandler) Handle(ctx context.Context, command Create
 	if err := c.ContactRepository.Save(ctx, contact); err != nil {
 		return fmt.Errorf("error during save contact: %w", err)
 	}
-	//c.Telemetry.Log(ctx, "Contact was created.")
 
 	if err := c.ContactCreatedEventHandler.Publish(ctx, event2.ContactCreatedEvent{Contact: contact}); err != nil {
 		return fmt.Errorf("error during handle event: %w", err)
