@@ -61,8 +61,10 @@ jobs:
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add - <<< "${{ secrets.GO_MODULE_PRIVATE_KEY }}"
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
-      - name: Setup Go
+      - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go-version }}
       - run: cp .env.github .env
       - run: make test_all
       - name: Archive code coverage results
