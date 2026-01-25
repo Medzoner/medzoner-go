@@ -21,11 +21,11 @@ type RecaptchaAdapter struct {
 }
 
 func NewRecaptchaAdapter(cfg config.Config) *RecaptchaAdapter {
-	recaptcha.Init(cfg.RecaptchaSecretKey)
+	recaptcha.Init(cfg.Recaptcha.RecaptchaSecretKey)
 
 	return &RecaptchaAdapter{
-		RecaptchaSiteKey:   cfg.RecaptchaSiteKey,
-		RecaptchaSecretKey: cfg.RecaptchaSecretKey,
+		RecaptchaSiteKey:   cfg.Recaptcha.RecaptchaSiteKey,
+		RecaptchaSecretKey: cfg.Recaptcha.RecaptchaSecretKey,
 	}
 }
 
