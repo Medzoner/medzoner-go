@@ -3,6 +3,7 @@ package captcha
 import (
 	"fmt"
 
+	"github.com/Medzoner/medzoner-go/internal/config"
 	"github.com/dpapathanasiou/go-recaptcha"
 )
 
@@ -10,12 +11,22 @@ type RecaptchaSiteKey string
 
 type Captcher interface {
 	Confirm(remoteip, response string) (result bool, err error)
+	GetSiteKey() string
+	GetSecretKey() string
 }
 
-type RecaptchaAdapter struct{}
+type RecaptchaAdapter struct {
+	RecaptchaSiteKey   string
+	RecaptchaSecretKey string
+}
 
-func NewRecaptchaAdapter() *RecaptchaAdapter {
-	return &RecaptchaAdapter{}
+func NewRecaptchaAdapter(cfg config.Config) *RecaptchaAdapter {
+	recaptcha.Init(cfg.RecaptchaSecretKey)
+
+	return &RecaptchaAdapter{
+		RecaptchaSiteKey:   cfg.RecaptchaSiteKey,
+		RecaptchaSecretKey: cfg.RecaptchaSecretKey,
+	}
 }
 
 func (s RecaptchaAdapter) Confirm(remoteip, response string) (result bool, err error) {
@@ -24,4 +35,12 @@ func (s RecaptchaAdapter) Confirm(remoteip, response string) (result bool, err e
 		return false, fmt.Errorf("captcha server error: %w", err)
 	}
 	return r, nil
+}
+
+func (s RecaptchaAdapter) GetSiteKey() string {
+	return s.RecaptchaSiteKey
+}
+
+func (s RecaptchaAdapter) GetSecretKey() string {
+	return s.RecaptchaSecretKey
 }

@@ -47,7 +47,6 @@ type IndexHandler struct {
 	Template                    templater.Templater
 	Validation                  validation.MzValidator
 	Recaptcha                   captcha.Captcher
-	RecaptchaSiteKey            string
 }
 
 // NewIndexHandler NewIndexHandler
@@ -152,7 +151,7 @@ func (h IndexHandler) initView(ctx context.Context, request *http.Request) (Inde
 		TechnoView: TechnoView{
 			Stacks: stacks,
 		},
-		RecaptchaSiteKey: h.RecaptchaSiteKey,
+		RecaptchaSiteKey: h.Recaptcha.GetSiteKey(),
 		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
 		FormMessage:      "",
 	}, nil
