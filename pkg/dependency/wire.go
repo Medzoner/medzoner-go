@@ -49,9 +49,9 @@ func pingers() probes.Pingers {
 
 var (
 	CommonWiring = wire.NewSet(
-		config.NewConfig2,
+		config.NewConfig,
 		wire.FieldsOf(
-			new(*config.Config2),
+			new(config.Config),
 			"Obs",
 			"Engine",
 			"Logger",
@@ -87,7 +87,6 @@ var (
 	)
 
 	InfraWiring = wire.NewSet(
-		config.NewConfig,
 		templater.NewTemplateHTML,
 		validation.NewValidatorAdapter,
 		captcha.NewRecaptchaAdapter,
@@ -144,7 +143,7 @@ var (
 )
 
 func InitDbMigration() (database2.DbMigration, error) {
-	panic(wire.Build(database2.NewDbMigration, DbWiring, InfraWiring))
+	panic(wire.Build(database2.NewDbMigration, CommonWiring, DbWiring))
 }
 
 func InitServerTest(ctx context.Context, m *mockBase.Mocks) (srv.Server, error) {

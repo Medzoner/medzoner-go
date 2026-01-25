@@ -45,31 +45,27 @@ func InitDbMigration() (database.DbMigration, error) {
 }
 
 func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) {
-	config2, err := config.NewConfig2()
-	if err != nil {
-		return server.Server{}, err
-	}
-	loggerConfig := config2.Logger
-	loggerInterface, err := logger.NewLogger(loggerConfig)
-	if err != nil {
-		return server.Server{}, err
-	}
-	observabilityConfig := &config2.Obs
-	telemetry, err := observability.NewTelemetry(ctx, observabilityConfig, loggerInterface)
-	if err != nil {
-		return server.Server{}, err
-	}
-	serverConfig := config2.Server
-	ginadapterConfig := config2.Engine
-	authConfig := config2.Auth
-	engine := ginadapter.New(ginadapterConfig, authConfig)
-	v := closers(telemetry)
-	probesPingers := pingers()
-	probesHandler := probes.New(serverConfig, probesPingers)
 	configConfig, err := config.NewConfig()
 	if err != nil {
 		return server.Server{}, err
 	}
+	loggerConfig := configConfig.Logger
+	loggerInterface, err := logger.NewLogger(loggerConfig)
+	if err != nil {
+		return server.Server{}, err
+	}
+	observabilityConfig := configConfig.Obs
+	telemetry, err := observability.NewTelemetry(ctx, observabilityConfig, loggerInterface)
+	if err != nil {
+		return server.Server{}, err
+	}
+	serverConfig := configConfig.Server
+	ginadapterConfig := configConfig.Engine
+	authConfig := configConfig.Auth
+	engine := ginadapter.New(ginadapterConfig, authConfig)
+	v := closers(telemetry)
+	probesPingers := pingers()
+	probesHandler := probes.New(serverConfig, probesPingers)
 	templateHTML := templater.NewTemplateHTML(configConfig)
 	mockTechnoRepository := m.TechnoRepository
 	listTechnoQueryHandler := query.NewListTechnoQueryHandler(mockTechnoRepository)
@@ -86,31 +82,27 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 }
 
 func InitServer(ctx context.Context) (server.Server, error) {
-	config2, err := config.NewConfig2()
-	if err != nil {
-		return server.Server{}, err
-	}
-	loggerConfig := config2.Logger
-	loggerInterface, err := logger.NewLogger(loggerConfig)
-	if err != nil {
-		return server.Server{}, err
-	}
-	observabilityConfig := &config2.Obs
-	telemetry, err := observability.NewTelemetry(ctx, observabilityConfig, loggerInterface)
-	if err != nil {
-		return server.Server{}, err
-	}
-	serverConfig := config2.Server
-	ginadapterConfig := config2.Engine
-	authConfig := config2.Auth
-	engine := ginadapter.New(ginadapterConfig, authConfig)
-	v := closers(telemetry)
-	probesPingers := pingers()
-	probesHandler := probes.New(serverConfig, probesPingers)
 	configConfig, err := config.NewConfig()
 	if err != nil {
 		return server.Server{}, err
 	}
+	loggerConfig := configConfig.Logger
+	loggerInterface, err := logger.NewLogger(loggerConfig)
+	if err != nil {
+		return server.Server{}, err
+	}
+	observabilityConfig := configConfig.Obs
+	telemetry, err := observability.NewTelemetry(ctx, observabilityConfig, loggerInterface)
+	if err != nil {
+		return server.Server{}, err
+	}
+	serverConfig := configConfig.Server
+	ginadapterConfig := configConfig.Engine
+	authConfig := configConfig.Auth
+	engine := ginadapter.New(ginadapterConfig, authConfig)
+	v := closers(telemetry)
+	probesPingers := pingers()
+	probesHandler := probes.New(serverConfig, probesPingers)
 	templateHTML := templater.NewTemplateHTML(configConfig)
 	technoJSONRepository := repository.NewTechnoJSONRepository(configConfig)
 	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository)
@@ -147,8 +139,8 @@ func pingers() probes.Pingers {
 }
 
 var (
-	CommonWiring = wire.NewSet(config.NewConfig2, wire.FieldsOf(
-		new(*config.Config2),
+	CommonWiring = wire.NewSet(config.NewConfig, wire.FieldsOf(
+		new(config.Config),
 		"Obs",
 		"Engine",
 		"Logger",
@@ -163,7 +155,7 @@ var (
 	UsecaseWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
 	HandlerWiring = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)
 
-	InfraWiring      = wire.NewSet(config.NewConfig, templater.NewTemplateHTML, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
+	InfraWiring      = wire.NewSet(templater.NewTemplateHTML, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
 	DbWiring         = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)))
 	MailerWiring     = wire.NewSet(notification.NewMailerSMTP, wire.Bind(new(mailer.Mailer), new(*notification.MailerSMTP)))
 	MailerMockWiring = wire.NewSet(wire.FieldsOf(
