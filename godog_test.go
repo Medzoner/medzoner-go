@@ -10,7 +10,7 @@ import (
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/golang/mock/gomock"
-	"github.com/Medzoner/medzoner-go/pkg/dependency"
+	"github.com/Medzoner/medzoner-go/internal/wire"
 )
 
 var opt = godog.Options{
@@ -37,7 +37,7 @@ func TestFeatures(t *testing.T) {
 
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("DEBUG", "true")
-	srv, err := dependency.InitServerTest(context.Background(), mocked)
+	srv, err := wire.InitServerTest(context.Background(), mocked)
 	if err != nil {
 		t.Error(err)
 		return

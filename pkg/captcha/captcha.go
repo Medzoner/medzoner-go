@@ -3,9 +3,13 @@ package captcha
 import (
 	"fmt"
 
-	"github.com/Medzoner/medzoner-go/internal/config"
 	"github.com/dpapathanasiou/go-recaptcha"
 )
+
+type Config struct {
+	RecaptchaSiteKey   string `env:"SITE_KEY"   envDefault:"xxxxxxxxxxxx"`
+	RecaptchaSecretKey string `env:"SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
+}
 
 type RecaptchaSiteKey string
 
@@ -20,12 +24,12 @@ type RecaptchaAdapter struct {
 	RecaptchaSecretKey string
 }
 
-func NewRecaptchaAdapter(cfg config.Config) *RecaptchaAdapter {
-	recaptcha.Init(cfg.Recaptcha.RecaptchaSecretKey)
+func NewRecaptchaAdapter(cfg Config) *RecaptchaAdapter {
+	recaptcha.Init(cfg.RecaptchaSecretKey)
 
 	return &RecaptchaAdapter{
-		RecaptchaSiteKey:   cfg.Recaptcha.RecaptchaSiteKey,
-		RecaptchaSecretKey: cfg.Recaptcha.RecaptchaSecretKey,
+		RecaptchaSiteKey:   cfg.RecaptchaSiteKey,
+		RecaptchaSecretKey: cfg.RecaptchaSecretKey,
 	}
 }
 

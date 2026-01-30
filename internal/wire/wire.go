@@ -1,6 +1,6 @@
 //go:build wireinject
 
-package dependency
+package wire
 
 import (
 	"github.com/Medzoner/medzoner-go/internal/application/command"
@@ -24,7 +24,6 @@ import (
 	"github.com/Medzoner/medzoner-go/pkg/captcha"
 	database2 "github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/pkg/notification"
-	repository3 "github.com/Medzoner/medzoner-go/pkg/repository"
 	"github.com/Medzoner/medzoner-go/pkg/validation"
 	"github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
@@ -57,6 +56,9 @@ var (
 			"Logger",
 			"Auth",
 			"Server",
+			"Mailer",
+			"Database",
+			"Recaptcha",
 		),
 
 		pingers,
@@ -111,11 +113,11 @@ var (
 		wire.Bind(new(mailer.Mailer), new(*mocks.MockMailer)),
 	)
 	RepositoryWiring = wire.NewSet(
-		repository3.NewTechnoJSONRepository,
-		repository3.NewMysqlContactRepository,
+		repository2.NewTechnoJSONRepository,
+		repository2.NewMysqlContactRepository,
 
-		wire.Bind(new(repository2.TechnoRepository), new(*repository3.TechnoJSONRepository)),
-		wire.Bind(new(repository2.ContactRepository), new(*repository3.MysqlContactRepository)),
+		wire.Bind(new(repository2.TechnoRepository), new(*repository2.TechnoJSONRepository)),
+		wire.Bind(new(repository2.ContactRepository), new(*repository2.MysqlContactRepository)),
 	)
 	RepositoryMockWiring = wire.NewSet(
 		wire.FieldsOf(

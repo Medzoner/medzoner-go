@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Medzoner/medzoner-go/internal/config"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 )
@@ -17,7 +16,7 @@ type DbMigration struct {
 }
 
 // NewDbMigration is a function that returns a new DbMigration
-func NewDbMigration(dbInstance DbInstantiator, conf config.Config) DbMigration {
+func NewDbMigration(dbInstance DbInstantiator, conf Config) DbMigration {
 	return DbMigration{
 		DbInstance:   dbInstance,
 		RootPath:     string(conf.RootPath),

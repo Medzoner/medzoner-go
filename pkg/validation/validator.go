@@ -6,9 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// MzValidator MzValidator
 type MzValidator interface {
-	// New() MzValidator
 	GetErrors() []CustomError
 	Struct(str interface{}) error
 }

@@ -3,11 +3,17 @@ package database
 import (
 	"fmt"
 
-	"github.com/Medzoner/medzoner-go/internal/config"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/jmoiron/sqlx"
 )
+
+type Config struct {
+	RootPath string `env:"ROOT_PATH" envDefault:"./"`
+	Dsn      string `env:"DSN"    envDefault:"root:changeme@tcp(0.0.0.0:3306)"`
+	Name     string `env:"NAME"   envDefault:"dev_medzoner"`
+	Driver   string `env:"DRIVER" envDefault:"mysql"`
+}
 
 type DbSQLInstance struct {
 	Connection   *sqlx.DB
@@ -17,11 +23,11 @@ type DbSQLInstance struct {
 }
 
 // NewDbSQLInstance is a function that returns a new DbSQLInstance
-func NewDbSQLInstance(conf config.Config) *DbSQLInstance {
+func NewDbSQLInstance(conf Config) *DbSQLInstance {
 	d := &DbSQLInstance{
-		Dsn:          conf.Database.Dsn,
-		DatabaseName: conf.Database.Name,
-		DriverName:   conf.Database.Driver,
+		Dsn:          conf.Dsn,
+		DatabaseName: conf.Name,
+		DriverName:   conf.Driver,
 		Connection:   nil,
 	}
 	d.Connect()

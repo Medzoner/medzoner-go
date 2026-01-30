@@ -12,6 +12,9 @@ import (
 	"github.com/Medzoner/gomedz/pkg/http/server"
 	"github.com/Medzoner/gomedz/pkg/config"
 	"github.com/Medzoner/gomedz/pkg/observability"
+	"github.com/Medzoner/medzoner-go/pkg/captcha"
+	"github.com/Medzoner/medzoner-go/pkg/database"
+	"github.com/Medzoner/medzoner-go/pkg/notification"
 )
 
 type (
@@ -22,29 +25,11 @@ type (
 		Engine    ginadapter.Config     `envPrefix:"ENGINE_"`
 		Logger    logger.Config         `envPrefix:"LOGGER_"`
 		Auth      auth.Config
-		Server    server.Config `envPrefix:"SERVER_"`
-		Mailer    Mailer        `envPrefix:"MAILER_"`
-		Database  Database      `envPrefix:"DATABASE_"`
-		RootPath  RootPath      `env:"ROOT_PATH"`
-		Recaptcha Recaptcha     `envPrefix:"RECAPTCHA_"`
-	}
-
-	Mailer struct {
-		User     string `env:"USER"     envDefault:"medzoner@xxx.fake"`
-		Password string `env:"PASSWORD" envDefault:"xxxxxxxxxxxx"`
-		Host     string `env:"HOST"     envDefault:"smtp.gmail.com"`
-		Port     string `env:"PORT"     envDefault:"587"`
-	}
-
-	Recaptcha struct {
-		RecaptchaSiteKey   string `env:"SITE_KEY"   envDefault:"xxxxxxxxxxxx"`
-		RecaptchaSecretKey string `env:"SECRET_KEY" envDefault:"xxxxxxxxxxxx"`
-	}
-
-	Database struct {
-		Dsn    string `env:"DSN"    envDefault:"root:changeme@tcp(0.0.0.0:3306)"`
-		Name   string `env:"NAME"   envDefault:"dev_medzoner"`
-		Driver string `env:"DRIVER" envDefault:"mysql"`
+		Server    server.Config       `envPrefix:"SERVER_"`
+		Mailer    notification.Config `envPrefix:"MAILER_"`
+		Database  database.Config     `envPrefix:"DATABASE_"`
+		RootPath  RootPath            `env:"ROOT_PATH"`
+		Recaptcha captcha.Config      `envPrefix:"RECAPTCHA_"`
 	}
 )
 

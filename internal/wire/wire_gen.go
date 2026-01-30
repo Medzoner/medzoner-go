@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package dependency
+package wire
 
 import (
 	"context"
@@ -19,13 +19,12 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
 	"github.com/Medzoner/medzoner-go/internal/config"
-	repository2 "github.com/Medzoner/medzoner-go/internal/domain/repository"
+	"github.com/Medzoner/medzoner-go/internal/domain/repository"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/pkg/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/pkg/notification"
-	"github.com/Medzoner/medzoner-go/pkg/repository"
 	"github.com/Medzoner/medzoner-go/pkg/validation"
 	"github.com/Medzoner/medzoner-go/test"
 	mocks2 "github.com/Medzoner/medzoner-go/test/mocks"
@@ -39,8 +38,9 @@ func InitDbMigration() (database.DbMigration, error) {
 	if err != nil {
 		return database.DbMigration{}, err
 	}
-	dbSQLInstance := database.NewDbSQLInstance(configConfig)
-	dbMigration := database.NewDbMigration(dbSQLInstance, configConfig)
+	databaseConfig := configConfig.Database
+	dbSQLInstance := database.NewDbSQLInstance(databaseConfig)
+	dbMigration := database.NewDbMigration(dbSQLInstance, databaseConfig)
 	return dbMigration, nil
 }
 
@@ -74,7 +74,8 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mockMailer)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler)
 	validatorAdapter := validation.NewValidatorAdapter()
-	recaptchaAdapter := captcha.NewRecaptchaAdapter(configConfig)
+	captchaConfig := configConfig.Recaptcha
+	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
 	v2 := controllers(probesHandler, indexHandler)
 	serverServer := server.NewServer(loggerInterface, telemetry, serverConfig, engine, v, v2...)
@@ -106,13 +107,16 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	templateHTML := templater.NewTemplateHTML(configConfig)
 	technoJSONRepository := repository.NewTechnoJSONRepository(configConfig)
 	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository)
-	dbSQLInstance := database.NewDbSQLInstance(configConfig)
+	databaseConfig := configConfig.Database
+	dbSQLInstance := database.NewDbSQLInstance(databaseConfig)
 	mysqlContactRepository := repository.NewMysqlContactRepository(dbSQLInstance)
-	mailerSMTP := notification.NewMailerSMTP(configConfig)
+	notificationConfig := configConfig.Mailer
+	mailerSMTP := notification.NewMailerSMTP(notificationConfig)
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mysqlContactRepository, contactCreatedEventHandler)
 	validatorAdapter := validation.NewValidatorAdapter()
-	recaptchaAdapter := captcha.NewRecaptchaAdapter(configConfig)
+	captchaConfig := configConfig.Recaptcha
+	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
 	v2 := controllers(probesHandler, indexHandler)
 	serverServer := server.NewServer(loggerInterface, telemetry, serverConfig, engine, v, v2...)
@@ -146,6 +150,9 @@ var (
 		"Logger",
 		"Auth",
 		"Server",
+		"Mailer",
+		"Database",
+		"Recaptcha",
 	), pingers, probes.New,
 	)
 	ServerWiring = wire.NewSet(ginadapter.New, wire.Bind(new(server.Enginer), new(*ginadapter.Engine)), controllers,
@@ -163,14 +170,14 @@ var (
 		"Mailer",
 	), wire.Bind(new(mailer.Mailer), new(*mocks2.MockMailer)),
 	)
-	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository2.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository2.ContactRepository), new(*repository.MysqlContactRepository)))
+	RepositoryWiring     = wire.NewSet(repository.NewTechnoJSONRepository, repository.NewMysqlContactRepository, wire.Bind(new(repository.TechnoRepository), new(*repository.TechnoJSONRepository)), wire.Bind(new(repository.ContactRepository), new(*repository.MysqlContactRepository)))
 	RepositoryMockWiring = wire.NewSet(wire.FieldsOf(
 		new(*mocks.Mocks),
 		"TechnoRepository",
-	), wire.Bind(new(repository2.TechnoRepository), new(*mocks2.MockTechnoRepository)), wire.FieldsOf(
+	), wire.Bind(new(repository.TechnoRepository), new(*mocks2.MockTechnoRepository)), wire.FieldsOf(
 		new(*mocks.Mocks),
 		"ContactRepository",
-	), wire.Bind(new(repository2.ContactRepository), new(*mocks2.MockContactRepository)),
+	), wire.Bind(new(repository.ContactRepository), new(*mocks2.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
 	UiWiring  = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)

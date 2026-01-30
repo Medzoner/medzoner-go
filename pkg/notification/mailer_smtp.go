@@ -10,10 +10,17 @@ import (
 	"strconv"
 
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/internal/config"
 	"github.com/Medzoner/medzoner-go/internal/entity"
 	"go.opentelemetry.io/otel/attribute"
 )
+
+type Config struct {
+	RootPath string `env:"ROOT_PATH" envDefault:"./"`
+	User     string `env:"USER"     envDefault:"medzoner@xxx.fake"`
+	Password string `env:"PASSWORD" envDefault:"xxxxxxxxxxxx"`
+	Host     string `env:"HOST"     envDefault:"smtp.gmail.com"`
+	Port     string `env:"PORT"     envDefault:"587"`
+}
 
 // MailerSMTP MailerSMTP
 type MailerSMTP struct {
@@ -25,13 +32,13 @@ type MailerSMTP struct {
 }
 
 // NewMailerSMTP NewMailerSMTP
-func NewMailerSMTP(config config.Config) *MailerSMTP {
+func NewMailerSMTP(config Config) *MailerSMTP {
 	return &MailerSMTP{
 		RootPath: string(config.RootPath),
-		User:     config.Mailer.User,
-		Password: config.Mailer.Password,
-		Host:     config.Mailer.Host,
-		Port:     config.Mailer.Port,
+		User:     config.User,
+		Password: config.Password,
+		Host:     config.Host,
+		Port:     config.Port,
 	}
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/Medzoner/gomedz/pkg/logger"
-	wire "github.com/Medzoner/medzoner-go/pkg/dependency"
+	wire "github.com/Medzoner/medzoner-go/internal/wire"
 )
 
 func main() {
