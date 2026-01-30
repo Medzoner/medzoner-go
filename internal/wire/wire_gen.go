@@ -8,6 +8,7 @@ package wire
 
 import (
 	"context"
+	"github.com/Medzoner/gomedz/pkg/captcha"
 	"github.com/Medzoner/gomedz/pkg/http"
 	"github.com/Medzoner/gomedz/pkg/http/adapter/gin"
 	"github.com/Medzoner/gomedz/pkg/http/probes"
@@ -22,7 +23,6 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/domain/repository"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/pkg/notification"
 	"github.com/Medzoner/medzoner-go/pkg/validation"

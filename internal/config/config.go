@@ -12,9 +12,9 @@ import (
 	"github.com/Medzoner/gomedz/pkg/http/server"
 	"github.com/Medzoner/gomedz/pkg/config"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/pkg/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/pkg/notification"
+	"github.com/Medzoner/gomedz/pkg/captcha"
 )
 
 type (

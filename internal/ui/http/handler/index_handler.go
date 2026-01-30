@@ -12,8 +12,8 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/pkg/captcha"
 	"github.com/Medzoner/medzoner-go/pkg/validation"
+	"github.com/Medzoner/gomedz/pkg/captcha"
 )
 
 // IndexView IndexView

@@ -21,12 +21,12 @@ import (
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/config"
-	"github.com/Medzoner/medzoner-go/pkg/captcha"
 	database2 "github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/pkg/notification"
 	"github.com/Medzoner/medzoner-go/pkg/validation"
 	"github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
+	"github.com/Medzoner/gomedz/pkg/captcha"
 )
 
 func controllers(p *probes.Handler, a handler2.IndexHandler) []http.Controller {

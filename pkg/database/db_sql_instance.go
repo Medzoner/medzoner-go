@@ -8,19 +8,30 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type Config struct {
-	RootPath string `env:"ROOT_PATH" envDefault:"./"`
-	Dsn      string `env:"DSN"    envDefault:"root:changeme@tcp(0.0.0.0:3306)"`
-	Name     string `env:"NAME"   envDefault:"dev_medzoner"`
-	Driver   string `env:"DRIVER" envDefault:"mysql"`
-}
+type (
+	DbInstantiator interface {
+		GetConnection() (db *sqlx.DB)
+		CreateDatabase(databaseName string)
+		DropDatabase(databaseName string)
+		GetDatabaseName() string
+		GetDatabaseDriver() (database.Driver, error)
+		Connect() (db *sqlx.DB)
+	}
 
-type DbSQLInstance struct {
-	Connection   *sqlx.DB
-	Dsn          string
-	DatabaseName string
-	DriverName   string
-}
+	Config struct {
+		RootPath string `env:"ROOT_PATH" envDefault:"./"`
+		Dsn      string `env:"DSN"    envDefault:"root:changeme@tcp(0.0.0.0:3306)"`
+		Name     string `env:"NAME"   envDefault:"dev_medzoner"`
+		Driver   string `env:"DRIVER" envDefault:"mysql"`
+	}
+
+	DbSQLInstance struct {
+		Connection   *sqlx.DB
+		Dsn          string
+		DatabaseName string
+		DriverName   string
+	}
+)
 
 // NewDbSQLInstance is a function that returns a new DbSQLInstance
 func NewDbSQLInstance(conf Config) *DbSQLInstance {
