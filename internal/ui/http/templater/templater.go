@@ -13,7 +13,7 @@ import (
 
 // Templater is an interface for rendering templates
 type Templater interface {
-	Render(name string, view interface{}, response http.ResponseWriter) error
+	Render(name string, view any, response http.ResponseWriter) error
 }
 
 // TemplateHTML is a struct that implements Templater interface
@@ -29,7 +29,7 @@ func NewTemplateHTML(config config.Config) *TemplateHTML {
 }
 
 // Render renders template
-func (t *TemplateHTML) Render(name string, view interface{}, response http.ResponseWriter) error {
+func (t *TemplateHTML) Render(name string, view any, response http.ResponseWriter) error {
 	htmlTemplate, err := t.parseTemplates(name)
 	if err != nil {
 		return fmt.Errorf("error parsing templates: %w", err)

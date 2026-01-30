@@ -8,9 +8,9 @@ import (
 	ginadapter "github.com/Medzoner/gomedz/pkg/http/adapter/gin"
 
 	"github.com/Medzoner/gomedz/pkg/auth"
+	"github.com/Medzoner/gomedz/pkg/config"
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/http/server"
-	"github.com/Medzoner/gomedz/pkg/config"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/pkg/notification"

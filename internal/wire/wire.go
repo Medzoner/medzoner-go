@@ -23,10 +23,10 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/config"
 	database2 "github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/pkg/notification"
-	"github.com/Medzoner/medzoner-go/pkg/validation"
 	"github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
 	"github.com/Medzoner/gomedz/pkg/captcha"
+	"github.com/Medzoner/gomedz/pkg/validation"
 )
 
 func controllers(p *probes.Handler, a handler2.IndexHandler) []http.Controller {
@@ -90,10 +90,10 @@ var (
 
 	InfraWiring = wire.NewSet(
 		templater.NewTemplateHTML,
-		validation.NewValidatorAdapter,
+		validation.New,
 		captcha.NewRecaptchaAdapter,
 		wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)),
-		wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)),
+		wire.Bind(new(validation.Validater), new(*validation.ValidatorAdapter)),
 		wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)),
 	)
 	DbWiring = wire.NewSet(

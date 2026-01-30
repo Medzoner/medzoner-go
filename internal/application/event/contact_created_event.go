@@ -10,6 +10,6 @@ type ContactCreatedEvent struct {
 }
 
 // GetModel returns model Contact
-func (c ContactCreatedEvent) GetModel() interface{} {
+func (c ContactCreatedEvent) GetModel() any {
 	return c.Contact
 }

@@ -24,21 +24,13 @@ type Config struct {
 
 // MailerSMTP MailerSMTP
 type MailerSMTP struct {
-	RootPath string
-	User     string
-	Password string
-	Host     string
-	Port     string
+	Config Config
 }
 
 // NewMailerSMTP NewMailerSMTP
 func NewMailerSMTP(config Config) *MailerSMTP {
 	return &MailerSMTP{
-		RootPath: string(config.RootPath),
-		User:     config.User,
-		Password: config.Password,
-		Host:     config.Host,
-		Port:     config.Port,
+		Config: config,
 	}
 }
 
@@ -67,14 +59,14 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 	correlationID := GetCorrelationID(ctx)
 	iSpan.SetAttributes(attribute.String("correlation.id", correlationID))
 
-	req := NewRequest([]string{m.User}, "Message [medzoner.com]", "Hello, World!")
-	if err := req.parseTemplate(m.RootPath+"/tmpl/contact/contactEmail.html", view); err != nil {
+	req := NewRequest([]string{m.Config.User}, "Message [medzoner.com]", "Hello, World!")
+	if err := req.parseTemplate(m.Config.RootPath+"/tmpl/contact/contactEmail.html", view); err != nil {
 		iSpan.RecordError(err)
 		return false, fmt.Errorf("parse template failed: %w", err)
 	}
 
-	auth := smtp.PlainAuth(m.User, m.User, m.Password, m.Host)
-	if err := smtp.SendMail(fmt.Sprintf("%s:%s", m.Host, m.Port), auth, m.User, req.to, m.message(view)); err != nil {
+	auth := smtp.PlainAuth(m.Config.User, m.Config.User, m.Config.Password, m.Config.Host)
+	if err := smtp.SendMail(fmt.Sprintf("%s:%s", m.Config.Host, m.Config.Port), auth, m.Config.User, req.to, m.message(view)); err != nil {
 		//return false, fmt.Errorf("send mail failed: %w", m.Telemetry.ErrorSpan(iSpan, err))
 		return false, fmt.Errorf("send mail failed: %w", err)
 	}
@@ -85,9 +77,9 @@ func (m *MailerSMTP) Send(ctx context.Context, view entity.Contact) (bool, error
 // message is a function that returns a message
 func (m *MailerSMTP) message(view entity.Contact) []byte {
 	r, _ := rand.Read(nil)
-	messageID := strconv.FormatInt(int64(r), 10) + "@" + m.Host
-	return []byte("From: " + m.User + " <" + m.User + ">" + "\r\n" +
-		"To: " + m.User + "\r\n" +
+	messageID := strconv.FormatInt(int64(r), 10) + "@" + m.Config.Host
+	return []byte("From: " + m.Config.User + " <" + m.Config.User + ">" + "\r\n" +
+		"To: " + m.Config.User + "\r\n" +
 		"Subject: " + "Message de [www.medzoner.com]" + "\r\n\r\n" +
 		"MIME-version: 1.0;\n" +
 		"Content-Type: text/html; charset=\"UTF-8\";\n" +

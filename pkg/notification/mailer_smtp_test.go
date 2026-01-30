@@ -21,13 +21,13 @@ func init() {
 
 func TestSmtp(t *testing.T) {
 	t.Run("Unit: test Smtp success", func(t *testing.T) {
-		mailer := notification.MailerSMTP{RootPath: "./../../.."}
+		mailer := notification.MailerSMTP{notification.Config{RootPath: "./../../.."}}
 		ctx := context.WithValue(context.Background(), notification.CorrelationContextKey{}, uuid.New().String())
 
 		_, _ = mailer.Send(ctx, entity.Contact{})
 	})
 	t.Run("Unit: test Smtp failed with bad RootPath", func(t *testing.T) {
-		mailer := notification.MailerSMTP{RootPath: ""}
+		mailer := notification.MailerSMTP{notification.Config{RootPath: ""}}
 
 		_, _ = mailer.Send(context.Background(), entity.Contact{})
 	})

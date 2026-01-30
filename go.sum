@@ -6,6 +6,10 @@ github.com/Medzoner/gomedz v0.6.16 h1:A3/8JomOR2EI0ZQgo0PpEDJqC6RcOwD/NAyfwHQ4Zf
 github.com/Medzoner/gomedz v0.6.16/go.mod h1:n5HZYJhaXmlG7HFc12ZAE3sJyaCYxdowl8glegAXlNA=
 github.com/Medzoner/gomedz v0.7.0 h1:B4ygi2jwVbEuCPp1yWwrSLlldjgUKbjf/D9ZPKVsjWc=
 github.com/Medzoner/gomedz v0.7.0/go.mod h1:mpdUssqBy0MyrOw7KE9hFBMywaONdLxHWZ6fbC1zro0=
+github.com/Medzoner/gomedz v0.8.0 h1:vmgDeI3FjmbSI9U993S5resSeHcuBXk+qFHrs+dAWoY=
+github.com/Medzoner/gomedz v0.8.0/go.mod h1:LRHHxuJD8sI7RTLNOFcLRM60CFX60kccEGB42qs1qrg=
+github.com/Medzoner/gomedz v0.9.0 h1:2mgw6R+dlQNXFdO0aY5L/oGXbNI4McXDzohB21yE8Bo=
+github.com/Medzoner/gomedz v0.9.0/go.mod h1:LRHHxuJD8sI7RTLNOFcLRM60CFX60kccEGB42qs1qrg=
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
 github.com/Microsoft/go-winio v0.6.2/go.mod h1:yd8OoFMLzJbo9gZq8j5qaps8bJ9aShtEA8Ipt1oGCvU=
 github.com/aws/smithy-go v1.23.2 h1:Crv0eatJUQhaManss33hS5r40CG3ZFH+21XSkqMrIUM=

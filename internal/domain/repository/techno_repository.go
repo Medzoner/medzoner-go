@@ -5,5 +5,5 @@ package repository
 import "context"
 
 type TechnoRepository interface {
-	FetchStack(ctx context.Context) (map[string]interface{}, error)
+	FetchStack(ctx context.Context) (map[string]any, error)
 }

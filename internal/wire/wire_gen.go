@@ -15,6 +15,7 @@ import (
 	"github.com/Medzoner/gomedz/pkg/http/server"
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
+	"github.com/Medzoner/gomedz/pkg/validation"
 	"github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/application/event"
 	"github.com/Medzoner/medzoner-go/internal/application/query"
@@ -25,7 +26,6 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/pkg/notification"
-	"github.com/Medzoner/medzoner-go/pkg/validation"
 	"github.com/Medzoner/medzoner-go/test"
 	mocks2 "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
@@ -73,7 +73,7 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	mockMailer := m.Mailer
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mockMailer)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler)
-	validatorAdapter := validation.NewValidatorAdapter()
+	validatorAdapter := validation.New()
 	captchaConfig := configConfig.Recaptcha
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
@@ -114,7 +114,7 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	mailerSMTP := notification.NewMailerSMTP(notificationConfig)
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mysqlContactRepository, contactCreatedEventHandler)
-	validatorAdapter := validation.NewValidatorAdapter()
+	validatorAdapter := validation.New()
 	captchaConfig := configConfig.Recaptcha
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
@@ -162,7 +162,7 @@ var (
 	UsecaseWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
 	HandlerWiring = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)
 
-	InfraWiring      = wire.NewSet(templater.NewTemplateHTML, validation.NewValidatorAdapter, captcha.NewRecaptchaAdapter, wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(validation.MzValidator), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
+	InfraWiring      = wire.NewSet(templater.NewTemplateHTML, validation.New, captcha.NewRecaptchaAdapter, wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(validation.Validater), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
 	DbWiring         = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)))
 	MailerWiring     = wire.NewSet(notification.NewMailerSMTP, wire.Bind(new(mailer.Mailer), new(*notification.MailerSMTP)))
 	MailerMockWiring = wire.NewSet(wire.FieldsOf(

@@ -99,6 +99,6 @@ func (b BadEvent) GetName() string {
 	return "BadEvent"
 }
 
-func (b BadEvent) GetModel() interface{} {
+func (b BadEvent) GetModel() any {
 	return BadEvent{}
 }

@@ -23,14 +23,14 @@ func NewListTechnoQueryHandler(technoRepository repository.TechnoRepository) Lis
 	}
 }
 
-// Handle handles ListTechnoQuery and return map[string]interface{}
-func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQuery) (map[string]interface{}, error) {
+// Handle handles ListTechnoQuery and return map[string]any
+func (l *ListTechnoQueryHandler) Handle(ctx context.Context, query ListTechnoQuery) (map[string]any, error) {
 	ctx, iSpan := observability.StartSpan(ctx, "ListTechnoQueryHandler.Publish",
 		otelTrace.WithAttributes([]attribute.KeyValue{attribute.String("ctx", "request.Host")}...),
 	)
 	defer iSpan.End()
 
-	resp := map[string]interface{}{}
+	resp := map[string]any{}
 	if query.Type == "stack" {
 		resp, err := l.TechnoRepository.FetchStack(ctx)
 		if err != nil {

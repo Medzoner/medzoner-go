@@ -12,8 +12,8 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/pkg/validation"
 	"github.com/Medzoner/gomedz/pkg/captcha"
+	"github.com/Medzoner/gomedz/pkg/validation"
 )
 
 // IndexView IndexView
@@ -22,7 +22,7 @@ type IndexView struct {
 	PageTitle string
 	TorHost   string
 	TechnoView
-	Errors           interface{}
+	Errors           any
 	RecaptchaSiteKey string
 	PageDescription  string
 	FormMessage      string
@@ -32,11 +32,11 @@ type IndexView struct {
 type TechnoView struct {
 	Locale      string
 	PageTitle   string
-	Stacks      interface{}
-	Experiences interface{}
-	Formations  interface{}
-	Langs       interface{}
-	Others      interface{}
+	Stacks      any
+	Experiences any
+	Formations  any
+	Langs       any
+	Others      any
 	TorHost     string
 }
 
@@ -45,7 +45,7 @@ type IndexHandler struct {
 	CreateContactCommandHandler command2.CreateContactCommandHandler
 	ListTechnoQueryHandler      query2.ListTechnoQueryHandler
 	Template                    templater.Templater
-	Validation                  validation.MzValidator
+	Validation                  validation.Validater
 	Recaptcha                   captcha.Captcher
 }
 
@@ -54,7 +54,7 @@ func NewIndexHandler(
 	template templater.Templater,
 	listTechnoQueryHandler query2.ListTechnoQueryHandler,
 	createContactCommandHandler command2.CreateContactCommandHandler,
-	validation validation.MzValidator,
+	validation validation.Validater,
 	recaptcha captcha.Captcher,
 ) IndexHandler {
 	return IndexHandler{

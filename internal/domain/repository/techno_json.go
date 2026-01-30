@@ -24,7 +24,7 @@ func NewTechnoJSONRepository(config config.Config) *TechnoJSONRepository {
 }
 
 // FetchStack FetchStack
-func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]interface{}, error) {
+func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]any, error) {
 	_ = ctx
 	jsonFile, err := os.Open(m.RootPath + "internal/resources/data/jobs/stacks.json")
 	if err != nil {
@@ -33,7 +33,7 @@ func (m *TechnoJSONRepository) FetchStack(ctx context.Context) (map[string]inter
 	defer m.deferJSONFile(ctx, jsonFile)
 
 	byteValue, _ := io.ReadAll(jsonFile)
-	c := make(map[string]interface{})
+	c := make(map[string]any)
 	if err = json.Unmarshal(byteValue, &c); err != nil {
 		return nil, fmt.Errorf("error during unmarshal json: %w", err)
 	}
