@@ -15,7 +15,7 @@ FROM golang:1.25.2 AS run
 
 COPY --from=base /etc/passwd /etc/passwd
 COPY --from=base /go/bin/dlv /
-COPY ./ /var/www/.
+COPY .. /var/www/.
 
 RUN mkdir -p /var/www && \
     mkdir -p /home/app/.cache

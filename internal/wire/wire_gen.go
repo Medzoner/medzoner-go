@@ -9,11 +9,13 @@ package wire
 import (
 	"context"
 	"github.com/Medzoner/gomedz/pkg/captcha"
+	"github.com/Medzoner/gomedz/pkg/connector"
 	"github.com/Medzoner/gomedz/pkg/http"
 	"github.com/Medzoner/gomedz/pkg/http/adapter/gin"
 	"github.com/Medzoner/gomedz/pkg/http/probes"
 	"github.com/Medzoner/gomedz/pkg/http/server"
 	"github.com/Medzoner/gomedz/pkg/logger"
+	"github.com/Medzoner/gomedz/pkg/notifier"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/gomedz/pkg/validation"
 	"github.com/Medzoner/medzoner-go/internal/application/command"
@@ -21,11 +23,10 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
 	"github.com/Medzoner/medzoner-go/internal/config"
+	"github.com/Medzoner/medzoner-go/internal/database"
 	"github.com/Medzoner/medzoner-go/internal/domain/repository"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
-	"github.com/Medzoner/medzoner-go/pkg/database"
-	"github.com/Medzoner/medzoner-go/pkg/notification"
 	"github.com/Medzoner/medzoner-go/test"
 	mocks2 "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
@@ -38,9 +39,9 @@ func InitDbMigration() (database.DbMigration, error) {
 	if err != nil {
 		return database.DbMigration{}, err
 	}
-	databaseConfig := configConfig.Database
-	dbSQLInstance := database.NewDbSQLInstance(databaseConfig)
-	dbMigration := database.NewDbMigration(dbSQLInstance, databaseConfig)
+	connectorConfig := configConfig.Database
+	dbSQLInstance := connector.NewDbSQLInstance(connectorConfig)
+	dbMigration := database.NewDbMigration(dbSQLInstance, connectorConfig)
 	return dbMigration, nil
 }
 
@@ -107,11 +108,11 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	templateHTML := templater.NewTemplateHTML(configConfig)
 	technoJSONRepository := repository.NewTechnoJSONRepository(configConfig)
 	listTechnoQueryHandler := query.NewListTechnoQueryHandler(technoJSONRepository)
-	databaseConfig := configConfig.Database
-	dbSQLInstance := database.NewDbSQLInstance(databaseConfig)
+	connectorConfig := configConfig.Database
+	dbSQLInstance := connector.NewDbSQLInstance(connectorConfig)
 	mysqlContactRepository := repository.NewMysqlContactRepository(dbSQLInstance)
-	notificationConfig := configConfig.Mailer
-	mailerSMTP := notification.NewMailerSMTP(notificationConfig)
+	notifierConfig := configConfig.Mailer
+	mailerSMTP := notifier.NewMailerSMTP(notifierConfig)
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP)
 	createContactCommandHandler := command.NewCreateContactCommandHandler(mysqlContactRepository, contactCreatedEventHandler)
 	validatorAdapter := validation.New()
@@ -163,8 +164,8 @@ var (
 	HandlerWiring = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)
 
 	InfraWiring      = wire.NewSet(templater.NewTemplateHTML, validation.New, captcha.NewRecaptchaAdapter, wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)), wire.Bind(new(validation.Validater), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
-	DbWiring         = wire.NewSet(database.NewDbSQLInstance, wire.Bind(new(database.DbInstantiator), new(*database.DbSQLInstance)))
-	MailerWiring     = wire.NewSet(notification.NewMailerSMTP, wire.Bind(new(mailer.Mailer), new(*notification.MailerSMTP)))
+	DbWiring         = wire.NewSet(connector.NewDbSQLInstance, wire.Bind(new(connector.DbInstantiator), new(*connector.DbSQLInstance)))
+	MailerWiring     = wire.NewSet(notifier.NewMailerSMTP, wire.Bind(new(mailer.Mailer), new(*notifier.MailerSMTP)))
 	MailerMockWiring = wire.NewSet(wire.FieldsOf(
 		new(*mocks.Mocks),
 		"Mailer",

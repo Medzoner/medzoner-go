@@ -16,7 +16,7 @@ services:
   mailhog:
     image: "mailhog/mailhog"
     container_name: "medzoner-mailhog"
-    hostname: "medzoner-mailhog"
+#    hostname: "medzoner-mailhog"
     restart: "no"
     ports:
       - "1025:1025"

@@ -7,16 +7,17 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/Medzoner/gomedz/pkg/connector"
 )
 
 type DbMigration struct {
 	RootPath     string
-	DbInstance   DbInstantiator
+	DbInstance   connector.DbInstantiator
 	MigrationDir string
 }
 
 // NewDbMigration is a function that returns a new DbMigration
-func NewDbMigration(dbInstance DbInstantiator, conf Config) DbMigration {
+func NewDbMigration(dbInstance connector.DbInstantiator, conf connector.Config) DbMigration {
 	return DbMigration{
 		DbInstance:   dbInstance,
 		RootPath:     string(conf.RootPath),

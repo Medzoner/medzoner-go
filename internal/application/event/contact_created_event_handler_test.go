@@ -3,7 +3,6 @@ package event_test
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"testing"
 	"time"
 
@@ -23,7 +22,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	_, _ = observability.NewTelemetry(context.Background(), &observability.Config{}, l)
+	_, _ = observability.NewTelemetry(context.Background(), observability.Config{}, l)
 }
 
 func TestContactCreatedEventHandler(t *testing.T) {
@@ -37,31 +36,29 @@ func TestContactCreatedEventHandler(t *testing.T) {
 	}
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
+		mocked := mocks.New(t)
+		mailer := mocked.Mailer
+		mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
+
 		contactCreatedEvent := event2.ContactCreatedEvent{
 			Contact: contact,
 		}
 
-		mailer := &MailerTest{
-			isSend: true,
-		}
 		handler := event2.ContactCreatedEventHandler{
 			Mailer: mailer,
 		}
 
 		err := handler.Publish(context.Background(), contactCreatedEvent)
 		assert.Equal(t, err, nil)
-		assert.Equal(t, mailer.isSend, true)
 	})
 	t.Run("Unit: test ContactCreatedEventHandler failed with bad event", func(t *testing.T) {
-		mailer := &MailerTest{
-			isSend: false,
-		}
+		mocked := mocks.New(t)
+		mailer := mocked.Mailer
 
 		handler := event2.NewContactCreatedEventHandler(mailer)
 
 		err := handler.Publish(context.Background(), BadEvent{})
 		assert.Equal(t, err, nil)
-		assert.Equal(t, mailer.isSend, false)
 	})
 	t.Run("Unit: test ContactCreatedEventHandler failed send mail", func(t *testing.T) {
 		mocked := mocks.New(t)
@@ -75,22 +72,6 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		err := handler.Publish(context.Background(), contactCreatedEvent)
 		assert.Error(t, err, "error during send mail: error")
 	})
-}
-
-type MailerTest struct {
-	User     string
-	Password string
-	Host     string
-	Port     string
-	isSend   bool
-}
-
-func (m *MailerTest) Send(ctx context.Context, view entity.Contact) (bool, error) {
-	_ = ctx
-	if _, err := fmt.Println(reflect.TypeOf(view)); err != nil {
-		return false, fmt.Errorf("error: %w", err)
-	}
-	return true, nil
 }
 
 type BadEvent struct{}

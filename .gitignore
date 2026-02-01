@@ -10,7 +10,7 @@
 /app/logs/
 /node_modules/
 /build
-/docker/.env
+/infra/docker/.env
 /.env
 /tmp/
 /app/spool/

@@ -15,3 +15,7 @@ type Contact struct {
 	Email       customtype.NullString `db:"email"`
 	ID          int                   `db:"id"    json:"id"`
 }
+
+func (c *Contact) Get() string {
+	return c.Message
+}

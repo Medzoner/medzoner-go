@@ -38,7 +38,7 @@ profiles:
     build:
       artifacts:
         - image: localhost:5000/medzoner-go
-          context: ''
+          context: 'docker'
 #          hooks:
 #            after:
 #              - command:

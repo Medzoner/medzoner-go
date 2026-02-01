@@ -8,17 +8,17 @@ import (
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/entity"
-	"github.com/Medzoner/medzoner-go/pkg/database"
 	otelTrace "go.opentelemetry.io/otel/trace"
+	"github.com/Medzoner/gomedz/pkg/connector"
 )
 
 // MysqlContactRepository MysqlContactRepository
 type MysqlContactRepository struct {
-	DbInstance database.DbInstantiator
+	DbInstance connector.DbInstantiator
 }
 
 // NewMysqlContactRepository is a function that returns a new MysqlContactRepository
-func NewMysqlContactRepository(dbInstance database.DbInstantiator) *MysqlContactRepository {
+func NewMysqlContactRepository(dbInstance connector.DbInstantiator) *MysqlContactRepository {
 	return &MysqlContactRepository{
 		DbInstance: dbInstance,
 	}

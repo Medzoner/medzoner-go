@@ -21,12 +21,13 @@ import (
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/config"
-	database2 "github.com/Medzoner/medzoner-go/pkg/database"
-	"github.com/Medzoner/medzoner-go/pkg/notification"
 	"github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
 	"github.com/Medzoner/gomedz/pkg/captcha"
 	"github.com/Medzoner/gomedz/pkg/validation"
+	"github.com/Medzoner/gomedz/pkg/connector"
+	"github.com/Medzoner/gomedz/pkg/notifier"
+	database2 "github.com/Medzoner/medzoner-go/internal/database"
 )
 
 func controllers(p *probes.Handler, a handler2.IndexHandler) []http.Controller {
@@ -97,13 +98,13 @@ var (
 		wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)),
 	)
 	DbWiring = wire.NewSet(
-		database2.NewDbSQLInstance,
+		connector.NewDbSQLInstance,
 
-		wire.Bind(new(database2.DbInstantiator), new(*database2.DbSQLInstance)),
+		wire.Bind(new(connector.DbInstantiator), new(*connector.DbSQLInstance)),
 	)
 	MailerWiring = wire.NewSet(
-		notification.NewMailerSMTP,
-		wire.Bind(new(mailer.Mailer), new(*notification.MailerSMTP)),
+		notifier.NewMailerSMTP,
+		wire.Bind(new(mailer.Mailer), new(*notifier.MailerSMTP)),
 	)
 	MailerMockWiring = wire.NewSet(
 		wire.FieldsOf(

@@ -30,10 +30,9 @@ func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) er
 	case ContactCreatedEvent:
 		if contactCreated, ok := event.GetModel().(entity.Contact); ok {
 			if contactCreated.UUID == "" {
-				//return fmt.Errorf("error during get contact from event: %w", c.Telemetry.ErrorSpan(iSpan, fmt.Errorf("contact UUID is empty")))
 				return fmt.Errorf("error during get contact from event: %w", fmt.Errorf("contact UUID is empty"))
 			}
-			_, err := c.Mailer.Send(ctx, contactCreated)
+			_, err := c.Mailer.Send(ctx, &contactCreated)
 			if err != nil {
 				//return fmt.Errorf("error during send mail: %w", c.Telemetry.ErrorSpan(iSpan, err))
 				return fmt.Errorf("error during send mail: %w", err)
@@ -41,7 +40,6 @@ func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) er
 			//c.Telemetry.Log(ctx, "Mail was send.")
 			return nil
 		}
-		//return fmt.Errorf("error during get contact from event: %w", c.Telemetry.ErrorSpan(iSpan, fmt.Errorf("contact is not of type entity.Contact")))
 		return fmt.Errorf("error during get contact from event: %w", fmt.Errorf("contact is not of type entity.Contact"))
 	default:
 		//c.Telemetry.Error(ctx, "ErrorSpan bad event type.")

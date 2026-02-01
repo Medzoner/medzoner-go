@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entity "github.com/Medzoner/medzoner-go/internal/entity"
+	notifier "github.com/Medzoner/gomedz/pkg/notifier"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -42,7 +42,7 @@ func (m *MockMailer) EXPECT() *MockMailerMockRecorder {
 }
 
 // Send mocks base method.
-func (m *MockMailer) Send(ctx context.Context, view entity.Contact) (bool, error) {
+func (m *MockMailer) Send(ctx context.Context, view notifier.Message) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Send", ctx, view)
 	ret0, _ := ret[0].(bool)

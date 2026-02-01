@@ -19,7 +19,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	_, _ = observability.NewTelemetry(context.Background(), &observability.Config{}, l)
+	_, _ = observability.NewTelemetry(context.Background(), observability.Config{}, l)
 }
 
 func TestListTechnoQueryHandler(t *testing.T) {

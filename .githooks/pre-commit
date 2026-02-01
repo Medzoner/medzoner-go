@@ -1,2 +1,2 @@
 #!/bin/sh
-./.hook-precommit.sh
+./scripts/.hook-precommit.sh

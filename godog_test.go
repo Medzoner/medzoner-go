@@ -5,12 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Medzoner/medzoner-go/features/bootstrap"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/golang/mock/gomock"
 	"github.com/Medzoner/medzoner-go/internal/wire"
+	"github.com/Medzoner/medzoner-go/test/features/bootstrap"
 )
 
 var opt = godog.Options{

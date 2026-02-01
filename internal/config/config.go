@@ -12,24 +12,24 @@ import (
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/http/server"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/pkg/database"
-	"github.com/Medzoner/medzoner-go/pkg/notification"
 	"github.com/Medzoner/gomedz/pkg/captcha"
+	"github.com/Medzoner/gomedz/pkg/connector"
+	"github.com/Medzoner/gomedz/pkg/notifier"
 )
 
 type (
 	RootPath string
 
 	Config struct {
-		Obs       *observability.Config `envPrefix:"TELEMETRY_"`
-		Engine    ginadapter.Config     `envPrefix:"ENGINE_"`
-		Logger    logger.Config         `envPrefix:"LOGGER_"`
-		Auth      auth.Config
-		Server    server.Config       `envPrefix:"SERVER_"`
-		Mailer    notification.Config `envPrefix:"MAILER_"`
-		Database  database.Config     `envPrefix:"DATABASE_"`
-		RootPath  RootPath            `env:"ROOT_PATH"`
-		Recaptcha captcha.Config      `envPrefix:"RECAPTCHA_"`
+		Obs       observability.Config `envPrefix:"TELEMETRY_"`
+		Engine    ginadapter.Config    `envPrefix:"ENGINE_"`
+		Logger    logger.Config        `envPrefix:"LOGGER_"`
+		Auth      auth.Config          `envPrefix:"AUTH_"`
+		Server    server.Config        `envPrefix:"SERVER_"`
+		Mailer    notifier.Config      `envPrefix:"MAILER_"`
+		Database  connector.Config     `envPrefix:"DATABASE_"`
+		RootPath  RootPath             `env:"ROOT_PATH"`
+		Recaptcha captcha.Config       `envPrefix:"RECAPTCHA_"`
 	}
 )
 

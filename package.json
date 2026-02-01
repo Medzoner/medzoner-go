@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "gateling": "docker run --rm -i grafana/k6 run  --vus 10 --duration 30s  - <k6/test.js",
+    "gateling": "infra/docker run --rm -i grafana/k6 run  --vus 10 --duration 30s  - <k6/test.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

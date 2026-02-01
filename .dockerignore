@@ -4,6 +4,6 @@
 ./.github
 ./.gitignore
 ./.githooks
-./features
-./k8s
+test/features
+infra/k8s
 ./node_modules
