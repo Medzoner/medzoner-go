@@ -9,7 +9,7 @@ echo "Registry login..."
 echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 
 echo "Building image ${REPOSITORY} ..."
-docker build -t ${REPOSITORY} -f ./infra/prod/docker/Dockerfile .
+docker build -t ${REPOSITORY} -f ./infra/docker/prod/Dockerfile .
 
 echo "Tag image ${REPOSITORY_NEW} ..."
 docker tag "${REPOSITORY}" "${REPOSITORY_NEW}"
