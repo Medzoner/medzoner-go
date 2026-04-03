@@ -4,7 +4,7 @@ go 1.25.6
 
 require (
 	github.com/Medzoner/gomedz v0.12.1
-	github.com/caarlos0/env/v11 v11.3.1
+	github.com/caarlos0/env/v11 v11.4.0
 	github.com/cucumber/godog v0.15.1
 	github.com/docker/distribution v2.8.3+incompatible
 	github.com/go-sql-driver/mysql v1.9.3
