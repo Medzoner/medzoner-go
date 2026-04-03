@@ -79,7 +79,7 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
 	v2 := controllers(probesHandler, indexHandler)
-	serverServer := server.NewServer(loggerInterface, telemetry, serverConfig, engine, v, v2...)
+	serverServer := server.NewServer(ctx, loggerInterface, telemetry, serverConfig, engine, v, v2...)
 	return serverServer, nil
 }
 
@@ -120,7 +120,7 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
 	indexHandler := handler.NewIndexHandler(templateHTML, listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
 	v2 := controllers(probesHandler, indexHandler)
-	serverServer := server.NewServer(loggerInterface, telemetry, serverConfig, engine, v, v2...)
+	serverServer := server.NewServer(ctx, loggerInterface, telemetry, serverConfig, engine, v, v2...)
 	return serverServer, nil
 }
 
