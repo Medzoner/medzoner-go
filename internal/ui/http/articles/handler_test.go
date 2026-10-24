@@ -58,3 +58,42 @@ func TestWhyorArticle(t *testing.T) {
 		assert.Assert(t, errors.Is(err, cause))
 	})
 }
+
+func TestESP32CamArticle(t *testing.T) {
+	t.Run("Unit: test ESP32-CAM article content and metadata", func(t *testing.T) {
+		renderer := gohttp.NewReloadingHTMLRenderer(filepath.Join("..", "..", "..", "..", "tmpl"))
+		req := httptest.NewRequest(http.MethodGet, articles.ESP32CamPath+"?title=UNTRUSTED_TITLE", nil)
+		w := httptest.NewRecorder()
+		ctx := gohttp.NewContext(w, req)
+		ctx.SetRenderer(renderer)
+		assert.NilError(t, articles.NewHandler().ESP32Cam(ctx, struct{}{}))
+		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Assert(t, strings.HasPrefix(w.Header().Get("Content-Type"), "text/html"))
+		body := w.Body.String()
+		for _, want := range []string{
+			`<html lang="en">`, articles.ESP32CamTitle,
+			`rel="canonical" href="https://www.medzoner.com/articles/resilient-multi-client-esp32-camera"`,
+			`property="og:type" content="article"`, `name="twitter:card" content="summary_large_image"`,
+			`/public/images/esp32cam-social.png`, `/public/images/esp32cam-flow.svg`,
+			`/public/images/esp32cam-dashboard.png`, `http://camera.local:81/stream`,
+			`https://github.com/Medzoner/domoticz-esp32cam`, `no TLS`,
+		} {
+			assert.Assert(t, strings.Contains(body, want), "missing content: %s", want)
+		}
+		assert.Assert(t, !strings.Contains(body, "UNTRUSTED_TITLE"))
+		data := regexp.MustCompile(`(?s)<script type="application/ld\+json">\s*(.*?)\s*</script>`).FindStringSubmatch(body)
+		assert.Equal(t, len(data), 2)
+		var schema map[string]any
+		assert.NilError(t, json.Unmarshal([]byte(data[1]), &schema))
+		assert.Equal(t, schema["@type"], "TechArticle")
+		assert.Equal(t, schema["inLanguage"], "en")
+	})
+	t.Run("Unit: test ESP32-CAM article render error is wrapped", func(t *testing.T) {
+		cause := errors.New("template unavailable")
+		ctx := gohttp.NewContext(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, articles.ESP32CamPath, nil))
+		ctx.SetRenderer(failingRenderer{err: cause})
+		err := articles.NewHandler().ESP32Cam(ctx, struct{}{})
+		assert.ErrorContains(t, err, "render ESP32-CAM article")
+		assert.Assert(t, errors.Is(err, cause))
+	})
+}

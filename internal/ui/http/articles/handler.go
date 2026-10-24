@@ -11,6 +11,9 @@ import (
 const (
 	Path  = "/articles/after-wire-whyor"
 	Title = "After Wire: compile-time dependency injection with whyor"
+
+	ESP32CamPath  = "/articles/resilient-multi-client-esp32-camera"
+	ESP32CamTitle = "Building a resilient multi-client ESP32 camera"
 )
 
 type View struct {
@@ -30,6 +33,7 @@ func (Handler) Prefix() string { return "/articles" }
 
 func (h Handler) Register(r gohttp.Router[any]) {
 	r.Get("/after-wire-whyor", h.Whyor, gohttp.Options{})
+	r.Get("/resilient-multi-client-esp32-camera", h.ESP32Cam, gohttp.Options{})
 }
 
 func (Handler) Whyor(c *gohttp.Context, _ struct{}) error {
@@ -45,6 +49,23 @@ func (Handler) Whyor(c *gohttp.Context, _ struct{}) error {
 	if err := c.HTML(http.StatusOK, "article_whyor", view); err != nil {
 		span.RecordError(err)
 		return fmt.Errorf("render whyor article: %w", err)
+	}
+	return nil
+}
+
+func (Handler) ESP32Cam(c *gohttp.Context, _ struct{}) error {
+	_, span := observability.StartSpan(c.Context(), "Articles.ESP32Cam")
+	defer span.End()
+	view := View{
+		Locale:          "en",
+		PageTitle:       ESP32CamTitle + " | Medzoner",
+		PageDescription: "How I designed an open-source ESP32 camera firmware for shared MJPEG streaming, adaptive load control, SD recording, and honest LAN security.",
+		CanonicalURL:    "https://www.medzoner.com" + ESP32CamPath,
+		SocialImage:     "https://www.medzoner.com/public/images/esp32cam-social.png",
+	}
+	if err := c.HTML(http.StatusOK, "article_esp32cam", view); err != nil {
+		span.RecordError(err)
+		return fmt.Errorf("render ESP32-CAM article: %w", err)
 	}
 	return nil
 }

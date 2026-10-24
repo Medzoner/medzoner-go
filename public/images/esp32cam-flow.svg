@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="500" viewBox="0 0 1100 500" role="img" aria-labelledby="title description">
+  <title id="title">ESP32-CAM shared streaming architecture</title>
+  <desc id="description">A camera captures a JPEG into PSRAM. An adaptive controller selects a stream profile. The same frame is sent to bounded MJPEG clients and optional SD recording, with health telemetry visible in the dashboard.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101827"/>
+      <stop offset="1" stop-color="#17243a"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0l10 5-10 5z" fill="#5eead4"/>
+    </marker>
+    <style>
+      .title{font:700 30px Inter,Arial,sans-serif;fill:#f8fafc}.subtitle{font:400 17px Inter,Arial,sans-serif;fill:#a9bad1}.label{font:700 13px Inter,Arial,sans-serif;letter-spacing:1.2px;fill:#5eead4}.main{font:600 21px Inter,Arial,sans-serif;fill:#f8fafc}.small{font:400 15px Inter,Arial,sans-serif;fill:#b9c9df}.box{fill:#20344d;stroke:#365370;stroke-width:2}.output{fill:#12383b;stroke:#2a7771;stroke-width:2}.line{fill:none;stroke:#5eead4;stroke-width:3;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1100" height="500" rx="26" fill="url(#background)"/>
+  <text x="42" y="58" class="title">One captured frame, bounded delivery</text>
+  <text x="42" y="88" class="subtitle">Keep capture shared, bound slow writes, expose pressure.</text>
+
+  <rect x="42" y="145" width="220" height="135" rx="16" class="box"/>
+  <text x="66" y="177" class="label">CAPTURE</text>
+  <text x="66" y="213" class="main">Camera + PSRAM</text>
+  <text x="66" y="242" class="small">Latest JPEG frame</text>
+  <text x="66" y="266" class="small">Two frame buffers</text>
+
+  <path d="M262 212h64" class="line"/>
+
+  <rect x="328" y="145" width="244" height="135" rx="16" class="box"/>
+  <text x="352" y="177" class="label">ADAPT</text>
+  <text x="352" y="213" class="main">Pressure controller</text>
+  <text x="352" y="242" class="small">FPS + JPEG quality offset</text>
+  <text x="352" y="266" class="small">Fast degrade, slow recovery</text>
+
+  <path d="M572 212h64" class="line"/>
+
+  <rect x="638" y="120" width="202" height="92" rx="16" class="output"/>
+  <text x="662" y="152" class="label">STREAM</text>
+  <text x="662" y="184" class="main">MJPEG clients</text>
+  <text x="662" y="205" class="small">Up to four sessions</text>
+
+  <rect x="638" y="232" width="202" height="92" rx="16" class="output"/>
+  <text x="662" y="264" class="label">RECORD</text>
+  <text x="662" y="296" class="main">SD segments</text>
+  <text x="662" y="317" class="small">Original JPEG frames</text>
+
+  <path d="M840 166h64" class="line"/>
+  <path d="M840 278h64" class="line"/>
+
+  <rect x="906" y="120" width="152" height="204" rx="16" class="box"/>
+  <text x="930" y="152" class="label">CONSUME</text>
+  <text x="930" y="184" class="main">Browser</text>
+  <text x="930" y="214" class="main">Domoticz</text>
+  <text x="930" y="244" class="main">MotionEye</text>
+  <text x="930" y="274" class="main">Home Assistant</text>
+  <text x="930" y="304" class="main">OctoPrint</text>
+
+  <path d="M450 280v81h288" class="line"/>
+  <rect x="638" y="345" width="420" height="100" rx="16" class="box"/>
+  <text x="662" y="377" class="label">OBSERVE</text>
+  <text x="662" y="409" class="main">Health endpoint + responsive dashboard</text>
+  <text x="662" y="433" class="small">Wi-Fi · heap · delivery time · pressure · recording</text>
+</svg>
